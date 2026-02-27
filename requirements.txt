@@ -1,0 +1,9 @@
+# DRAS-5: Dynamic Risk Assessment State Machine
+# Core (no heavy dependencies — the state machine itself is pure Python)
+numpy>=1.21.0
+matplotlib>=3.4.0
+seaborn>=0.11.0
+
+# Development (optional)
+pytest>=7.0.0
+pytest-cov>=3.0.0
