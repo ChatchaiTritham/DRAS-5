@@ -2,7 +2,8 @@
 
 [![License: MIT](https://img.shields.io/badge/License-MIT-yellow.svg)](https://opensource.org/licenses/MIT)
 [![Python 3.8+](https://img.shields.io/badge/python-3.8+-blue.svg)](https://www.python.org/downloads/)
-[![Status: Research](https://img.shields.io/badge/status-research-orange.svg)]()
+[![Tests: 103 passed](https://img.shields.io/badge/tests-103%20passed-brightgreen.svg)](tests/)
+[![Status: Research](https://img.shields.io/badge/status-research-orange.svg)](https://github.com/ChatchaiTritham/DRAS-5)
 
 > A five-state risk assessment machine with exponential decay de-escalation
 > and provable safety guarantees for clinical decision support.
@@ -254,8 +255,15 @@ DRAS-5/
     generate_figures.py  # Reproduce manuscript figures
   notebooks/
     01_state_machine_basics.ipynb
+  .github/
+    ISSUE_TEMPLATE/      # Bug report & feature request templates
+    PULL_REQUEST_TEMPLATE.md
+  CHANGELOG.md
   CITATION.cff
+  CODE_OF_CONDUCT.md
+  CONTRIBUTING.md
   LICENSE                # MIT (research use only)
+  SECURITY.md
   requirements.txt
   setup.py
 ```
@@ -331,7 +339,12 @@ MIT License.  See [LICENSE](LICENSE) for details.
 
 ---
 
-**Institution**: Department of Computer Science and Information Technology,
-Naresuan University, Phitsanulok 65000, Thailand
+## Authors
 
-**Contact**: chatchait66@nu.ac.th
+| # | Name | Role | Email |
+| --- | ------ | ------ | ------- |
+| 1 | **Chatchai Tritham** | PhD Candidate | `chatchait66@nu.ac.th` |
+| 2 | **Chakkrit Snae Namahoot** | Supervisor (Corresponding Author) | `chakkrits@nu.ac.th` |
+
+**Affiliation**: Department of Computer Science and Information Technology,
+Faculty of Science, Naresuan University, Phitsanulok 65000, Thailand
