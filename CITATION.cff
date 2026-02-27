@@ -1,0 +1,44 @@
+cff-version: 1.2.0
+message: "If you use this software, please cite it as below."
+type: software
+title: "DRAS-5: Dynamic Risk Assessment State Machine with Exponential Decay De-escalation and Provable Safety Guarantees"
+version: 1.0.0
+date-released: 2026-02-27
+authors:
+  - family-names: "Tritham"
+    given-names: "Chatchai"
+    email: "chatchait66@nu.ac.th"
+    affiliation: "Naresuan University"
+    orcid: ""
+  - family-names: "Snae Namahoot"
+    given-names: "Chakkrit"
+    email: "chakkrits@nu.ac.th"
+    affiliation: "Naresuan University"
+repository-code: "https://github.com/ChatchaiTritham/DRAS-5"
+url: "https://github.com/ChatchaiTritham/DRAS-5"
+abstract: >-
+  DRAS-5 implements a formal five-state risk assessment state machine with
+  exponential decay de-escalation (C5) and provable safety guarantees (C1--C5)
+  for clinical decision support.  Five constraints are enforced on every update:
+  monotonic escalation, timeout enforcement, audit completeness, human approval
+  gating, and controlled de-escalation with dual clinician approval.
+keywords:
+  - state machine
+  - risk assessment
+  - formal methods
+  - clinical decision support
+  - patient safety
+  - constraint enforcement
+  - exponential decay
+  - de-escalation
+license: MIT
+preferred-citation:
+  type: article
+  authors:
+    - family-names: "Tritham"
+      given-names: "Chatchai"
+    - family-names: "Snae Namahoot"
+      given-names: "Chakkrit"
+  title: "DRAS-5: A Dynamic Risk Assessment State Machine with Exponential Decay De-escalation and Provable Safety Guarantees for Clinical Decision Support"
+  journal: "Applied Intelligence"
+  year: 2026
