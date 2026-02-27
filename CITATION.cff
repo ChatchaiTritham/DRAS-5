@@ -8,12 +8,11 @@ authors:
   - family-names: "Tritham"
     given-names: "Chatchai"
     email: "chatchait66@nu.ac.th"
-    affiliation: "Naresuan University"
-    orcid: ""
+    affiliation: "Department of Computer Science and Information Technology, Faculty of Science, Naresuan University, Phitsanulok 65000, Thailand"
   - family-names: "Snae Namahoot"
     given-names: "Chakkrit"
     email: "chakkrits@nu.ac.th"
-    affiliation: "Naresuan University"
+    affiliation: "Department of Computer Science and Information Technology, Faculty of Science, Naresuan University, Phitsanulok 65000, Thailand"
 repository-code: "https://github.com/ChatchaiTritham/DRAS-5"
 url: "https://github.com/ChatchaiTritham/DRAS-5"
 abstract: >-
@@ -42,3 +41,7 @@ preferred-citation:
   title: "DRAS-5: A Dynamic Risk Assessment State Machine with Exponential Decay De-escalation and Provable Safety Guarantees for Clinical Decision Support"
   journal: "Applied Intelligence"
   year: 2026
+contact:
+  - family-names: "Snae Namahoot"
+    given-names: "Chakkrit"
+    email: "chakkrits@nu.ac.th"

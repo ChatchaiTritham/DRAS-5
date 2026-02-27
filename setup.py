@@ -5,9 +5,11 @@ Package configuration for the DRAS-5 framework, which implements a 5-state
 risk assessment machine with exponential decay de-escalation and formal
 constraint enforcement (C1--C5) for clinical decision support.
 
-Author: Chatchai Tritham
-Advisor: Assoc. Prof. Dr. Chakkrit Snae Namahoot
-Institution: Naresuan University, Thailand
+Author: Chatchai Tritham (chatchait66@nu.ac.th)
+Supervisor: Chakkrit Snae Namahoot (chakkrits@nu.ac.th)
+Institution: Department of Computer Science and Information Technology,
+             Faculty of Science, Naresuan University,
+             Phitsanulok 65000, Thailand
 """
 
 from setuptools import setup, find_packages
@@ -20,7 +22,7 @@ setup(
     name="dras5",
     version="1.0.0",
     author="Chatchai Tritham, Chakkrit Snae Namahoot",
-    author_email="chatchait66@nu.ac.th",
+    author_email="chatchait66@nu.ac.th, chakkrits@nu.ac.th",
     description=(
         "DRAS-5: 5-State Dynamic Risk Assessment Machine with "
         "Exponential Decay De-escalation and Provable Safety Guarantees"
