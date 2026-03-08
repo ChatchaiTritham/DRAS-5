@@ -17,7 +17,7 @@ Tritham C, Snae Namahoot C (2026). DRAS-5, Section 3.3.
 import math
 from typing import Optional
 
-from .states import RiskState, STATE_CONFIG
+from .states import STATE_CONFIG, RiskState
 
 __all__ = ["DecayTracker"]
 
@@ -50,8 +50,7 @@ class DecayTracker:
         self._t_peak = 0.0
         self._current_state = state
 
-    def effective_risk(self, rho: float, t: float,
-                       state: RiskState) -> float:
+    def effective_risk(self, rho: float, t: float, state: RiskState) -> float:
         """Compute rho_eff(t) per Eq. 5.
 
         Parameters

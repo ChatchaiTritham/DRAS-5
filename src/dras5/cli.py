@@ -12,9 +12,9 @@ from __future__ import annotations
 import argparse
 import sys
 
-from .states import RiskState, STATE_CONFIG, half_life, min_deescalation_latency
-from .state_machine import DRAS5StateMachine
 from .simulator import generate_trajectory, run_evaluation
+from .state_machine import DRAS5StateMachine
+from .states import STATE_CONFIG, RiskState, half_life, min_deescalation_latency
 
 
 def _print_header(text: str) -> None:
@@ -32,6 +32,7 @@ def _print_section(text: str) -> None:
 # ------------------------------------------------------------------
 # dras5-demo
 # ------------------------------------------------------------------
+
 
 def demo() -> None:
     """Interactive demonstration of the DRAS-5 state machine."""
@@ -51,14 +52,16 @@ def demo() -> None:
     for s in RiskState:
         cfg = STATE_CONFIG[s]
         t12 = half_life(s)
-        print(fmt.format(
-            s.name,
-            f"{cfg['theta']:.2f}",
-            f"{cfg['t_max']:.0f}" if cfg["t_max"] != float("inf") else "inf",
-            f"{cfg['lam']}" if cfg["lam"] is not None else "---",
-            f"{cfg['t_cool']:.0f}" if cfg["t_cool"] is not None else "---",
-            f"{t12:.1f}" if t12 is not None else "---",
-        ))
+        print(
+            fmt.format(
+                s.name,
+                f"{cfg['theta']:.2f}",
+                f"{cfg['t_max']:.0f}" if cfg["t_max"] != float("inf") else "inf",
+                f"{cfg['lam']}" if cfg["lam"] is not None else "---",
+                f"{cfg['t_cool']:.0f}" if cfg["t_cool"] is not None else "---",
+                f"{t12:.1f}" if t12 is not None else "---",
+            )
+        )
 
     # 2. Gradual escalation
     _print_section("2. Gradual Risk Escalation")
@@ -81,10 +84,12 @@ def demo() -> None:
 
     # 4. Audit trail
     _print_section("4. Audit Trail (C3)")
-    for entry in sm.get_history():
-        print(f"  #{entry.entry_id}  {entry.from_state.name:10s} -> "
-              f"{entry.to_state.name:10s}  rho={entry.risk_score:.3f}  "
-              f"trigger={entry.trigger}")
+    for i, entry in enumerate(sm.get_history(), 1):
+        print(
+            f"  #{i}  {entry.from_state.name:10s} -> "
+            f"{entry.to_state.name:10s}  rho={entry.risk_score:.3f}  "
+            f"trigger={entry.trigger}"
+        )
 
     # 5. De-escalation latency
     _print_section("5. Minimum De-escalation Latency (Proposition 2)")
@@ -105,17 +110,24 @@ def demo() -> None:
 # dras5-validate
 # ------------------------------------------------------------------
 
+
 def validate() -> None:
     """Run constraint compliance validation on synthetic trajectories."""
     parser = argparse.ArgumentParser(description="DRAS-5 constraint validator")
-    parser.add_argument("-n", "--trajectories", type=int, default=5000,
-                        help="Number of trajectories (default: 5000)")
-    parser.add_argument("--steps", type=int, default=100,
-                        help="Steps per trajectory (default: 100)")
-    parser.add_argument("--dt", type=float, default=10.0,
-                        help="Time step in seconds (default: 10)")
-    parser.add_argument("--no-c5", action="store_true",
-                        help="Disable C5 de-escalation")
+    parser.add_argument(
+        "-n",
+        "--trajectories",
+        type=int,
+        default=5000,
+        help="Number of trajectories (default: 5000)",
+    )
+    parser.add_argument(
+        "--steps", type=int, default=100, help="Steps per trajectory (default: 100)"
+    )
+    parser.add_argument(
+        "--dt", type=float, default=10.0, help="Time step in seconds (default: 10)"
+    )
+    parser.add_argument("--no-c5", action="store_true", help="Disable C5 de-escalation")
     args = parser.parse_args()
 
     _print_header("DRAS-5 CONSTRAINT VALIDATION")
