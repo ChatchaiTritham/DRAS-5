@@ -1,8 +1,8 @@
 """Tests for dras5.constraints — C1, C2, C4, C5 validators."""
 
 import pytest
-from dras5.states import RiskState
 from dras5.constraints import check_c1, check_c2, check_c4, check_c5
+from dras5.states import RiskState
 
 
 class TestC1MonotonicEscalation:
@@ -24,12 +24,15 @@ class TestC1MonotonicEscalation:
         ok, _ = check_c1(RiskState.CRITICAL, RiskState.ALERT, c5_approved=True)
         assert ok
 
-    @pytest.mark.parametrize("from_s,to_s", [
-        (RiskState.SAFE, RiskState.MONITOR),
-        (RiskState.MONITOR, RiskState.ALERT),
-        (RiskState.ALERT, RiskState.CRITICAL),
-        (RiskState.CRITICAL, RiskState.EMERGENCY),
-    ])
+    @pytest.mark.parametrize(
+        "from_s,to_s",
+        [
+            (RiskState.SAFE, RiskState.MONITOR),
+            (RiskState.MONITOR, RiskState.ALERT),
+            (RiskState.ALERT, RiskState.CRITICAL),
+            (RiskState.CRITICAL, RiskState.EMERGENCY),
+        ],
+    )
     def test_all_single_step_escalations(self, from_s, to_s):
         ok, _ = check_c1(from_s, to_s)
         assert ok
@@ -120,9 +123,16 @@ class TestC5ControlledDeescalation:
         assert not ok
         assert "alpha2" in msg
 
-    def test_deny_decay_not_sustained(self):
-        # rho_eff at sample 2 is above theta_3=0.50
+    def test_deny_above_target_threshold(self):
+        # rho_eff at sample 2 is above theta_3=0.50 (ALERT entry threshold)
         series = [0.45, 0.42, 0.55, 0.38]
+        ok, msg = check_c5(RiskState.CRITICAL, series, alpha1=True, alpha2=True)
+        assert not ok
+        assert "above threshold" in msg
+
+    def test_deny_decay_not_sustained(self):
+        # All values below theta_3=0.50, but not strictly decreasing
+        series = [0.45, 0.42, 0.45, 0.38]
         ok, msg = check_c5(RiskState.CRITICAL, series, alpha1=True, alpha2=True)
         assert not ok
         assert "decay not sustained" in msg
