@@ -19,29 +19,56 @@ import random
 from dataclasses import dataclass
 from typing import List, Optional, Tuple
 
-from .states import RiskState
 from .state_machine import DRAS5StateMachine
+from .states import RiskState
 
-__all__ = ["TrajectoryPoint", "generate_trajectory",
-           "run_evaluation", "EvaluationResult"]
+DEFAULT_RANDOM_SEED = 42
+DEFAULT_TIME_STEP_SECONDS = 10.0
+DEFAULT_STEP_COUNT = 100
+DEFAULT_TRAJECTORY_COUNT = 5000
+MIN_RISK_SCORE = 0.0
+MAX_RISK_SCORE = 1.0
+MONOTONIC_BASE_RISK = 0.1
+MONOTONIC_RISK_SPAN = 0.8
+MONOTONIC_NOISE_STD = 0.02
+OSCILLATING_BASE_RISK = 0.5
+OSCILLATING_AMPLITUDE = 0.35
+OSCILLATING_PERIOD_FACTOR = 0.4
+OSCILLATING_NOISE_STD = 0.05
+SPIKE_RISK_SCORE = 0.92
+SPIKE_NOISE_STD = 0.02
+SPIKE_DECAY_RATE = 0.015
+
+TRAJECTORY_TYPE_MONOTONIC = "monotonic"
+TRAJECTORY_TYPE_OSCILLATING = "oscillating"
+TRAJECTORY_TYPE_SPIKE_RECOVER = "spike_recover"
+
+__all__ = [
+    "TrajectoryPoint",
+    "generate_trajectory",
+    "run_evaluation",
+    "EvaluationResult",
+]
 
 
 @dataclass
 class TrajectoryPoint:
     """A single time-step in a synthetic trajectory."""
+
     t: float
-    rho: float               # true instantaneous risk
-    true_state: RiskState     # state implied by rho alone (stateless)
-    system_state: RiskState   # state assigned by DRAS
+    rho: float  # true instantaneous risk
+    true_state: RiskState  # state implied by rho alone (stateless)
+    system_state: RiskState  # state assigned by DRAS
 
 
 @dataclass
 class EvaluationResult:
     """Aggregated evaluation metrics over multiple trajectories."""
+
     n_trajectories: int
     n_evaluations: int
-    mer: float                # Missed Escalation Rate (Eq. 10)
-    oer: float                # Over-Escalation Rate (Eq. 11)
+    mer: float  # Missed Escalation Rate (Eq. 10)
+    oer: float  # Over-Escalation Rate (Eq. 11)
     c1_violations: int
     c2_violations: int
     c3_violations: int
@@ -57,15 +84,16 @@ class EvaluationResult:
 # Trajectory generators
 # ------------------------------------------------------------------
 
+
 def _monotonic(n_steps: int, dt: float, seed: int) -> List[Tuple[float, float]]:
     """Steadily rising risk with small noise."""
     rng = random.Random(seed)
     points = []
     for i in range(n_steps):
         t = i * dt
-        base = 0.1 + 0.8 * (i / n_steps)
-        noise = rng.gauss(0, 0.02)
-        rho = max(0.0, min(1.0, base + noise))
+        base_risk_score = MONOTONIC_BASE_RISK + MONOTONIC_RISK_SPAN * (i / n_steps)
+        noise = rng.gauss(0, MONOTONIC_NOISE_STD)
+        rho = max(MIN_RISK_SCORE, min(MAX_RISK_SCORE, base_risk_score + noise))
         points.append((t, rho))
     return points
 
@@ -76,9 +104,11 @@ def _oscillating(n_steps: int, dt: float, seed: int) -> List[Tuple[float, float]
     points = []
     for i in range(n_steps):
         t = i * dt
-        base = 0.5 + 0.35 * math.sin(2 * math.pi * i / (n_steps * 0.4))
-        noise = rng.gauss(0, 0.05)
-        rho = max(0.0, min(1.0, base + noise))
+        base_risk_score = OSCILLATING_BASE_RISK + OSCILLATING_AMPLITUDE * math.sin(
+            2 * math.pi * i / (n_steps * OSCILLATING_PERIOD_FACTOR)
+        )
+        noise = rng.gauss(0, OSCILLATING_NOISE_STD)
+        rho = max(MIN_RISK_SCORE, min(MAX_RISK_SCORE, base_risk_score + noise))
         points.append((t, rho))
     return points
 
@@ -91,30 +121,32 @@ def _spike_recover(n_steps: int, dt: float, seed: int) -> List[Tuple[float, floa
     for i in range(n_steps):
         t = i * dt
         if i < spike_at:
-            base = 0.2 + 0.1 * (i / spike_at)
+            base_risk_score = 0.2 + 0.1 * (i / spike_at)
         elif i == spike_at:
-            base = 0.92
+            base_risk_score = SPIKE_RISK_SCORE
         else:
             decay_steps = i - spike_at
-            base = 0.92 * math.exp(-0.015 * decay_steps)
-        noise = rng.gauss(0, 0.02)
-        rho = max(0.0, min(1.0, base + noise))
+            base_risk_score = SPIKE_RISK_SCORE * math.exp(
+                -SPIKE_DECAY_RATE * decay_steps
+            )
+        noise = rng.gauss(0, SPIKE_NOISE_STD)
+        rho = max(MIN_RISK_SCORE, min(MAX_RISK_SCORE, base_risk_score + noise))
         points.append((t, rho))
     return points
 
 
 TRAJECTORY_TYPES = {
-    "monotonic": _monotonic,
-    "oscillating": _oscillating,
-    "spike_recover": _spike_recover,
+    TRAJECTORY_TYPE_MONOTONIC: _monotonic,
+    TRAJECTORY_TYPE_OSCILLATING: _oscillating,
+    TRAJECTORY_TYPE_SPIKE_RECOVER: _spike_recover,
 }
 
 
 def generate_trajectory(
-    ttype: str = "monotonic",
-    n_steps: int = 100,
-    dt: float = 10.0,
-    seed: int = 42,
+    ttype: str = TRAJECTORY_TYPE_MONOTONIC,
+    n_steps: int = DEFAULT_STEP_COUNT,
+    dt: float = DEFAULT_TIME_STEP_SECONDS,
+    seed: int = DEFAULT_RANDOM_SEED,
     enable_c5: bool = True,
     require_human_approval: bool = False,
 ) -> List[TrajectoryPoint]:
@@ -143,8 +175,10 @@ def generate_trajectory(
 
     gen_fn = TRAJECTORY_TYPES.get(ttype)
     if gen_fn is None:
-        raise ValueError(f"Unknown trajectory type: {ttype}. "
-                         f"Choose from {list(TRAJECTORY_TYPES)}")
+        raise ValueError(
+            f"Unknown trajectory type: {ttype}. "
+            f"Choose from {list(TRAJECTORY_TYPES)}"
+        )
 
     raw = gen_fn(n_steps, dt, seed)
 
@@ -152,28 +186,30 @@ def generate_trajectory(
         enable_constraints=True,
         enable_audit=True,
         require_human_approval=require_human_approval,
-        session_id=f"sim-{ttype}-{seed}",
     )
 
     trajectory: List[TrajectoryPoint] = []
     for t, rho in raw:
         true_s = risk_to_state(rho)
-        sys_s = sm.update(
-            risk_score=rho,
-            t=t,
-            human_approved=True,  # auto-approve for simulation
+        system_state = RiskState(
+            int(
+                sm.update(
+                    risk_score=rho,
+                    human_approved=True,  # auto-approve for simulation
+                )
+            )
         )
-        trajectory.append(TrajectoryPoint(t=t, rho=rho,
-                                          true_state=true_s,
-                                          system_state=sys_s))
+        trajectory.append(
+            TrajectoryPoint(t=t, rho=rho, true_state=true_s, system_state=system_state)
+        )
 
     return trajectory
 
 
 def run_evaluation(
-    n_trajectories: int = 5000,
-    n_steps: int = 100,
-    dt: float = 10.0,
+    n_trajectories: int = DEFAULT_TRAJECTORY_COUNT,
+    n_steps: int = DEFAULT_STEP_COUNT,
+    dt: float = DEFAULT_TIME_STEP_SECONDS,
     enable_c5: bool = True,
 ) -> EvaluationResult:
     """Run the full evaluation suite (Section 4 of the manuscript).
@@ -184,8 +220,12 @@ def run_evaluation(
     """
     from .states import risk_to_state
 
-    types = ["monotonic", "oscillating", "spike_recover"]
-    per_type = n_trajectories // len(types)
+    trajectory_types = [
+        TRAJECTORY_TYPE_MONOTONIC,
+        TRAJECTORY_TYPE_OSCILLATING,
+        TRAJECTORY_TYPE_SPIKE_RECOVER,
+    ]
+    per_type = n_trajectories // len(trajectory_types)
 
     total_evals = 0
     missed = 0
@@ -194,10 +234,13 @@ def run_evaluation(
     c5_granted = c5_denied_decay = c5_denied_cooling = c5_denied_approval = 0
     c5_premature = 0
 
-    for tt in types:
+    for trajectory_type in trajectory_types:
         for seed in range(per_type):
             traj = generate_trajectory(
-                ttype=tt, n_steps=n_steps, dt=dt, seed=seed,
+                ttype=trajectory_type,
+                n_steps=n_steps,
+                dt=dt,
+                seed=seed,
                 enable_c5=enable_c5,
             )
             total_evals += len(traj)
@@ -212,7 +255,7 @@ def run_evaluation(
             over_steps = sum(1 for p in traj if p.system_state > p.true_state)
             over_sum += over_steps / len(traj)
 
-    n_total = per_type * len(types)
+    n_total = per_type * len(trajectory_types)
     mer = missed / n_total if n_total > 0 else 0.0
     oer = over_sum / n_total if n_total > 0 else 0.0
 

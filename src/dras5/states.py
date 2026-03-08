@@ -11,9 +11,9 @@ State Machine with Exponential Decay De-escalation and Provable Safety
 Guarantees for Clinical Decision Support.
 """
 
+import math
 from enum import IntEnum
 from typing import Dict, Optional
-import math
 
 __all__ = ["RiskState", "STATE_CONFIG"]
 
@@ -35,25 +35,25 @@ class RiskState(IntEnum):
 STATE_CONFIG: Dict[RiskState, dict] = {
     RiskState.SAFE: {
         "label": "SAFE",
-        "theta": 0.00,          # entry threshold
-        "theta_upper": 0.30,    # upper boundary
+        "theta": 0.00,  # entry threshold
+        "theta_upper": 0.30,  # upper boundary
         "t_max": float("inf"),  # no timeout
-        "lam": None,            # no decay
-        "t_cool": None,         # no cooling period
+        "lam": None,  # no decay
+        "t_cool": None,  # no cooling period
     },
     RiskState.MONITOR: {
         "label": "MONITOR",
         "theta": 0.30,
         "theta_upper": 0.50,
-        "t_max": 300.0,         # 5 min
-        "lam": 0.005,           # decay rate (s^-1)
-        "t_cool": 600.0,        # cooling period (s)
+        "t_max": 300.0,  # 5 min
+        "lam": 0.005,  # decay rate (s^-1)
+        "t_cool": 600.0,  # cooling period (s)
     },
     RiskState.ALERT: {
         "label": "ALERT",
         "theta": 0.50,
         "theta_upper": 0.70,
-        "t_max": 120.0,         # 2 min
+        "t_max": 120.0,  # 2 min
         "lam": 0.003,
         "t_cool": 300.0,
     },
@@ -61,7 +61,7 @@ STATE_CONFIG: Dict[RiskState, dict] = {
         "label": "CRITICAL",
         "theta": 0.70,
         "theta_upper": 0.90,
-        "t_max": 60.0,          # 1 min
+        "t_max": 60.0,  # 1 min
         "lam": 0.001,
         "t_cool": 180.0,
     },
