@@ -12,8 +12,9 @@ Institution: Department of Computer Science and Information Technology,
              Phitsanulok 65000, Thailand
 """
 
-from setuptools import setup, find_packages
 from pathlib import Path
+
+from setuptools import find_packages, setup
 
 readme_path = Path(__file__).parent / "README.md"
 long_desc = readme_path.read_text(encoding="utf-8") if readme_path.exists() else ""
@@ -30,7 +31,8 @@ setup(
     long_description=long_desc,
     long_description_content_type="text/markdown",
     url="https://github.com/ChatchaiTritham/DRAS-5",
-    packages=find_packages(),
+    package_dir={"": "src"},
+    packages=find_packages(where="src"),
     classifiers=[
         "Development Status :: 4 - Beta",
         "Intended Audience :: Science/Research",
@@ -39,13 +41,12 @@ setup(
         "Topic :: Scientific/Engineering :: Medical Science Apps.",
         "License :: OSI Approved :: MIT License",
         "Programming Language :: Python :: 3",
-        "Programming Language :: Python :: 3.8",
         "Programming Language :: Python :: 3.9",
         "Programming Language :: Python :: 3.10",
         "Programming Language :: Python :: 3.11",
         "Programming Language :: Python :: 3.12",
     ],
-    python_requires=">=3.8",
+    python_requires=">=3.9",
     install_requires=[
         "numpy>=1.21.0",
     ],

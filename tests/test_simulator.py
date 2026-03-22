@@ -1,8 +1,8 @@
 """Tests for dras5.simulator — trajectory generation and evaluation."""
 
 import pytest
-from dras5.states import RiskState
 from dras5.simulator import generate_trajectory, run_evaluation
+from dras5.states import RiskState
 
 
 class TestGenerateTrajectory:
