@@ -1,9 +1,10 @@
 """Tests for dras5.decay — exponential risk decay (Eq. 5)."""
 
 import math
+
 import pytest
-from dras5.states import RiskState
 from dras5.decay import DecayTracker
+from dras5.states import RiskState
 
 
 class TestDecayTracker:

@@ -1,131 +1,71 @@
-# DRAS-5: Dynamic Risk Assessment State Machine
+# DRAS-5
 
-[![License: MIT](https://img.shields.io/badge/License-MIT-yellow.svg)](https://opensource.org/licenses/MIT)
-[![Python 3.8+](https://img.shields.io/badge/python-3.8+-blue.svg)](https://www.python.org/downloads/)
-[![Tests: 103 passed](https://img.shields.io/badge/tests-103%20passed-brightgreen.svg)](tests/)
-[![Status: Research](https://img.shields.io/badge/status-research-orange.svg)](https://github.com/ChatchaiTritham/DRAS-5)
+## Overview
 
-> A five-state risk assessment machine with exponential decay de-escalation
-> and provable safety guarantees for clinical decision support.
+DRAS-5 is the Dynamic Risk Assessment State Machine used to model bounded,
+stateful escalation for clinical decision support.
 
-**DRAS-5** implements a formal state machine that governs patient risk
-transitions through five acuity levels (S1 SAFE through S5 EMERGENCY).
-Five safety constraints (C1--C5) are enforced on every update cycle,
-including a novel **controlled de-escalation protocol (C5)** that permits
-state regression only when an exponential risk decay has been sustained
-for a full cooling period and two independent clinicians approve.
+## Installation
 
-Part of the emergency triage trilogy:
-[TRI-X](https://github.com/ChatchaiTritham/TRI-X) |
-**DRAS-5** |
-[ORASR](https://github.com/ChatchaiTritham/ORASR)
+```bash
+pip install -e .
+```
 
----
+## Repository Structure
 
-## Key Results
+- `src/dras5/`: importable package
+- `tests/`: automated tests
+- `scripts/`: runnable demos and figure generation
+- `notebooks/`: research notebooks
 
-| Metric | DRAS-5 | NEWS2 (stateless) | MEWS (stateless) |
-|--------|--------|-------------------|-------------------|
-| Missed Escalation Rate | **0.0%** | 11.2% | 12.8% |
-| Over-Escalation Rate (with C5) | **3.6%** | 0.0% | 0.0% |
-| Over-Escalation Rate (no C5) | 7.4% | 0.0% | 0.0% |
+## Tutorials And Demos
 
-- 0% MER is a **structural guarantee** of C1, not a statistical finding
-- C5 reduces over-escalation by **51%** (7.4% to 3.6%) without sacrificing safety
-- O(1) transition complexity; >8,300 updates/second
+- Scripts:
+  - `scripts/demo.py`: quick state-machine walkthrough
+  - `scripts/timeout_demo.py`: timeout and escalation behavior
+  - `scripts/generate_figures.py`: manuscript-ready figure generation
+- Notebooks:
+  - `notebooks/01_state_machine_basics.ipynb`: core state machine, constraints, decay, and audit walkthrough
+  - `notebooks/02_advanced_governance_workflows.ipynb`: timeout escalation, controlled de-escalation, manual overrides, and audit-driven workflow visualization
 
----
+## Cross-Repository Tutorial Charts
+
+- `../tutorial_surface_comparison.png`: scripts vs examples vs notebooks across all repositories
+- `../tutorial_asset_density.png`: interactive/tutorial asset density normalized by repository size
+
+## Package Scope
+
+The package includes:
+
+- risk states in `src/dras5/states.py`
+- transition logic in `src/dras5/state_machine.py`
+- constraints, audit logging, decay, and simulation helpers
 
 ## Quick Start
 
 ```bash
-git clone https://github.com/ChatchaiTritham/DRAS-5.git && cd DRAS-5
-pip install -e .
-
-# Run interactive demo
 python -m dras5.cli
-
-# Or from Python
-python -c "
-from dras5 import DRAS5StateMachine, RiskState
-
-sm = DRAS5StateMachine()
-for rho in [0.15, 0.35, 0.55, 0.75]:
-    s = sm.update(risk_score=rho, t=rho*100)
-    print(f'rho={rho:.2f} -> {s.name}')
-"
 ```
 
----
+```python
+from dras5 import DRAS5StateMachine
 
-## State Model (Table 2)
-
-| State | Entry Threshold | T_max | Decay Rate | Cooling Period | Half-Life |
-|-------|:-:|:-:|:-:|:-:|:-:|
-| S1 SAFE | 0.00 | -- | -- | -- | -- |
-| S2 MONITOR | 0.30 | 300 s (5 min) | 0.005 s^-1 | 600 s | 139 s |
-| S3 ALERT | 0.50 | 120 s (2 min) | 0.003 s^-1 | 300 s | 231 s |
-| S4 CRITICAL | 0.70 | 60 s (1 min) | 0.001 s^-1 | 180 s | 693 s |
-| S5 EMERGENCY | 0.90 | -- | -- | -- | -- |
-
-Higher-acuity states have smaller decay rates, so risk memory persists
-longer: S4 decays roughly 5x slower than S2.
-
----
-
-## Five Safety Constraints
-
-### C1 -- Monotonic Escalation
-
-```
-s(t+1) >= s(t)   unless C5-approved
+state_machine = DRAS5StateMachine()
+for risk_score in [0.15, 0.35, 0.55, 0.75]:
+    state = state_machine.update(risk_score=risk_score)
+    print(f"risk={risk_score:.2f} -> {state.name}")
 ```
 
-Once the patient's risk state escalates, it cannot automatically revert.
-This eliminates the 12--15% missed escalation rate observed in stateless
-scoring systems.
+## Source Layout
 
-### C2 -- Timeout Enforcement
+This repository uses the recommended `src/<package_name>` layout.
+Importable code lives in `src/dras5/`.
 
+## Testing
+
+```bash
+pytest tests -v
 ```
-duration(S_k) <= T_max(S_k) + epsilon
-```
-
-If a patient remains in S2, S3, or S4 beyond the maximum allowed
-duration, the machine auto-escalates by one level.  This prevents
-clinical situations from stalling in intermediate states.
-
-### C3 -- Audit Completeness
-
-Every state transition produces an immutable, append-only log entry
-containing timestamp, from/to states, risk scores, trigger type,
-approval signals, and constraint validation results.
-
-### C4 -- Human Approval Gate
-
-```
-S4 -> S5  requires  alpha = 1
-```
-
-The transition from CRITICAL to EMERGENCY is blocked unless a clinician
-explicitly approves.  This prevents automated over-escalation to the
-highest acuity level.
-
-### C5 -- Controlled De-escalation (Novel)
-
-```
-rho_eff(t) = max(rho(t),  rho_peak * exp(-lambda_k * (t - t_peak)))
-```
-
-De-escalation from S_k to S_{k-1} requires **all three** conditions:
-
-1. **Sustained decay** -- the effective risk rho_eff stays below the
-   target threshold for the entire cooling period T_cool.
-2. **Dual clinician approval** -- two independent clinicians approve.
-3. **Single-step regression** -- at most one level per de-escalation event.
-
-De-escalation from S5 is not permitted through C5; it requires a full
-clinical review.
 
 ---
 
@@ -234,10 +174,11 @@ print(f"  OER = {result.oer*100:.1f}%")
 
 ```
 DRAS-5/
-  dras5/
-    __init__.py          # Public API exports
-    states.py            # RiskState enum, Table 2 parameters, tau(rho)
-    state_machine.py     # DRAS5StateMachine (Algorithm 1)
+  src/
+    dras5/
+     __init__.py          # Public API exports
+     states.py            # RiskState enum, Table 2 parameters, tau(rho)
+     state_machine.py     # DRAS5StateMachine (Algorithm 1)
     constraints.py       # C1--C5 validators
     decay.py             # Exponential risk decay tracker (Eq. 5)
     audit.py             # Immutable audit log (C3)
@@ -339,12 +280,22 @@ MIT License.  See [LICENSE](LICENSE) for details.
 
 ---
 
-## Authors
+## Contact
 
-| # | Name | Role | Email |
-| --- | ------ | ------ | ------- |
-| 1 | **Chatchai Tritham** | PhD Candidate | `chatchait66@nu.ac.th` |
-| 2 | **Chakkrit Snae Namahoot** | Supervisor (Corresponding Author) | `chakkrits@nu.ac.th` |
+### Contact Author
 
-**Affiliation**: Department of Computer Science and Information Technology,
-Faculty of Science, Naresuan University, Phitsanulok 65000, Thailand
+**Chatchai Tritham** (PhD Candidate)
+
+- Email: [chatchait66@nu.ac.th](mailto:chatchait66@nu.ac.th)
+- Department of Computer Science and Information Technology
+- Faculty of Science, Naresuan University
+- Phitsanulok 65000, Thailand
+
+### Supervisor
+
+**Chakkrit Snae Namahoot**
+
+- Email: [chakkrits@nu.ac.th](mailto:chakkrits@nu.ac.th)
+- Department of Computer Science
+- Faculty of Science, Naresuan University
+- Phitsanulok 65000, Thailand
