@@ -8,9 +8,9 @@ simulated time (no real-time sleep needed).
 import sys
 from pathlib import Path
 
-sys.path.insert(0, str(Path(__file__).parent.parent))
+sys.path.insert(0, str(Path(__file__).parent.parent / "src"))
 
-from dras5 import DRAS5StateMachine, RiskState, STATE_CONFIG
+from dras5 import STATE_CONFIG, DRAS5StateMachine, RiskState
 
 
 def main():
@@ -64,8 +64,10 @@ def main():
 
     print(f"\n  Audit trail ({len(sm2.get_history())} transitions):")
     for e in sm2.get_history():
-        print(f"    {e.from_state.name:10s} -> {e.to_state.name:10s}  "
-              f"trigger={e.trigger:12s}  t={e.timestamp:.0f}s")
+        print(
+            f"    {e.from_state.name:10s} -> {e.to_state.name:10s}  "
+            f"trigger={e.trigger:12s}  t={e.timestamp:.0f}s"
+        )
 
     print("\n" + "=" * 60)
     print("Demo Complete")

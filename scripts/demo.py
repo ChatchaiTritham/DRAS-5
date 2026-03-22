@@ -8,11 +8,15 @@ de-escalation protocol.
 import sys
 from pathlib import Path
 
-sys.path.insert(0, str(Path(__file__).parent.parent))
+sys.path.insert(0, str(Path(__file__).parent.parent / "src"))
 
 from dras5 import (
-    DRAS5StateMachine, RiskState, STATE_CONFIG,
-    half_life, min_deescalation_latency, check_c5,
+    STATE_CONFIG,
+    DRAS5StateMachine,
+    RiskState,
+    check_c5,
+    half_life,
+    min_deescalation_latency,
 )
 
 
@@ -38,20 +42,22 @@ def main():
     for s in RiskState:
         cfg = STATE_CONFIG[s]
         t12 = half_life(s)
-        print(fmt.format(
-            s.name,
-            f"{cfg['theta']:.2f}",
-            f"{cfg['t_max']:.0f}" if cfg["t_max"] != float("inf") else "inf",
-            f"{cfg['lam']}" if cfg["lam"] is not None else "---",
-            f"{cfg['t_cool']:.0f}" if cfg["t_cool"] is not None else "---",
-            f"{t12:.1f}" if t12 is not None else "---",
-        ))
+        print(
+            fmt.format(
+                s.name,
+                f"{cfg['theta']:.2f}",
+                f"{cfg['t_max']:.0f}" if cfg["t_max"] != float("inf") else "inf",
+                f"{cfg['lam']}" if cfg["lam"] is not None else "---",
+                f"{cfg['t_cool']:.0f}" if cfg["t_cool"] is not None else "---",
+                f"{t12:.1f}" if t12 is not None else "---",
+            )
+        )
 
     # ---- 2. Gradual escalation ----
     section("2. Gradual Risk Escalation")
     sm = DRAS5StateMachine(require_human_approval=True)
     scenarios = [
-        (0.15,  5.0, "Normal vitals"),
+        (0.15, 5.0, "Normal vitals"),
         (0.35, 15.0, "Slightly elevated"),
         (0.55, 25.0, "Moderate concern"),
         (0.75, 35.0, "Critical signs"),
@@ -76,9 +82,11 @@ def main():
     section("5. C3: Audit Trail")
     print(f"  Total transitions logged: {len(sm.get_history())}")
     for e in sm.get_history():
-        print(f"    #{e.entry_id}  {e.from_state.name:10s} -> "
-              f"{e.to_state.name:10s}  rho={e.risk_score:.3f}  "
-              f"trigger={e.trigger}")
+        print(
+            f"    #{e.entry_id}  {e.from_state.name:10s} -> "
+            f"{e.to_state.name:10s}  rho={e.risk_score:.3f}  "
+            f"trigger={e.trigger}"
+        )
 
     # ---- 6. C5: Controlled de-escalation ----
     section("6. C5: Controlled De-escalation")
@@ -92,7 +100,8 @@ def main():
     print(f"  C5 check (sustained decay, dual approval): {msg}")
 
     sm2.update(
-        risk_score=0.15, t=50,
+        risk_score=0.15,
+        t=50,
         deescalation_request=True,
         human_approved=True,
         dual_approval=True,
