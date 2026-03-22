@@ -1,8 +1,8 @@
 """Tests for dras5.state_machine — Algorithm 1 integration tests."""
 
 import pytest
-from dras5.states import RiskState
 from dras5.state_machine import DRAS5StateMachine
+from dras5.states import RiskState
 
 
 class TestBasicEscalation:
@@ -108,7 +108,8 @@ class TestC5Deescalation:
         # ALERT->MONITOR: need rho_eff < theta_2=0.30
         series = [0.25, 0.22, 0.20, 0.18, 0.15]
         sm.update(
-            risk_score=0.15, t=50,
+            risk_score=0.15,
+            t=50,
             deescalation_request=True,
             human_approved=True,
             dual_approval=True,
@@ -123,7 +124,8 @@ class TestC5Deescalation:
 
         series = [0.25, 0.22, 0.20]
         sm.update(
-            risk_score=0.15, t=50,
+            risk_score=0.15,
+            t=50,
             deescalation_request=True,
             human_approved=True,
             dual_approval=True,
@@ -137,7 +139,8 @@ class TestC5Deescalation:
 
         series = [0.25, 0.22, 0.20]
         sm.update(
-            risk_score=0.15, t=50,
+            risk_score=0.15,
+            t=50,
             deescalation_request=True,
             human_approved=True,
             dual_approval=False,
@@ -151,7 +154,8 @@ class TestC5Deescalation:
 
         series = [0.25, 0.35, 0.20]  # middle sample above theta_2=0.30
         sm.update(
-            risk_score=0.15, t=50,
+            risk_score=0.15,
+            t=50,
             deescalation_request=True,
             human_approved=True,
             dual_approval=True,

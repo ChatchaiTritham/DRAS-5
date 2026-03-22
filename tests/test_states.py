@@ -1,10 +1,14 @@
 """Tests for dras5.states — state definitions and risk-to-state mapping."""
 
 import math
+
 import pytest
 from dras5.states import (
-    RiskState, STATE_CONFIG, risk_to_state, half_life,
+    STATE_CONFIG,
+    RiskState,
+    half_life,
     min_deescalation_latency,
+    risk_to_state,
 )
 
 
@@ -23,19 +27,22 @@ class TestRiskStateOrdering:
 class TestRiskToState:
     """Verify Eq. 2: tau(rho) mapping."""
 
-    @pytest.mark.parametrize("rho,expected", [
-        (0.00, RiskState.SAFE),
-        (0.15, RiskState.SAFE),
-        (0.29, RiskState.SAFE),
-        (0.30, RiskState.MONITOR),
-        (0.49, RiskState.MONITOR),
-        (0.50, RiskState.ALERT),
-        (0.69, RiskState.ALERT),
-        (0.70, RiskState.CRITICAL),
-        (0.89, RiskState.CRITICAL),
-        (0.90, RiskState.EMERGENCY),
-        (1.00, RiskState.EMERGENCY),
-    ])
+    @pytest.mark.parametrize(
+        "rho,expected",
+        [
+            (0.00, RiskState.SAFE),
+            (0.15, RiskState.SAFE),
+            (0.29, RiskState.SAFE),
+            (0.30, RiskState.MONITOR),
+            (0.49, RiskState.MONITOR),
+            (0.50, RiskState.ALERT),
+            (0.69, RiskState.ALERT),
+            (0.70, RiskState.CRITICAL),
+            (0.89, RiskState.CRITICAL),
+            (0.90, RiskState.EMERGENCY),
+            (1.00, RiskState.EMERGENCY),
+        ],
+    )
     def test_mapping(self, rho, expected):
         assert risk_to_state(rho) == expected
 
