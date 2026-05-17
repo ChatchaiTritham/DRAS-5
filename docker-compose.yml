@@ -1,0 +1,8 @@
+services:
+  dras5:
+    build: .
+    image: chatchaitritham/dras-5:latest
+    working_dir: /app
+    volumes:
+      - .:/app
+    command: python -m pytest tests -q
