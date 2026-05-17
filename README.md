@@ -290,10 +290,6 @@ This software is for **research purposes only**.
 
 ## Manuscript Alignment
 
-Canonical manuscript package:
-
-- `D:\PhD-NU\Manuscript\Manuscript\AI_DRAS-5\sn-article-template`
-
 The in-progress manuscript package uses Springer-template filenames
 `sn-article.tex` and `sn-article.pdf`; a `main.pdf` alias is not required. This
 repository supports the manuscript's state-machine contribution:
