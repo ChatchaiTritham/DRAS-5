@@ -20,7 +20,7 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 - Table 2 state parameters with state-specific decay rates and cooling periods
 - Trajectory simulator with monotonic, oscillating, and spike-recover patterns
 - 103 unit tests covering all constraints and parameters
-- 13 publication-quality figures (2D + 3D, 300 DPI PDF/PNG)
+- 13 manuscript-support figures (2D + 3D, 300 DPI PDF/PNG)
 - CLI entry points: `dras5-demo` and `dras5-validate`
 - Jupyter notebook for interactive exploration
 - CITATION.cff for proper academic citation
