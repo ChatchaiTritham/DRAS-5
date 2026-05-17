@@ -1,4 +1,4 @@
-# Changelog
+﻿# Changelog
 
 All notable changes to DRAS-5 will be documented in this file.
 
@@ -23,6 +23,5 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 - 13 manuscript-support figures (2D + 3D, 300 DPI PDF/PNG)
 - CLI entry points: `dras5-demo` and `dras5-validate`
 - Jupyter notebook for interactive exploration
-- CITATION.cff for proper academic citation
 
 [1.0.0]: https://github.com/ChatchaiTritham/DRAS-5/releases/tag/v1.0.0

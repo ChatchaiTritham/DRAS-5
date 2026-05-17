@@ -1,4 +1,4 @@
-# DRAS-5
+﻿# DRAS-5
 
 ## Overview
 
@@ -230,7 +230,6 @@ DRAS-5/
     ISSUE_TEMPLATE/      # Bug report & feature request templates
     PULL_REQUEST_TEMPLATE.md
   CHANGELOG.md
-  CITATION.cff
   CODE_OF_CONDUCT.md
   CONTRIBUTING.md
   LICENSE                # MIT (research use only)
@@ -316,22 +315,6 @@ The manuscript links DRAS-5 to established safety practice:
 - EU AI Act high-risk requirements for risk management, transparency, human
   oversight, and auditability
 - runtime safety monitoring and formal invariant verification
-
----
-
-## Citation
-
-```bibtex
-@software{tritham2026dras5,
-  author  = {Tritham, Chatchai and Snae Namahoot, Chakkrit},
-  title   = {{DRAS-5}: A Dynamic Risk Assessment State Machine with
-             Exponential Decay De-escalation and Provable Safety
-             Guarantees for Clinical Decision Support},
-  year    = {2026},
-  url     = {https://github.com/ChatchaiTritham/DRAS-5},
-  note    = {Research software; associated manuscript in preparation}
-}
-```
 
 ---
 
