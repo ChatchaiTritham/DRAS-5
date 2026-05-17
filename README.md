@@ -284,9 +284,10 @@ MIT License.  See [LICENSE](LICENSE) for details.
 
 ### Contact Author
 
-**Chatchai Tritham** (PhD Candidate)
+**Chatchai Tritham** (Author)
 
 - Email: [chatchait66@nu.ac.th](mailto:chatchait66@nu.ac.th)
+- ORCID: [0000-0001-7899-228X](https://orcid.org/0000-0001-7899-228X)
 - Department of Computer Science and Information Technology
 - Faculty of Science, Naresuan University
 - Phitsanulok 65000, Thailand
@@ -295,7 +296,8 @@ MIT License.  See [LICENSE](LICENSE) for details.
 
 **Chakkrit Snae Namahoot**
 
-- Email: [chakkrits@nu.ac.th](mailto:chakkrits@nu.ac.th)
-- Department of Computer Science
+- E-mail: [chakkrits@nu.ac.th](mailto:chakkrits@nu.ac.th)
+- ORCID: [0000-0003-4660-4590](https://orcid.org/0000-0003-4660-4590)
+- Department of Computer Science and Information Technology
 - Faculty of Science, Naresuan University
 - Phitsanulok 65000, Thailand
