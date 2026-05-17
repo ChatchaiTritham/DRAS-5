@@ -23,10 +23,40 @@ pip install -e .
 - Scripts:
   - `scripts/demo.py`: quick state-machine walkthrough
   - `scripts/timeout_demo.py`: timeout and escalation behavior
-  - `scripts/generate_figures.py`: manuscript-ready figure generation
+  - `scripts/generate_figures.py`: manuscript-support figure generation
+  - `scripts/generate_manuscript_manifest.py`: curated manuscript figure manifest and visual QA sheet
 - Notebooks:
   - `notebooks/01_state_machine_basics.ipynb`: core state machine, constraints, decay, and audit walkthrough
   - `notebooks/02_advanced_governance_workflows.ipynb`: timeout escalation, controlled de-escalation, manual overrides, and audit-driven workflow visualization
+
+## Curated Manuscript Figures
+
+The curated manuscript figure set is maintained for a manuscript that is still
+in preparation. This status does not imply publication, acceptance, or final
+journal readiness for every raw, supplementary, or exploratory figure in
+`figures/`.
+
+Regenerate all DRAS-5 figure exports:
+
+```bash
+python scripts/generate_figures.py
+```
+
+Regenerate the manifest and visual QA sheet:
+
+```bash
+python scripts/generate_manuscript_manifest.py
+```
+
+Outputs:
+
+- `figures/`: PDF and PNG figure exports
+- `FIGURE_MANIFEST.csv`: curated figure role, source script, source artifact,
+  caption, and intended article section
+- `figures/visual_qa_contact_sheet.png`: visual QA sheet
+
+Figures not listed in `FIGURE_MANIFEST.csv` remain supplementary or archive
+artifacts until promoted into the curated manuscript set.
 
 ## Cross-Repository Tutorial Charts
 
@@ -258,17 +288,52 @@ This software is for **research purposes only**.
 
 ---
 
+## Manuscript Alignment
+
+Canonical manuscript package:
+
+- `D:\PhD-NU\Manuscript\Manuscript\AI_DRAS-5\sn-article-template`
+
+The in-progress manuscript package uses Springer-template filenames
+`sn-article.tex` and `sn-article.pdf`; a `main.pdf` alias is not required. This
+repository supports the manuscript's state-machine contribution:
+
+- formulas: ordered risk states, threshold mapping, timeout escalation,
+  de-escalation, exponential risk decay, MER, and OER
+- pseudocode: unified state update and controlled de-escalation procedures
+- logic: formal invariants C1-C5, including monotonic escalation, timeout
+  enforcement, audit trail, human approval, and bounded de-escalation
+- data/results: synthetic trajectory evaluation, baseline comparison against
+  stateless early-warning scores, and sensitivity sweeps
+- figures: state machine, enforcement pipeline, sensitivity, performance, and
+  regulatory mapping artifacts
+
+The 0% missed-escalation claim must be read as a structural consequence of the
+C1 invariant, not as a standalone empirical accuracy claim.
+
+## Methodological References
+
+The manuscript links DRAS-5 to established safety practice:
+
+- NEWS2 and MEWS as stateless early-warning baselines
+- IEC 61508 and IEC 62304 for functional-safety and medical-software framing
+- EU AI Act high-risk requirements for risk management, transparency, human
+  oversight, and auditability
+- runtime safety monitoring and formal invariant verification
+
+---
+
 ## Citation
 
 ```bibtex
-@article{tritham2026dras5,
+@software{tritham2026dras5,
   author  = {Tritham, Chatchai and Snae Namahoot, Chakkrit},
   title   = {{DRAS-5}: A Dynamic Risk Assessment State Machine with
              Exponential Decay De-escalation and Provable Safety
              Guarantees for Clinical Decision Support},
-  journal = {Applied Intelligence},
   year    = {2026},
-  note    = {Under review}
+  url     = {https://github.com/ChatchaiTritham/DRAS-5},
+  note    = {Research software; associated manuscript in preparation}
 }
 ```
 
