@@ -55,15 +55,31 @@ The curated visual set is controlled by FIGURE_MANIFEST.csv and currently lists 
 
 ## Reproduce
 
-```powershell
-cd D:\PhD-NU\Manuscript\GitHub\DRAS-5
+Run these from the repository root (the directory containing this `README.md`):
+
+```bash
 python -m venv .venv
-.\.venv\Scripts\Activate.ps1
+# Windows:        .\.venv\Scripts\Activate.ps1
+# Linux / macOS:  source .venv/bin/activate
 pip install -e .
 python -m pytest -q
+
+# Regenerate the quantitative safety metrics from the fixed seed (42).
+# Writes results/*.csv and results/summary.json:
+python scripts/run_all.py
+
+# Redraw the data figures directly from results/*.csv:
+python scripts/generate_figures.py
 ```
 
-If figure-generation scripts are present, run the matching script listed in `FIGURE_MANIFEST.csv` from the repository root.
+`scripts/run_all.py` is deterministic at seed 42, so a rerun reproduces the
+committed `results/*.csv` byte-for-byte. The data figures (MER, OER, C5 outcomes)
+are drawn from those CSVs, not from numbers hardcoded in the plotting script.
+
+**Reproducibility status:** the structural **MER = 0%** guarantee (constraint C1)
+reproduces; the over-escalation / C5 de-escalation figures do **not** reproduce from
+the committed model. See [`REPRODUCIBILITY.md`](REPRODUCIBILITY.md) for the exact
+manuscript-vs-code comparison and the verified root cause.
 
 ## Verification Criteria
 
@@ -86,6 +102,9 @@ If figure-generation scripts are present, run the matching script listed in `FIG
 | SynDX | Synthetic validation and explainability evidence |
 | SURgul | SRGL/governance reproducibility component |
 | TRI-X-CDSS | Integration and implementation package |
+| Selective-CDSS | Risk-controlled selective-prediction (abstention) component |
+| Causal-CDSS | Causal-inference evaluation component |
+| Beyond-Accuracy | Simulation-based safety/calibration evaluation framework |
 
 ## Contact
 
