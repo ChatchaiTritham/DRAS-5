@@ -14,10 +14,29 @@
       "spike_critical"
     ]
   },
+  "bootstrap": {
+    "n_resamples": 1000,
+    "seed": 42,
+    "ci": "95%"
+  },
   "mer_overall_pct": {
     "dras5": 0.0,
     "news2": 74.22,
     "mews": 75.6
+  },
+  "mer_overall_ci95": {
+    "dras5": [
+      0.0,
+      0.0
+    ],
+    "news2": [
+      73.0,
+      75.36
+    ],
+    "mews": [
+      74.42,
+      76.72
+    ]
   },
   "under_recognition_overall_pct": {
     "dras5": 0.0,
@@ -28,25 +47,59 @@
     "no_c5": 69.71,
     "with_c5": 69.71
   },
+  "oer_overall_ci95": {
+    "no_c5": [
+      69.25,
+      70.2
+    ],
+    "with_c5": [
+      69.25,
+      70.2
+    ]
+  },
   "oer_reduction_pct": 0.0,
+  "oer_by_true_level": [
+    {
+      "true_state": "SAFE",
+      "true_level": 1,
+      "steps_at_level": 200485,
+      "over_escalated_steps": 118375,
+      "oer_pct": 59.04
+    },
+    {
+      "true_state": "MONITOR",
+      "true_level": 2,
+      "steps_at_level": 104527,
+      "over_escalated_steps": 70108,
+      "oer_pct": 67.07
+    },
+    {
+      "true_state": "ALERT",
+      "true_level": 3,
+      "steps_at_level": 93335,
+      "over_escalated_steps": 74558,
+      "oer_pct": 79.88
+    },
+    {
+      "true_state": "CRITICAL",
+      "true_level": 4,
+      "steps_at_level": 95617,
+      "over_escalated_steps": 85529,
+      "oer_pct": 89.45
+    },
+    {
+      "true_state": "EMERGENCY",
+      "true_level": 5,
+      "steps_at_level": 6036,
+      "over_escalated_steps": 0,
+      "oer_pct": 0.0
+    }
+  ],
   "c5_outcomes": {
-    "granted": 0,
-    "denied_decay": 0,
-    "denied_cooling": 26673,
+    "granted": 1250,
+    "denied_decay": 47407,
+    "denied_cooling": 67100,
     "denied_approval": 0
   },
-  "c5_total_requests": 26673,
-  "ml_wrapper": {
-    "gbt_rmse": 0.0563,
-    "n_test_trajectories": 1000,
-    "mer_governed_pct": 0.0,
-    "mer_ungoverned_pct": 100.0
-  },
-  "latency": {
-    "operations": 50000,
-    "mean_ms": 0.0303,
-    "ci95_low_ms": 0.0031,
-    "ci95_high_ms": 0.1061,
-    "throughput_per_s": 33008
-  }
+  "c5_total_requests": 115757
 }
