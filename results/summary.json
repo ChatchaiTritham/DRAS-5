@@ -1,0 +1,52 @@
+{
+  "config": {
+    "seed": 42,
+    "n_trajectories": 5000,
+    "n_steps": 100,
+    "dt_seconds": 10.0,
+    "obs_interval_news2": 2,
+    "obs_interval_mews": 3,
+    "n_evaluations": 500000,
+    "trajectory_types": [
+      "monotonic",
+      "oscillating",
+      "spike_emergency",
+      "spike_critical"
+    ]
+  },
+  "mer_overall_pct": {
+    "dras5": 0.0,
+    "news2": 74.22,
+    "mews": 75.6
+  },
+  "under_recognition_overall_pct": {
+    "dras5": 0.0,
+    "news2": 64.82,
+    "mews": 66.99
+  },
+  "oer_overall_pct": {
+    "no_c5": 69.71,
+    "with_c5": 69.71
+  },
+  "oer_reduction_pct": 0.0,
+  "c5_outcomes": {
+    "granted": 0,
+    "denied_decay": 0,
+    "denied_cooling": 26673,
+    "denied_approval": 0
+  },
+  "c5_total_requests": 26673,
+  "ml_wrapper": {
+    "gbt_rmse": 0.0563,
+    "n_test_trajectories": 1000,
+    "mer_governed_pct": 0.0,
+    "mer_ungoverned_pct": 100.0
+  },
+  "latency": {
+    "operations": 50000,
+    "mean_ms": 0.0303,
+    "ci95_low_ms": 0.0031,
+    "ci95_high_ms": 0.1061,
+    "throughput_per_s": 33008
+  }
+}

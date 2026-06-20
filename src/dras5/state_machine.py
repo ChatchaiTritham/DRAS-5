@@ -103,6 +103,7 @@ class DRAS5StateMachine:
         self._audit_log = AuditLog()
         self._decay_tracker = DecayTracker()
         self._rho_eff_history: List[float] = []
+        self._rho_eff_times: List[float] = []
 
         logger.info(
             f"DRAS-5 initialized: state={initial_state.name}, "
@@ -154,6 +155,7 @@ class DRAS5StateMachine:
             risk_score, current_time, self.current_state
         )
         self._rho_eff_history.append(rho_eff)
+        self._rho_eff_times.append(current_time)
 
         old_state = self.current_state
         new_state = self._calculate_target_state(risk_score)
@@ -164,8 +166,24 @@ class DRAS5StateMachine:
                 logger.warning("De-escalation denied: dual approval required")
                 new_state = old_state
             else:
-                # Use externally-provided series, or fall back to internal history
-                series = rho_eff_series if rho_eff_series else self._rho_eff_history
+                if rho_eff_series:
+                    series = rho_eff_series
+                else:
+                    # Evaluate C5 over the cooling-period window only (Theorem 5a:
+                    # sustained decay below threshold for the *full cooling period*).
+                    # Samples accumulated right after state entry are still near the
+                    # entry peak; including them would make a genuine sustained
+                    # recovery impossible to demonstrate.
+                    t_cool = STATE_CONFIG[old_state].get("t_cool") or 0.0
+                    in_state = current_time - self.state_entry_time
+                    if in_state + 1e-9 < t_cool:
+                        series = []  # cooling period has not yet elapsed
+                    else:
+                        series = [
+                            r
+                            for ti, r in zip(self._rho_eff_times, self._rho_eff_history)
+                            if current_time - ti <= t_cool
+                        ]
                 from dras5.constraints import check_c5
                 allowed, _ = check_c5(old_state, series, alpha1=True, alpha2=True)
                 if not allowed:
@@ -217,9 +235,18 @@ class DRAS5StateMachine:
         return self.current_state
 
     def _check_and_auto_escalate(self, current_time: float):
-        """Check for timeout and auto-escalate if needed."""
-        if self.check_timeout(t=current_time):
-            self.auto_escalate(t=current_time)
+        """Check for timeout and auto-escalate if needed.
+
+        C2 timeout escalation targets a patient who remains at elevated risk
+        without clinician action. A patient whose risk has resolved below the
+        current state's entry threshold is recovering and must stay eligible for
+        controlled C5 de-escalation rather than being forced into EMERGENCY.
+        """
+        if not self.check_timeout(t=current_time):
+            return
+        if self._calculate_target_state(self.last_risk_score) < self.current_state:
+            return
+        self.auto_escalate(t=current_time)
 
     def _calculate_target_state(self, risk_score: float) -> RiskState:
         """Calculate target state based on risk score"""
@@ -254,6 +281,7 @@ class DRAS5StateMachine:
         self.state_entry_time = current_time
         self._decay_tracker.reset(new_state)
         self._rho_eff_history.clear()
+        self._rho_eff_times.clear()
 
         # Record transition
         if self.enable_audit:
