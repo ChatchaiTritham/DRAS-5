@@ -1,5 +1,5 @@
-trajectory_type,n,mer_dras5_pct,mer_news2_pct,mer_mews_pct,urr_news2_pct,urr_mews_pct
-monotonic,1250,0.0,0.56,2.56,7.75,13.32
-oscillating,1250,0.0,96.32,99.84,67.53,67.46
-spike_emergency,1250,0.0,100.0,100.0,87.57,88.67
-spike_critical,1250,0.0,100.0,100.0,96.42,98.5
+trajectory_type,n,mer_dras5_pct,mer_dras5_ci_lo,mer_dras5_ci_hi,mer_news2_pct,mer_news2_ci_lo,mer_news2_ci_hi,mer_mews_pct,mer_mews_ci_lo,mer_mews_ci_hi,urr_news2_pct,urr_mews_pct
+monotonic,1250,0.0,0.0,0.0,0.56,0.24,0.96,2.56,1.68,3.44,7.75,13.32
+oscillating,1250,0.0,0.0,0.0,96.32,95.28,97.28,99.84,99.6,100.0,67.53,67.46
+spike_emergency,1250,0.0,0.0,0.0,100.0,100.0,100.0,100.0,100.0,100.0,87.57,88.67
+spike_critical,1250,0.0,0.0,0.0,100.0,100.0,100.0,100.0,100.0,100.0,96.42,98.5
