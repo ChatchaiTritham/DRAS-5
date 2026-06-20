@@ -581,7 +581,8 @@ def fig7_c5_rejection(outdir: Path):
             color="#999", lw=0.7, ls="--", zorder=1)
     ax.bar(len(labels) - 1, max(granted, total * 0.004), 0.62, color=DRAS_GREEN,
            edgecolor="#055", linewidth=0.5, zorder=3)
-    ax.text(len(labels) - 1, total * 0.02, f"{granted:,}\n(0.0%)", ha="center",
+    gpct = 100.0 * granted / total if total else 0.0
+    ax.text(len(labels) - 1, total * 0.02, f"{granted:,}\n({gpct:.1f}%)", ha="center",
             va="bottom", fontsize=7, color="#0a6", fontweight="bold")
 
     ax.set_xticks(x)
@@ -592,7 +593,7 @@ def fig7_c5_rejection(outdir: Path):
     ax.grid(axis="x", visible=False)
     ax.set_title(
         f"C5 De-escalation Outcome Funnel (n = {total:,}, seed 42): "
-        "every request is gated out at the cooling window; 0 granted",
+        f"{granted:,} granted, each clearing the cooling/decay/dual-approval guards (0 premature)",
         fontsize=8,
         pad=6,
     )
