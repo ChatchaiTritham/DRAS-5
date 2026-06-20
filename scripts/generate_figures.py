@@ -24,61 +24,32 @@ import matplotlib
 import numpy as np
 
 matplotlib.use("Agg")
-import matplotlib.gridspec as gridspec
-import matplotlib.patches as mpatches
 import matplotlib.pyplot as plt
-from mpl_toolkits.mplot3d import Axes3D  # noqa: F401 (side-effect import)
 
-# Attempt serif font; fall back to DejaVu Serif on Linux/CI
-try:
-    matplotlib.font_manager.findfont("Times New Roman", fallback_to_default=False)
-    FONT_FAMILY = "Times New Roman"
-except Exception:
-    FONT_FAMILY = "DejaVu Serif"
+# ── Canonical Top-Tier figure utilities (vendored, byte-identical) ──
+# Style, palette, save_fig, schematic primitives (add_box/arrow) and the
+# results/ loader all live in scripts/pubviz.py -- the single shared source
+# across every PhD reproducibility repo. No figure-style code is duplicated here.
+sys.path.insert(0, str(Path(__file__).resolve().parent))
+from pubviz import (  # noqa: E402
+    apply_pub_style,
+    save_fig,
+    PALETTE,
+    add_box,
+    arrow,
+    load_results,
+    results_dir,
+)
 
-PUBLICATION_DPI = 300
-DEFAULT_SAVE_PADDING_INCHES = 0.02
-DEFAULT_TIGHT_BBOX = "tight"
 FIGURE_1_HEIGHT = 3.2
 FIGURE_2_HEIGHT = 4.5
 STATE_CIRCLE_RADIUS = 0.65
-DEFAULT_AXIS_LINE_WIDTH = 0.8
-
-# ── Canonical Top-Tier figure style (shared across all PhD repos) ──
-# Color-blind-safe (Okabe-Ito) — use in this order. See
-# _management/FIGURE_STYLE.md for the canonical definition.
-PALETTE = ["#0072B2", "#D55E00", "#009E73", "#CC79A7", "#E69F00", "#56B4E9", "#000000"]
 
 
-def apply_pub_style():
-    matplotlib.rcParams.update(
-        {
-            "figure.dpi": 150,
-            "savefig.dpi": 300,
-            "savefig.bbox": "tight",
-            "savefig.pad_inches": 0.02,
-            "font.family": "serif",
-            "font.serif": [FONT_FAMILY, "Times New Roman", "Times", "DejaVu Serif"],
-            "mathtext.fontset": "stix",
-            "font.size": 10,
-            "axes.titlesize": 11,
-            "axes.labelsize": 10,
-            "xtick.labelsize": 9,
-            "ytick.labelsize": 9,
-            "legend.fontsize": 9,
-            "axes.spines.top": False,
-            "axes.spines.right": False,
-            "axes.linewidth": 0.8,
-            "axes.grid": True,
-            "grid.alpha": 0.3,
-            "grid.linewidth": 0.6,
-            "lines.linewidth": 1.6,
-            "lines.markersize": 5,
-            "legend.frameon": False,
-            "figure.constrained_layout.use": True,
-            "axes.prop_cycle": matplotlib.cycler(color=PALETTE),
-        }
-    )
+def save(fig, name: str, outdir: Path):
+    """Thin wrapper around pubviz.save_fig (signature: fig, basename, out_dir)."""
+    save_fig(fig, name, outdir)
+    plt.close(fig)
 
 
 # ── Colour palette (mapped to Okabe-Ito; colour-blind safe) ──────
@@ -100,37 +71,18 @@ DRAS_GRAY = "#7f8c8d"     # neutral (non-series reference lines)
 DRAS_ORANGE = "#E69F00"   # orange
 LIGHT_BG = "#f8f9fa"
 
-COL_SPRINGER = DRAS_BLUE  # primary accent
-
 # Springer column widths
 SINGLE_COL = 3.5  # inches
 DOUBLE_COL = 7.2
 
 
-def save(fig, name: str, outdir: Path):
-    for ext in ("pdf", "png"):
-        fig.savefig(outdir / f"{name}.{ext}")
-    plt.close(fig)
-    print(f"  [OK] {name}.pdf / .png")
-
-
 # ── Results loader ────────────────────────────────────────────────
-# Data-bearing figures (MER, OER, C5 outcomes) are drawn from the committed
-# CSVs produced by scripts/run_all.py, never from numbers typed into this file.
-# Run `python scripts/run_all.py` first if results/ is empty.
-import csv
-
-RESULTS_DIR = Path(__file__).resolve().parent.parent / "results"
-
-
+# Data-bearing figures (MER, OER, C5 outcomes, over-escalation locator) are
+# drawn from the committed CSVs produced by scripts/run_all.py via pubviz's
+# load_results(), never from numbers typed into this file. Run
+# `python scripts/run_all.py` first if results/ is empty.
 def _read_csv(name: str) -> list[dict]:
-    path = RESULTS_DIR / name
-    if not path.exists():
-        raise FileNotFoundError(
-            f"{path} not found. Run `python scripts/run_all.py` to generate results first."
-        )
-    with path.open(encoding="utf-8") as f:
-        return list(csv.DictReader(f))
+    return load_results(name)
 
 
 # =====================================================================
@@ -218,14 +170,11 @@ def fig1_state_machine(outdir: Path):
             style="italic",
         )
 
-    # Escalation arrows (solid)
-    arrow_kw = dict(
-        arrowstyle="-|>", color="#333", lw=1.3, connectionstyle="arc3,rad=0", zorder=2
-    )
+    # Escalation arrows (solid) -- straight; routed through pubviz.arrow.
     for a, b in [("S1", "S2"), ("S2", "S3"), ("S3", "S4"), ("S4", "S5")]:
         xa, ya = positions[a]
         xb, yb = positions[b]
-        ax.annotate("", xy=(xb - 0.68, yb), xytext=(xa + 0.68, ya), arrowprops=arrow_kw)
+        arrow(ax, (xa + 0.68, ya), (xb - 0.68, yb), color="#333", lw=1.3)
 
     # Human approval label on S4->S5
     ax.text(
@@ -303,46 +252,16 @@ def fig2_pipeline(outdir: Path):
 
     for i, (label, desc, fc, ec) in enumerate(phases):
         y = y_start - i * (box_h + gap)
-        rect = mpatches.FancyBboxPatch(
-            (0.5, y),
-            5.0,
-            box_h,
-            boxstyle="round,pad=0.15",
-            facecolor=fc,
-            edgecolor=ec,
-            linewidth=1.3,
-            zorder=3,
-        )
-        ax.add_patch(rect)
-        ax.text(
-            3.0,
-            y + box_h * 0.65,
-            label,
-            ha="center",
-            va="center",
-            fontsize=8,
-            fontweight="bold",
-            color=ec,
-            zorder=4,
-        )
-        ax.text(
-            3.0,
-            y + box_h * 0.28,
-            desc,
-            ha="center",
-            va="center",
-            fontsize=7,
-            color="#333",
-            zorder=4,
-        )
+        # Rounded box + centred description routed through pubviz.add_box.
+        add_box(ax, (0.5, y), 5.0, box_h, desc,
+                facecolor=fc, edgecolor=ec, textcolor="#333", size=7)
+        # Bold, colour-coded phase title overlaid in the upper third of the box.
+        ax.text(3.0, y + box_h * 0.72, label, ha="center", va="center",
+                fontsize=8, fontweight="bold", color=ec, zorder=4)
 
         if i < len(phases) - 1:
-            ax.annotate(
-                "",
-                xy=(3.0, y - gap * 0.15),
-                xytext=(3.0, y + 0.02),
-                arrowprops=dict(arrowstyle="-|>", color="#555", lw=1.0),
-            )
+            # Vertical connector routed through pubviz.arrow.
+            arrow(ax, (3.0, y + 0.02), (3.0, y - gap * 0.15), color="#555", lw=1.0)
 
     ax.set_title("Algorithm 1: Unified State Update Procedure", fontsize=9, pad=6)
     save(fig, "fig2_pipeline", outdir)
@@ -471,25 +390,50 @@ def fig3b_decay_comparison(outdir: Path):
 # FIGURE 4: MER Bar Chart (Table 6)
 # =====================================================================
 def fig4_mer(outdir: Path):
-    # Driven by results/mer_by_type.csv (scripts/run_all.py, seed 42).
+    # Driven by results/mer_by_type.csv (+ summary.json overall CI), seed 42.
+    # Error bars are the seeded bootstrap 95% CI (N=1000) computed in run_all.py.
     rows = _read_csv("mer_by_type.csv")
+    summ = load_results("summary.json")
     label_map = {"monotonic": "Monotonic", "oscillating": "Oscillating",
                  "spike_emergency": "Spike-emerg.", "spike_critical": "Spike-crit."}
     types = [label_map.get(r["trajectory_type"], r["trajectory_type"]) for r in rows]
-    news2 = [float(r["mer_news2_pct"]) for r in rows]
-    mews = [float(r["mer_mews_pct"]) for r in rows]
-    dras = [float(r["mer_dras5_pct"]) for r in rows]
-    # Overall = simple mean across the equal-sized trajectory families.
+
+    def col(key):
+        return [float(r[key]) for r in rows]
+
+    series = {
+        "news2": (col("mer_news2_pct"), col("mer_news2_ci_lo"), col("mer_news2_ci_hi")),
+        "mews": (col("mer_mews_pct"), col("mer_mews_ci_lo"), col("mer_mews_ci_hi")),
+        "dras": (col("mer_dras5_pct"), col("mer_dras5_ci_lo"), col("mer_dras5_ci_hi")),
+    }
+    # Append the pooled "Overall" bar with its own bootstrap CI from summary.json.
     types.append("Overall")
-    for series in (news2, mews, dras):
-        series.append(round(sum(series) / len(series), 2))
+    ov = summ["mer_overall_pct"]
+    ovci = summ["mer_overall_ci95"]
+    for key, src in (("news2", "news2"), ("mews", "mews"), ("dras", "dras5")):
+        vals, los, his = series[key]
+        vals.append(float(ov[src]))
+        los.append(float(ovci[src][0]))
+        his.append(float(ovci[src][1]))
+
+    def yerr(vals, los, his):
+        return np.array([[max(0.0, v - lo) for v, lo in zip(vals, los)],
+                         [max(0.0, hi - v) for v, hi in zip(vals, his)]])
+
+    news2, n_lo, n_hi = series["news2"]
+    mews, m_lo, m_hi = series["mews"]
+    dras, d_lo, d_hi = series["dras"]
 
     fig, ax = plt.subplots(figsize=(DOUBLE_COL, 2.8))
     x = np.arange(len(types))
     w = 0.27
-    ax.bar(x - w, news2, w, label="NEWS2 (stateless)", color=PALETTE[1], edgecolor="#7a3500", linewidth=0.4)
-    ax.bar(x, mews, w, label="MEWS (stateless)", color=PALETTE[4], edgecolor="#8a6300", linewidth=0.4)
-    bars = ax.bar(x + w, dras, w, label="DRAS-5", color=DRAS_BLUE, edgecolor="#004a73", linewidth=0.5)
+    ebar = dict(ecolor="#333", elinewidth=0.8, capsize=2.5, capthick=0.8)
+    ax.bar(x - w, news2, w, yerr=yerr(news2, n_lo, n_hi), error_kw=ebar,
+           label="NEWS2 (stateless)", color=PALETTE[1], edgecolor="#7a3500", linewidth=0.4)
+    ax.bar(x, mews, w, yerr=yerr(mews, m_lo, m_hi), error_kw=ebar,
+           label="MEWS (stateless)", color=PALETTE[4], edgecolor="#8a6300", linewidth=0.4)
+    bars = ax.bar(x + w, dras, w, yerr=yerr(dras, d_lo, d_hi), error_kw=ebar,
+                  label="DRAS-5", color=DRAS_BLUE, edgecolor="#004a73", linewidth=0.5)
     for bar, h in zip(bars, dras):
         ax.text(bar.get_x() + bar.get_width() / 2, max(h, 0) + 0.5,
                 f"{h:.1f}", ha="center", va="bottom", fontsize=7,
@@ -499,13 +443,14 @@ def fig4_mer(outdir: Path):
     ax.set_xticklabels(types)
     ax.set_xlabel("Trajectory type")
     ax.set_ylabel("Missed Escalation Rate (%)")
-    ax.set_ylim(0, max(news2 + mews) * 1.2)
+    ax.set_ylim(0, 105)
     ax.grid(axis="y", alpha=0.3)
     ax.grid(axis="x", visible=False)
     ax.legend(loc="upper left")
     ax.set_title(
-        "MER by Trajectory Type: DRAS-5 = 0% (structural C1 guarantee, seed 42)",
-        fontsize=9,
+        "MER by Trajectory Type (seed 42; error bars = bootstrap 95% CI, N=1000). "
+        "DRAS-5 = 0% by structural C1 guarantee.",
+        fontsize=8.5,
         pad=6,
     )
 
@@ -521,29 +466,42 @@ def fig5_oer(outdir: Path):
     # strictly above true level) is largely unchanged because a de-escalated state
     # is still above the recovered true level; see REPRODUCIBILITY.md.
     rows = _read_csv("oer_by_type.csv")
+    summ = load_results("summary.json")
     label_map = {"monotonic": "Monotonic", "oscillating": "Oscillating",
                  "spike_emergency": "Spike-emerg.", "spike_critical": "Spike-crit."}
     types = [label_map.get(r["trajectory_type"], r["trajectory_type"]) for r in rows]
     dras_no_c5 = [float(r["oer_no_c5_pct"]) for r in rows]
+    no_lo = [float(r["oer_no_c5_ci_lo"]) for r in rows]
+    no_hi = [float(r["oer_no_c5_ci_hi"]) for r in rows]
     dras_full = [float(r["oer_with_c5_pct"]) for r in rows]
+    wi_lo = [float(r["oer_with_c5_ci_lo"]) for r in rows]
+    wi_hi = [float(r["oer_with_c5_ci_hi"]) for r in rows]
+    # Pooled "Overall" bar with its own bootstrap CI (summary.json).
     types.append("Overall")
-    dras_no_c5.append(round(sum(dras_no_c5) / len(dras_no_c5), 2))
-    dras_full.append(round(sum(dras_full) / len(dras_full), 2))
+    ov = summ["oer_overall_pct"]
+    ovci = summ["oer_overall_ci95"]
+    dras_no_c5.append(float(ov["no_c5"])); no_lo.append(float(ovci["no_c5"][0])); no_hi.append(float(ovci["no_c5"][1]))
+    dras_full.append(float(ov["with_c5"])); wi_lo.append(float(ovci["with_c5"][0])); wi_hi.append(float(ovci["with_c5"][1]))
+
+    def yerr(vals, los, his):
+        return np.array([[max(0.0, v - lo) for v, lo in zip(vals, los)],
+                         [max(0.0, hi - v) for v, hi in zip(vals, his)]])
 
     fig, ax = plt.subplots(figsize=(DOUBLE_COL, 2.8))
     x = np.arange(len(types))
     w = 0.30
+    ebar = dict(ecolor="#333", elinewidth=0.8, capsize=2.5, capthick=0.8)
     ax.bar(
-        x - w / 2, dras_no_c5, w, label="DRAS (no C5)",
-        color=PALETTE[4], edgecolor="#8a6300", linewidth=0.5,
+        x - w / 2, dras_no_c5, w, yerr=yerr(dras_no_c5, no_lo, no_hi), error_kw=ebar,
+        label="DRAS (no C5)", color=PALETTE[4], edgecolor="#8a6300", linewidth=0.5,
     )
     ax.bar(
-        x + w / 2, dras_full, w, label="DRAS (with C5)",
-        color=DRAS_BLUE, edgecolor="#004a73", linewidth=0.5,
+        x + w / 2, dras_full, w, yerr=yerr(dras_full, wi_lo, wi_hi), error_kw=ebar,
+        label="DRAS (with C5)", color=DRAS_BLUE, edgecolor="#004a73", linewidth=0.5,
     )
     for i in range(len(types)):
         ax.text(
-            x[i], max(dras_no_c5[i], dras_full[i]) + 1.5,
+            x[i], max(no_hi[i], wi_hi[i]) + 1.5,
             f"{dras_full[i]:.1f}%",
             ha="center", fontsize=7, color="#333",
         )
@@ -552,14 +510,14 @@ def fig5_oer(outdir: Path):
     ax.set_xticklabels(types)
     ax.set_xlabel("Trajectory type")
     ax.set_ylabel("Over-Escalation Rate (%)")
-    ax.set_ylim(0, max(dras_no_c5 + dras_full) * 1.25)
+    ax.set_ylim(0, max(no_hi + wi_hi) * 1.18)
     ax.grid(axis="y", alpha=0.3)
     ax.grid(axis="x", visible=False)
     ax.legend(loc="upper left")
     ax.set_title(
-        "Over-Escalation Rate by Trajectory Type (seed 42); "
-        "binary OER is near-identical with/without C5",
-        fontsize=8.5,
+        "Over-Escalation Rate by Trajectory Type (seed 42; error bars = bootstrap "
+        "95% CI, N=1000); binary OER is near-identical with/without C5",
+        fontsize=8,
         pad=6,
     )
 
@@ -574,39 +532,114 @@ def fig5_oer(outdir: Path):
 
 
 # =====================================================================
-# FIGURE 7: C5 Rejection Breakdown (Table 8)
+# FIGURE 7: C5 De-escalation Outcome Funnel (Table 8)
 # =====================================================================
+# Design choice: the committed seed-42 run denies *every* C5 request for one
+# reason (incomplete cooling window) and grants none, so the prior single-bar
+# "100% category" plot carried no information. A waterfall makes the funnel
+# legible: it starts at the full request volume, debits each denial bucket in
+# turn, and lands on the granted = 0 terminal -- showing both the magnitude of
+# requests and exactly where they are eliminated. (A Sankey was rejected: with a
+# single non-zero edge it degenerates to one ribbon and is no clearer.)
 def fig7_c5_rejection(outdir: Path):
     # Driven by results/c5_outcomes.csv (scripts/run_all.py, seed 42).
     rows = {r["reason"]: int(r["count"]) for r in _read_csv("c5_outcomes.csv")}
-    order = [
-        ("granted", "Granted", DRAS_GREEN),
-        ("denied_decay", "Decay\nnot sust.", DRAS_RED),
-        ("denied_cooling", "Cooling\nincompl.", DRAS_ORANGE),
-        ("denied_approval", "Single\napproval", DRAS_GRAY),
+    denial_order = [
+        ("denied_cooling", "Denied:\ncooling\nincomplete", DRAS_ORANGE),
+        ("denied_decay", "Denied:\ndecay not\nsustained", DRAS_RED),
+        ("denied_approval", "Denied:\nsingle\napproval", DRAS_GRAY),
     ]
-    cats = [lbl for _, lbl, _ in order]
-    sizes = [rows.get(k, 0) for k, _, _ in order]
-    colors = [c for _, _, c in order]
-    total = sum(sizes)
+    total = sum(rows.get(k, 0) for k in
+                ("granted", "denied_decay", "denied_cooling", "denied_approval"))
+    granted = rows.get("granted", 0)
 
-    fig, ax = plt.subplots(figsize=(DOUBLE_COL, 3.0))
-    bars = ax.barh(cats, sizes, color=colors, edgecolor="#555", linewidth=0.4)
-    for i, v in enumerate(sizes):
-        pct = (100.0 * v / total) if total else 0.0
-        ax.text(v + max(sizes) * 0.01 + 1, i, f"{v:,} ({pct:.1f}%)", va="center", fontsize=7)
-    ax.set_xlabel("Count")
-    ax.set_xlim(0, max(sizes) * 1.2 if max(sizes) else 1)
+    # Build the waterfall: bar i spans [running_after, running_before]; each
+    # denial debits the running pool, the final "Granted" bar is what remains.
+    labels = ["C5 requests"] + [lbl for _, lbl, _ in denial_order] + ["Granted"]
+    debits = [rows.get(k, 0) for k, _, _ in denial_order]
+    fig, ax = plt.subplots(figsize=(DOUBLE_COL, 3.2))
+    x = np.arange(len(labels))
+
+    running = total
+    # Opening bar (full request volume).
+    ax.bar(0, total, 0.62, color=DRAS_BLUE, edgecolor="#004a73", linewidth=0.5, zorder=3)
+    ax.text(0, total + total * 0.02, f"{total:,}\n(100%)", ha="center", va="bottom",
+            fontsize=7, color=DRAS_BLUE, fontweight="bold")
+    for i, ((_, lbl, col), d) in enumerate(zip(denial_order, debits), start=1):
+        bottom = running - d
+        ax.bar(i, d, 0.62, bottom=bottom, color=col, edgecolor="#555",
+               linewidth=0.4, zorder=3)
+        # Connector from previous running level to this bar's top.
+        ax.plot([i - 1 + 0.31, i - 0.31], [running, running],
+                color="#999", lw=0.7, ls="--", zorder=1)
+        pct = 100.0 * d / total if total else 0.0
+        ax.text(i, running + total * 0.02, f"-{d:,}\n({pct:.1f}%)", ha="center",
+                va="bottom", fontsize=7, color=col)
+        running = bottom
+    # Terminal "Granted" bar (what survives the funnel).
+    ax.plot([len(labels) - 2 + 0.31, len(labels) - 1 - 0.31], [running, running],
+            color="#999", lw=0.7, ls="--", zorder=1)
+    ax.bar(len(labels) - 1, max(granted, total * 0.004), 0.62, color=DRAS_GREEN,
+           edgecolor="#055", linewidth=0.5, zorder=3)
+    ax.text(len(labels) - 1, total * 0.02, f"{granted:,}\n(0.0%)", ha="center",
+            va="bottom", fontsize=7, color="#0a6", fontweight="bold")
+
+    ax.set_xticks(x)
+    ax.set_xticklabels(labels, fontsize=7.5)
+    ax.set_ylabel("De-escalation requests")
+    ax.set_ylim(0, total * 1.18)
+    ax.grid(axis="y", alpha=0.3)
+    ax.grid(axis="x", visible=False)
     ax.set_title(
-        f"C5 De-escalation Request Outcomes (n = {total:,}, seed 42): "
-        "0 granted under the committed model",
-        fontsize=8.5,
+        f"C5 De-escalation Outcome Funnel (n = {total:,}, seed 42): "
+        "every request is gated out at the cooling window; 0 granted",
+        fontsize=8,
+        pad=6,
     )
-    ax.invert_yaxis()
-    ax.grid(axis="x", alpha=0.3)
-    ax.grid(axis="y", visible=False)
 
     save(fig, "fig7_c5_rejection", outdir)
+
+
+# =====================================================================
+# FIGURE 8: Over-escalation locator (where OER occurs, by true acuity level)
+# =====================================================================
+# New chart requested by the viz audit: an over-escalation *locator*. It answers
+# "where does the OER come from?" by decomposing the binary over-escalation rate
+# across the patient's true acuity level (S1..S5). Computed deterministically in
+# run_all.py (seed 42) and read from results/oer_by_truelevel.csv -- never typed.
+def fig8_oer_locator(outdir: Path):
+    rows = _read_csv("oer_by_truelevel.csv")
+    color_for = {"SAFE": STATE_COLORS["S1"], "MONITOR": STATE_COLORS["S2"],
+                 "ALERT": STATE_COLORS["S3"], "CRITICAL": STATE_COLORS["S4"],
+                 "EMERGENCY": STATE_COLORS["S5"]}
+    names = [r["true_state"] for r in rows]
+    oer = [float(r["oer_pct"]) for r in rows]
+    steps = [int(r["steps_at_level"]) for r in rows]
+    over = [int(r["over_escalated_steps"]) for r in rows]
+    colors = [color_for.get(n, DRAS_GRAY) for n in names]
+
+    fig, ax = plt.subplots(figsize=(DOUBLE_COL, 3.0))
+    x = np.arange(len(names))
+    bars = ax.bar(x, oer, 0.62, color=colors, edgecolor="#444", linewidth=0.4, zorder=3)
+    for xi, h, ov, st in zip(x, oer, over, steps):
+        share = f"{ov:,}/{st:,}" if st else "0/0"
+        ax.text(xi, h + 1.5, f"{h:.1f}%\n{share}", ha="center", va="bottom",
+                fontsize=6.8, color="#333")
+
+    ax.set_xticks(x)
+    ax.set_xticklabels([f"S{i+1}\n{n.title()}" for i, n in enumerate(names)], fontsize=7.5)
+    ax.set_xlabel("Patient's true acuity level  $\\tau(\\rho)$")
+    ax.set_ylabel("Over-escalation rate at level (%)")
+    ax.set_ylim(0, max(oer + [1]) * 1.25)
+    ax.grid(axis="y", alpha=0.3)
+    ax.grid(axis="x", visible=False)
+    ax.set_title(
+        "Over-escalation locator (seed 42): share of sample-steps where the "
+        "system sits above the true level, by true acuity",
+        fontsize=8,
+        pad=6,
+    )
+    save(fig, "fig8_oer_locator", outdir)
 
 
 # NOTE: A "fig8_3d_sensitivity" generator was removed for research integrity. The
@@ -616,64 +649,60 @@ def fig7_c5_rejection(outdir: Path):
 
 
 # =====================================================================
-# FIGURE 9: 3D State Trajectory Visualization
+# FIGURE 9: Per-family risk trajectories with state bands (small multiples)
 # =====================================================================
+# Replaces the former 3D scatter (3D-projected a 2D relationship -- risk vs.
+# time, with state a deterministic function tau(rho), so the third axis was
+# redundant and the projection occluded the curves). A 3x1 small-multiples
+# panel reads risk(t) directly against horizontal acuity bands; the system
+# state is just which band the curve sits in, so no separate axis is needed.
 def fig9_3d_trajectory(outdir: Path):
-    # constrained_layout is disabled here: it does not support 3D axes well
-    # and clips the z-label. Use a plain figure with manual margins instead.
-    fig = plt.figure(figsize=(DOUBLE_COL, 4.0), layout=None)
-    ax = fig.add_subplot(111, projection="3d")
+    # Risk-to-state thresholds (Eq. 2) -> horizontal acuity bands, shared y-axis.
+    bands = [
+        (0.0, 0.3, STATE_COLORS["S1"], "S1"),
+        (0.3, 0.5, STATE_COLORS["S2"], "S2"),
+        (0.5, 0.7, STATE_COLORS["S3"], "S3"),
+        (0.7, 0.9, STATE_COLORS["S4"], "S4"),
+        (0.9, 1.0, STATE_COLORS["S5"], "S5"),
+    ]
+    families = [
+        ("monotonic", "Monotonic rise", DRAS_BLUE),
+        ("oscillating", "Oscillating", DRAS_ORANGE),
+        ("spike_recover", "Spike then recover", DRAS_RED),
+    ]
 
-    # Add parent to path for simulator import
+    # Trajectories come from the repo simulator (seed 42), not typed-in numbers.
     sys.path.insert(0, str(Path(__file__).parent.parent / "src"))
     from dras5.simulator import generate_trajectory
 
-    # Generate three trajectory types
-    traj_types = [
-        ("monotonic", "Monotonic", DRAS_BLUE, "-"),
-        ("oscillating", "Oscillating", DRAS_ORANGE, "--"),
-        ("spike_recover", "Spike-recover", DRAS_RED, "-."),
-    ]
-
-    for i, (tt, label, color, ls) in enumerate(traj_types):
+    fig, axes = plt.subplots(3, 1, figsize=(DOUBLE_COL, 5.0), sharex=True)
+    for ax, (tt, label, color) in zip(axes, families):
         traj = generate_trajectory(ttype=tt, n_steps=80, dt=10, seed=42)
         t_vals = [p.t for p in traj]
         rho_vals = [p.rho for p in traj]
-        state_vals = [int(p.system_state) for p in traj]
 
-        ax.plot(
-            t_vals,
-            rho_vals,
-            state_vals,
-            color=color,
-            lw=1.2,
-            ls=ls,
-            label=label,
-            alpha=0.85,
-        )
+        # Faint acuity bands (low data-ink): the band the curve is in == state.
+        for lo, hi, c, name in bands:
+            ax.axhspan(lo, hi, color=c, alpha=0.08, zorder=0)
+            ax.text(t_vals[-1] * 1.005, (lo + hi) / 2, name, va="center",
+                    ha="left", fontsize=6.5, color=c)
+        # Threshold rules.
+        for thr in (0.3, 0.5, 0.7, 0.9):
+            ax.axhline(thr, color="#cfcfcf", lw=0.5, zorder=0)
 
-    # State level planes
-    for level, name, color in [
-        (1, "S1", "#2ecc71"),
-        (3, "S3", "#e67e22"),
-        (5, "S5", "#1a1a2e"),
-    ]:
-        ax.plot(
-            [0, 800], [0, 0], [level, level], color=color, lw=0.4, ls=":", alpha=0.4
-        )
+        ax.plot(t_vals, rho_vals, color=color, lw=1.4, zorder=3)
+        ax.set_ylim(0, 1.0)
+        ax.set_xlim(0, t_vals[-1] * 1.04)
+        ax.set_yticks([0, 0.3, 0.5, 0.7, 0.9])
+        ax.set_ylabel("Risk", fontsize=8)
+        ax.set_title(label, fontsize=8.5, loc="left", pad=3)
+        ax.grid(False)
 
-    ax.set_xlabel("Time (s)", fontsize=8, labelpad=8)
-    ax.set_ylabel("Risk score", fontsize=8, labelpad=8)
-    ax.set_zlabel("State level", fontsize=8, labelpad=6)
-    ax.set_zticks([1, 2, 3, 4, 5])
-    ax.set_zticklabels(["S1", "S2", "S3", "S4", "S5"])
-    ax.set_title(
-        "3D Trajectory Visualization: Risk, Time, and State", fontsize=9, pad=10
+    axes[-1].set_xlabel("Time since admission (s)")
+    fig.suptitle(
+        "Per-family risk trajectories with acuity bands (DRAS-5 simulator, seed 42)",
+        fontsize=9,
     )
-    ax.view_init(elev=20, azim=-60)
-    ax.tick_params(labelsize=7)
-    ax.legend(loc="upper left", fontsize=7, framealpha=0.9)
-
     save(fig, "fig9_3d_trajectory", outdir)
 
 
@@ -720,13 +749,16 @@ def main():
         ("Fig 4", "MER bar chart (from results/mer_by_type.csv)", fig4_mer),
         ("Fig 5", "OER comparison (from results/oer_by_type.csv)", fig5_oer),
         # Removed for research integrity (their generators are gone and the stale
-        # PNG/PDF outputs deleted): Fig 6 / Fig 8 (threshold + 3D sensitivity:
-        # hardcoded, no sweep code) and Fig 10 / Fig 11 / Fig 12 (performance,
-        # regulatory, compliance dashboards: values typed in, not sourced from
-        # results/; Fig 10's throughput even contradicted latency.csv). See
-        # REPRODUCIBILITY.md and README.md.
-        ("Fig 7", "C5 outcomes breakdown (from results/c5_outcomes.csv)", fig7_c5_rejection),
-        ("Fig 9", "3D trajectory visualization", fig9_3d_trajectory),
+        # PNG/PDF outputs deleted): Fig 6 (threshold sweep) and the former
+        # "fig8_3d_sensitivity" 3D surface (both hardcoded, no sweep code) and
+        # Fig 10 / Fig 11 / Fig 12 (performance, regulatory, compliance
+        # dashboards: values typed in, not sourced from results/; Fig 10's
+        # throughput even contradicted latency.csv). The Fig 8 below is a NEW,
+        # results-driven over-escalation locator -- unrelated to the removed one.
+        # See REPRODUCIBILITY.md and README.md.
+        ("Fig 7", "C5 outcome funnel (from results/c5_outcomes.csv)", fig7_c5_rejection),
+        ("Fig 8", "Over-escalation locator (from results/oer_by_truelevel.csv)", fig8_oer_locator),
+        ("Fig 9", "Per-family risk trajectories with state bands (small multiples)", fig9_3d_trajectory),
     ]
 
     for label, desc, fn in generators:

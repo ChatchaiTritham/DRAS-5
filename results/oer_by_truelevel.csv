@@ -1,0 +1,6 @@
+true_state,true_level,steps_at_level,over_escalated_steps,oer_pct
+SAFE,1,200485,118375,59.04
+MONITOR,2,104527,70108,67.07
+ALERT,3,93335,74558,79.88
+CRITICAL,4,95617,85529,89.45
+EMERGENCY,5,6036,0,0.0

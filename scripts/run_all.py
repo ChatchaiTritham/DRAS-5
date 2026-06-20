@@ -270,6 +270,39 @@ def baseline_mer(rho: List[float], interval: int) -> bool:
     return reported[-1] < sustained_peak_level(rho)
 
 
+# ------------------------------------------------------------------ bootstrap CI
+# Bootstrap configuration is fixed so the reported 95% confidence intervals are
+# byte-stable across reruns (independent of the metric run's RNG state).
+BOOTSTRAP_N = 1000
+BOOTSTRAP_SEED = 42
+
+
+def _bootstrap_ci(values: List[float], scale: float = 100.0,
+                  n_boot: int = BOOTSTRAP_N, seed: int = BOOTSTRAP_SEED
+                  ) -> Tuple[float, float]:
+    """Seeded nonparametric bootstrap 95% CI for the mean of ``values``.
+
+    ``values`` are per-trajectory observations (0/1 indicators for MER, or a
+    per-trajectory over-escalation fraction for OER); the returned bounds are the
+    2.5th / 97.5th percentiles of the resampled means, expressed on ``scale``
+    (percent). Deterministic given ``seed`` -> reproducible CIs.
+    """
+    n = len(values)
+    if n == 0:
+        return 0.0, 0.0
+    rng = random.Random(seed)
+    means = []
+    for _ in range(n_boot):
+        s = 0.0
+        for _ in range(n):
+            s += values[rng.randrange(n)]
+        means.append(scale * s / n)
+    means.sort()
+    lo = means[int(0.025 * n_boot)]
+    hi = means[min(n_boot - 1, int(0.975 * n_boot))]
+    return round(lo, 2), round(hi, 2)
+
+
 # ------------------------------------------------------------------ metrics
 def evaluate(n_traj: int, base_seed: int):
     per_type = n_traj // len(TYPES)
@@ -281,6 +314,15 @@ def evaluate(n_traj: int, base_seed: int):
     oer_sum = {c: {tt: 0.0 for tt in TYPES} for c in ("c5_on", "c5_off")}
     c5_tot = {"granted": 0, "denied_decay": 0, "denied_cooling": 0, "denied_approval": 0}
     n_evals = 0
+
+    # Per-trajectory observations retained for the seeded bootstrap CIs.
+    mer_obs = {s: {tt: [] for tt in TYPES} for s in systems}
+    oer_obs = {c: {tt: [] for tt in TYPES} for c in ("c5_on", "c5_off")}
+    # Over-escalation locator: for every true acuity level, how many sample-steps
+    # the system sat above the true level (numerator) out of all steps the patient
+    # genuinely occupied that level (denominator). Reveals WHERE OER concentrates.
+    over_by_level = {int(s): 0 for s in RiskState}
+    steps_by_level = {int(s): 0 for s in RiskState}
 
     for tt in TYPES:
         for j in range(per_type):
@@ -296,16 +338,24 @@ def evaluate(n_traj: int, base_seed: int):
                     n_evals += len(sys_states)
                     for k in c5_tot:
                         c5_tot[k] += c5[k]
-                    if max(sys_states) < max_true:
-                        mer["DRAS-5"][tt] += 1
+                    missed = 1 if max(sys_states) < max_true else 0
+                    mer["DRAS-5"][tt] += missed
+                    mer_obs["DRAS-5"][tt].append(missed)
+                    # Over-escalation locator (computed on the committed c5-on run).
+                    for s, ts in zip(sys_states, true_states):
+                        steps_by_level[int(ts)] += 1
+                        if s > ts:
+                            over_by_level[int(ts)] += 1
                 over = sum(1 for s, ts in zip(sys_states, true_states) if s > ts)
                 oer_sum[cond][tt] += over / len(sys_states)
+                oer_obs[cond][tt].append(over / len(sys_states))
 
             # Stateless baselines: binary MER (fails to retain the peak at the
             # decision point) and graded under-recognition rate.
             for s in ("NEWS2", "MEWS"):
-                if baseline_mer(rho, obs[s]):
-                    mer[s][tt] += 1
+                m = 1 if baseline_mer(rho, obs[s]) else 0
+                mer[s][tt] += m
+                mer_obs[s][tt].append(m)
                 urr[s][tt] += baseline_under_recognition_rate(rho, obs[s])
 
     def pct(numer, denom):
@@ -316,30 +366,61 @@ def evaluate(n_traj: int, base_seed: int):
     mer_overall = {s: 0 for s in systems}
     urr_overall = {"NEWS2": 0.0, "MEWS": 0.0}
     oer_overall = {"c5_on": 0.0, "c5_off": 0.0}
+    # Pooled per-trajectory observations (for overall-row CIs).
+    mer_obs_all = {s: [] for s in systems}
+    oer_obs_all = {c: [] for c in ("c5_on", "c5_off")}
     for tt in TYPES:
         for s in systems:
             mer_overall[s] += mer[s][tt]
+            mer_obs_all[s].extend(mer_obs[s][tt])
         for s in ("NEWS2", "MEWS"):
             urr_overall[s] += urr[s][tt]
         for cond in ("c5_on", "c5_off"):
             oer_overall[cond] += oer_sum[cond][tt]
+            oer_obs_all[cond].extend(oer_obs[cond][tt])
+        d5_lo, d5_hi = _bootstrap_ci(mer_obs["DRAS-5"][tt])
+        n2_lo, n2_hi = _bootstrap_ci(mer_obs["NEWS2"][tt])
+        mw_lo, mw_hi = _bootstrap_ci(mer_obs["MEWS"][tt])
         mer_rows.append({
             "trajectory_type": tt, "n": per_type,
             "mer_dras5_pct": pct(mer["DRAS-5"][tt], per_type),
+            "mer_dras5_ci_lo": d5_lo, "mer_dras5_ci_hi": d5_hi,
             "mer_news2_pct": pct(mer["NEWS2"][tt], per_type),
+            "mer_news2_ci_lo": n2_lo, "mer_news2_ci_hi": n2_hi,
             "mer_mews_pct": pct(mer["MEWS"][tt], per_type),
+            "mer_mews_ci_lo": mw_lo, "mer_mews_ci_hi": mw_hi,
             "urr_news2_pct": pct(urr["NEWS2"][tt], per_type),
             "urr_mews_pct": pct(urr["MEWS"][tt], per_type),
         })
+        no_lo, no_hi = _bootstrap_ci(oer_obs["c5_off"][tt])
+        wi_lo, wi_hi = _bootstrap_ci(oer_obs["c5_on"][tt])
         oer_rows.append({
             "trajectory_type": tt, "n": per_type,
             "oer_no_c5_pct": pct(oer_sum["c5_off"][tt], per_type),
+            "oer_no_c5_ci_lo": no_lo, "oer_no_c5_ci_hi": no_hi,
             "oer_with_c5_pct": pct(oer_sum["c5_on"][tt], per_type),
+            "oer_with_c5_ci_lo": wi_lo, "oer_with_c5_ci_hi": wi_hi,
         })
 
     oer_no = pct(oer_overall["c5_off"], n_total)
     oer_with = pct(oer_overall["c5_on"], n_total)
     reduction = round(100.0 * (oer_no - oer_with) / oer_no, 1) if oer_no else 0.0
+
+    # Over-escalation locator table (one row per true acuity level, seed 42).
+    oer_locator_rows = []
+    for lvl in sorted(steps_by_level):
+        st = RiskState(lvl)
+        oer_locator_rows.append({
+            "true_state": st.name,
+            "true_level": lvl,
+            "steps_at_level": steps_by_level[lvl],
+            "over_escalated_steps": over_by_level[lvl],
+            "oer_pct": pct(over_by_level[lvl], steps_by_level[lvl]),
+        })
+
+    # Overall-row bootstrap CIs.
+    mer_ci_overall = {s.lower().replace("-", ""): _bootstrap_ci(mer_obs_all[s]) for s in systems}
+    oer_ci_overall = {c: _bootstrap_ci(oer_obs_all[c]) for c in ("c5_on", "c5_off")}
 
     summary = {
         "config": {
@@ -348,10 +429,16 @@ def evaluate(n_traj: int, base_seed: int):
             "obs_interval_news2": NEWS2_OBS_INTERVAL, "obs_interval_mews": MEWS_OBS_INTERVAL,
             "n_evaluations": n_evals, "trajectory_types": list(TYPES),
         },
+        "bootstrap": {"n_resamples": BOOTSTRAP_N, "seed": BOOTSTRAP_SEED, "ci": "95%"},
         "mer_overall_pct": {
             "dras5": pct(mer_overall["DRAS-5"], n_total),
             "news2": pct(mer_overall["NEWS2"], n_total),
             "mews": pct(mer_overall["MEWS"], n_total),
+        },
+        "mer_overall_ci95": {
+            "dras5": list(mer_ci_overall["dras5"]),
+            "news2": list(mer_ci_overall["news2"]),
+            "mews": list(mer_ci_overall["mews"]),
         },
         "under_recognition_overall_pct": {
             "dras5": 0.0,  # DRAS-5 retains the peak (C1) -> never under-recognises
@@ -359,11 +446,16 @@ def evaluate(n_traj: int, base_seed: int):
             "mews": pct(urr_overall["MEWS"], n_total),
         },
         "oer_overall_pct": {"no_c5": oer_no, "with_c5": oer_with},
+        "oer_overall_ci95": {
+            "no_c5": list(oer_ci_overall["c5_off"]),
+            "with_c5": list(oer_ci_overall["c5_on"]),
+        },
         "oer_reduction_pct": reduction,
+        "oer_by_true_level": oer_locator_rows,
         "c5_outcomes": c5_tot,
         "c5_total_requests": sum(c5_tot.values()),
     }
-    return mer_rows, oer_rows, c5_tot, summary
+    return mer_rows, oer_rows, c5_tot, oer_locator_rows, summary
 
 
 # ------------------------------------------------------------------ ML wrapper experiment
@@ -481,9 +573,11 @@ def main():
     args = ap.parse_args()
 
     RESULTS.mkdir(exist_ok=True)
-    mer_rows, oer_rows, c5_tot, summary = evaluate(args.trajectories, args.seed)
+    mer_rows, oer_rows, c5_tot, oer_locator_rows, summary = evaluate(
+        args.trajectories, args.seed)
     write_csv(RESULTS / "mer_by_type.csv", mer_rows)
     write_csv(RESULTS / "oer_by_type.csv", oer_rows)
+    write_csv(RESULTS / "oer_by_truelevel.csv", oer_locator_rows)
     write_csv(RESULTS / "c5_outcomes.csv",
               [{"reason": k, "count": v} for k, v in c5_tot.items()])
 

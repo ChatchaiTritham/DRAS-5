@@ -1,5 +1,5 @@
-trajectory_type,n,oer_no_c5_pct,oer_with_c5_pct
-monotonic,1250,40.24,40.24
-oscillating,1250,88.04,88.04
-spike_emergency,1250,74.98,74.98
-spike_critical,1250,75.6,75.6
+trajectory_type,n,oer_no_c5_pct,oer_no_c5_ci_lo,oer_no_c5_ci_hi,oer_with_c5_pct,oer_with_c5_ci_lo,oer_with_c5_ci_hi
+monotonic,1250,40.24,40.05,40.43,40.24,40.05,40.43
+oscillating,1250,88.04,87.94,88.14,88.04,87.94,88.14
+spike_emergency,1250,74.98,74.84,75.13,74.98,74.84,75.13
+spike_critical,1250,75.6,75.46,75.74,75.6,75.46,75.74
