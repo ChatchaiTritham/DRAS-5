@@ -291,7 +291,15 @@ def check_c5(
     theta = STATE_CONFIG[target_state].get("theta", 0.5)
     if not all(r < theta for r in series):
         return False, "DENY: some values above threshold"
+    # Theorem 5a requires rho_eff < theta_{k-1} sustained over the FULL cooling
+    # window. The effective-risk envelope is non-increasing while the patient is
+    # recovering, but it may plateau (e.g. rho_eff has reached the observed-risk
+    # floor and stays flat). A strictly-decreasing test would reject a fully
+    # recovered, stable-low patient, which contradicts the liveness property
+    # (Theorem 6). We therefore require the series to be non-increasing
+    # (within numerical tolerance) and sustained below threshold.
+    tol = 1e-9
     for i in range(1, len(series)):
-        if series[i] >= series[i-1]:
+        if series[i] > series[i - 1] + tol:
             return False, "DENY: decay not sustained below threshold"
     return True, f"GRANT: sustained decay below {theta}"

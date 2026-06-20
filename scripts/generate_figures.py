@@ -27,7 +27,6 @@ matplotlib.use("Agg")
 import matplotlib.gridspec as gridspec
 import matplotlib.patches as mpatches
 import matplotlib.pyplot as plt
-from matplotlib.colors import LinearSegmentedColormap
 from mpl_toolkits.mplot3d import Axes3D  # noqa: F401 (side-effect import)
 
 # Attempt serif font; fall back to DejaVu Serif on Linux/CI
@@ -100,6 +99,25 @@ def save(fig, name: str, outdir: Path):
         fig.savefig(outdir / f"{name}.{ext}")
     plt.close(fig)
     print(f"  [OK] {name}.pdf / .png")
+
+
+# ── Results loader ────────────────────────────────────────────────
+# Data-bearing figures (MER, OER, C5 outcomes) are drawn from the committed
+# CSVs produced by scripts/run_all.py, never from numbers typed into this file.
+# Run `python scripts/run_all.py` first if results/ is empty.
+import csv
+
+RESULTS_DIR = Path(__file__).resolve().parent.parent / "results"
+
+
+def _read_csv(name: str) -> list[dict]:
+    path = RESULTS_DIR / name
+    if not path.exists():
+        raise FileNotFoundError(
+            f"{path} not found. Run `python scripts/run_all.py` to generate results first."
+        )
+    with path.open(encoding="utf-8") as f:
+        return list(csv.DictReader(f))
 
 
 # =====================================================================
@@ -438,77 +456,37 @@ def fig3b_decay_comparison(outdir: Path):
 # FIGURE 4: MER Bar Chart (Table 6)
 # =====================================================================
 def fig4_mer(outdir: Path):
+    # Driven by results/mer_by_type.csv (scripts/run_all.py, seed 42).
+    rows = _read_csv("mer_by_type.csv")
+    label_map = {"monotonic": "Monotonic", "oscillating": "Oscillating",
+                 "spike_emergency": "Spike-emerg.", "spike_critical": "Spike-crit."}
+    types = [label_map.get(r["trajectory_type"], r["trajectory_type"]) for r in rows]
+    news2 = [float(r["mer_news2_pct"]) for r in rows]
+    mews = [float(r["mer_mews_pct"]) for r in rows]
+    dras = [float(r["mer_dras5_pct"]) for r in rows]
+    # Overall = simple mean across the equal-sized trajectory families.
+    types.append("Overall")
+    for series in (news2, mews, dras):
+        series.append(round(sum(series) / len(series), 2))
+
     fig, ax = plt.subplots(figsize=(DOUBLE_COL, 2.8))
-
-    types = ["Monotonic", "Oscillating", "Spike-recover", "Overall"]
-    news2 = [0.0, 12.3, 28.4, 11.2]
-    mews = [0.0, 14.7, 31.2, 12.8]
-    dras = [0.0, 0.0, 0.0, 0.0]
-
     x = np.arange(len(types))
-    w = 0.25
-
-    bars1 = ax.bar(
-        x - w,
-        news2,
-        w,
-        label="NEWS2 (stateless)",
-        color="#bdc3c7",
-        edgecolor="#7f8c8d",
-        linewidth=0.5,
-    )
-    bars2 = ax.bar(
-        x,
-        mews,
-        w,
-        label="MEWS (stateless)",
-        color="#95a5a6",
-        edgecolor="#7f8c8d",
-        linewidth=0.5,
-    )
-    bars3 = ax.bar(
-        x + w,
-        dras,
-        w,
-        label="DRAS-5",
-        color=DRAS_BLUE,
-        edgecolor="#2471a3",
-        linewidth=0.5,
-    )
-
-    # Value labels
-    for bars in [bars1, bars2, bars3]:
-        for bar in bars:
-            h = bar.get_height()
-            if h > 0:
-                ax.text(
-                    bar.get_x() + bar.get_width() / 2,
-                    h + 0.5,
-                    f"{h:.1f}",
-                    ha="center",
-                    va="bottom",
-                    fontsize=6.5,
-                )
-
-    # Zero annotation for DRAS
-    for i in range(len(types)):
-        ax.text(
-            x[i] + w,
-            0.8,
-            "0.0%",
-            ha="center",
-            fontsize=6.5,
-            color=DRAS_BLUE,
-            fontweight="bold",
-        )
+    w = 0.27
+    ax.bar(x - w, news2, w, label="NEWS2 (stateless)", color="#e74c3c", edgecolor="#922b21", linewidth=0.4)
+    ax.bar(x, mews, w, label="MEWS (stateless)", color="#e67e22", edgecolor="#a04000", linewidth=0.4)
+    bars = ax.bar(x + w, dras, w, label="DRAS-5", color=DRAS_BLUE, edgecolor="#2471a3", linewidth=0.5)
+    for bar, h in zip(bars, dras):
+        ax.text(bar.get_x() + bar.get_width() / 2, max(h, 0) + 0.5,
+                f"{h:.1f}", ha="center", va="bottom", fontsize=6,
+                color=DRAS_BLUE, fontweight="bold")
 
     ax.set_xticks(x)
     ax.set_xticklabels(types)
     ax.set_ylabel("Missed Escalation Rate (%)")
-    ax.set_ylim(0, 36)
+    ax.set_ylim(0, max(news2 + mews) * 1.2)
     ax.legend(loc="upper left", framealpha=0.95, fontsize=7)
     ax.set_title(
-        "MER by Trajectory Type (Table 6): DRAS-5 = 0% (Structural Guarantee)",
+        "MER by Trajectory Type: DRAS-5 = 0% (structural C1 guarantee, seed 42)",
         fontsize=9,
         pad=6,
     )
@@ -520,193 +498,99 @@ def fig4_mer(outdir: Path):
 # FIGURE 5: OER Comparison (Table 7)
 # =====================================================================
 def fig5_oer(outdir: Path):
+    # Driven by results/oer_by_type.csv (scripts/run_all.py, seed 42).
+    # C5 grants controlled de-escalations, but the binary OER metric (system level
+    # strictly above true level) is largely unchanged because a de-escalated state
+    # is still above the recovered true level; see REPRODUCIBILITY.md.
+    rows = _read_csv("oer_by_type.csv")
+    label_map = {"monotonic": "Monotonic", "oscillating": "Oscillating",
+                 "spike_emergency": "Spike-emerg.", "spike_critical": "Spike-crit."}
+    types = [label_map.get(r["trajectory_type"], r["trajectory_type"]) for r in rows]
+    dras_no_c5 = [float(r["oer_no_c5_pct"]) for r in rows]
+    dras_full = [float(r["oer_with_c5_pct"]) for r in rows]
+    types.append("Overall")
+    dras_no_c5.append(round(sum(dras_no_c5) / len(dras_no_c5), 2))
+    dras_full.append(round(sum(dras_full) / len(dras_full), 2))
+
     fig, ax = plt.subplots(figsize=(DOUBLE_COL, 2.8))
-
-    types = ["Monotonic", "Oscillating", "Spike-recover", "Overall"]
-    dras_no_c5 = [2.1, 8.7, 14.3, 7.4]
-    dras_full = [1.8, 4.2, 6.1, 3.6]
-
     x = np.arange(len(types))
     w = 0.30
-
     ax.bar(
-        x - w / 2,
-        dras_no_c5,
-        w,
-        label="DRAS (no C5)",
-        color="#e8d5b7",
-        edgecolor="#b7950b",
-        linewidth=0.5,
+        x - w / 2, dras_no_c5, w, label="DRAS (no C5)",
+        color="#e8d5b7", edgecolor="#b7950b", linewidth=0.5,
     )
-    bars2 = ax.bar(
-        x + w / 2,
-        dras_full,
-        w,
-        label="DRAS (with C5)",
-        color=DRAS_BLUE,
-        edgecolor="#2471a3",
-        linewidth=0.5,
+    ax.bar(
+        x + w / 2, dras_full, w, label="DRAS (with C5)",
+        color=DRAS_BLUE, edgecolor="#2471a3", linewidth=0.5,
     )
-
-    # Reduction annotations
     for i in range(len(types)):
-        pct = (
-            (dras_no_c5[i] - dras_full[i]) / dras_no_c5[i] * 100
-            if dras_no_c5[i] > 0
-            else 0
-        )
-        mid_y = max(dras_no_c5[i], dras_full[i]) + 0.5
         ax.text(
-            x[i],
-            mid_y + 0.3,
-            f"-{pct:.0f}%",
-            ha="center",
-            fontsize=7,
-            color=DRAS_RED,
-            fontweight="bold",
+            x[i], max(dras_no_c5[i], dras_full[i]) + 1.5,
+            f"{dras_full[i]:.1f}%",
+            ha="center", fontsize=7, color="#333",
         )
 
     ax.set_xticks(x)
     ax.set_xticklabels(types)
     ax.set_ylabel("Over-Escalation Rate (%)")
-    ax.set_ylim(0, 18)
+    ax.set_ylim(0, max(dras_no_c5 + dras_full) * 1.25)
     ax.legend(loc="upper left", framealpha=0.95, fontsize=7)
     ax.set_title(
-        "C5 De-escalation Reduces Over-Escalation by 51% (Table 7)", fontsize=9, pad=6
+        "Over-Escalation Rate by Trajectory Type (seed 42); "
+        "binary OER is near-identical with/without C5",
+        fontsize=8.5,
+        pad=6,
     )
 
     save(fig, "fig5_oer", outdir)
 
 
-# =====================================================================
-# FIGURE 6: Threshold Sensitivity Analysis (Table 9)
-# =====================================================================
-def fig6_sensitivity(outdir: Path):
-    fig, ax1 = plt.subplots(figsize=(DOUBLE_COL, 3.0))
-
-    perturbations = [-15, -10, -5, 0, 5, 10, 15]
-    oer = [6.8, 5.4, 4.3, 3.6, 3.1, 2.7, 2.3]
-    mtcs = [8.2, 6.1, 4.5, 3.2, 3.8, 5.4, 7.9]
-
-    ax1.fill_between(perturbations, oer, alpha=0.15, color=DRAS_BLUE)
-    (line1,) = ax1.plot(
-        perturbations, oer, "o-", color=DRAS_BLUE, lw=1.5, ms=5, label="OER (%)"
-    )
-    ax1.set_xlabel("Threshold perturbation (%)")
-    ax1.set_ylabel("Over-Escalation Rate (%)", color=DRAS_BLUE)
-    ax1.tick_params(axis="y", labelcolor=DRAS_BLUE)
-    ax1.set_ylim(0, 10)
-
-    ax2 = ax1.twinx()
-    (line2,) = ax2.plot(
-        perturbations, mtcs, "s--", color=DRAS_ORANGE, lw=1.3, ms=4, label="MTCS (s)"
-    )
-    ax2.set_ylabel("Mean Time to Correct State (s)", color=DRAS_ORANGE)
-    ax2.tick_params(axis="y", labelcolor=DRAS_ORANGE)
-    ax2.set_ylim(0, 12)
-
-    # MER=0 annotation
-    ax1.text(
-        0,
-        9.0,
-        "MER = 0% at all perturbation levels",
-        ha="center",
-        fontsize=7,
-        color=DRAS_GREEN,
-        fontweight="bold",
-        bbox=dict(boxstyle="round,pad=0.3", fc="#e8f8e8", ec=DRAS_GREEN, alpha=0.9),
-    )
-
-    ax1.legend(handles=[line1, line2], loc="upper right", framealpha=0.95, fontsize=7)
-    ax1.set_title(
-        "Threshold Sensitivity Analysis: " r"$\pm$15% Perturbation (Table 9)",
-        fontsize=9,
-        pad=6,
-    )
-
-    save(fig, "fig6_sensitivity", outdir)
+# NOTE: A "fig6_sensitivity" generator was removed for research integrity. Its OER
+# and MTCS curves were typed into the script, not produced by any perturbation
+# sweep (no sweep code exists in this repository) and they contradicted the
+# seed-42 results in results/. The only reproducible part of the sensitivity claim
+# (MER = 0% under perturbation) is structural; see REPRODUCIBILITY.md.
 
 
 # =====================================================================
 # FIGURE 7: C5 Rejection Breakdown (Table 8)
 # =====================================================================
 def fig7_c5_rejection(outdir: Path):
-    fig, (ax1, ax2) = plt.subplots(1, 2, figsize=(DOUBLE_COL, 3.0))
-
-    # Pie chart
-    sizes = [312, 203, 147, 138]
-    labels = [
-        "Granted\n(39.0%)",
-        "Decay not\nsustained\n(25.4%)",
-        "Cooling\nincomplete\n(18.4%)",
-        "Single\napproval\n(17.3%)",
+    # Driven by results/c5_outcomes.csv (scripts/run_all.py, seed 42).
+    rows = {r["reason"]: int(r["count"]) for r in _read_csv("c5_outcomes.csv")}
+    order = [
+        ("granted", "Granted", DRAS_GREEN),
+        ("denied_decay", "Decay\nnot sust.", DRAS_RED),
+        ("denied_cooling", "Cooling\nincompl.", DRAS_ORANGE),
+        ("denied_approval", "Single\napproval", DRAS_GRAY),
     ]
-    colors = [DRAS_GREEN, DRAS_RED, DRAS_ORANGE, DRAS_GRAY]
-    explode = (0.04, 0, 0, 0)
+    cats = [lbl for _, lbl, _ in order]
+    sizes = [rows.get(k, 0) for k, _, _ in order]
+    colors = [c for _, _, c in order]
+    total = sum(sizes)
 
-    ax1.pie(
-        sizes,
-        labels=labels,
-        colors=colors,
-        explode=explode,
-        autopct=lambda p: f"{p:.1f}%",
-        pctdistance=0.65,
-        startangle=90,
-        textprops={"fontsize": 7},
-    )
-    ax1.set_title("C5 Request Outcomes\n(n = 800)", fontsize=9)
-
-    # Bar chart
-    cats = ["Granted", "Decay\nnot sust.", "Cooling\nincompl.", "Single\napproval"]
-    ax2.barh(cats, sizes, color=colors, edgecolor="#555", linewidth=0.4)
+    fig, ax = plt.subplots(figsize=(DOUBLE_COL, 3.0))
+    bars = ax.barh(cats, sizes, color=colors, edgecolor="#555", linewidth=0.4)
     for i, v in enumerate(sizes):
-        ax2.text(v + 5, i, str(v), va="center", fontsize=7)
-    ax2.set_xlabel("Count")
-    ax2.set_title("C5 Decision Breakdown\n(Table 8)", fontsize=9)
-    ax2.invert_yaxis()
+        pct = (100.0 * v / total) if total else 0.0
+        ax.text(v + max(sizes) * 0.01 + 1, i, f"{v:,} ({pct:.1f}%)", va="center", fontsize=7)
+    ax.set_xlabel("Count")
+    ax.set_xlim(0, max(sizes) * 1.2 if max(sizes) else 1)
+    ax.set_title(
+        f"C5 De-escalation Request Outcomes (n = {total:,}, seed 42): "
+        "0 granted under the committed model",
+        fontsize=8.5,
+    )
+    ax.invert_yaxis()
 
     plt.tight_layout()
     save(fig, "fig7_c5_rejection", outdir)
 
 
-# =====================================================================
-# FIGURE 8: 3D Sensitivity Surface
-# =====================================================================
-def fig8_3d_sensitivity(outdir: Path):
-    fig = plt.figure(figsize=(DOUBLE_COL, 4.0))
-    ax = fig.add_subplot(111, projection="3d")
-
-    # Create grid: threshold perturbation x decay rate scaling
-    perturb = np.linspace(-15, 15, 30)
-    decay_scale = np.linspace(0.5, 2.0, 30)
-    P, D = np.meshgrid(perturb, decay_scale)
-
-    # OER model: increases with lower thresholds, decreases with faster decay
-    OER = 3.6 + 0.22 * (-P) + 1.8 * (D - 1.0) + 0.01 * P * (D - 1.0)
-    OER = np.clip(OER, 0, 15)
-
-    # Custom colormap
-    cmap = LinearSegmentedColormap.from_list(
-        "dras", ["#2ecc71", "#f1c40f", "#e74c3c"], N=256
-    )
-
-    surf = ax.plot_surface(
-        P, D, OER, cmap=cmap, alpha=0.85, edgecolor="none", antialiased=True
-    )
-
-    ax.set_xlabel("Threshold perturbation (%)", fontsize=8, labelpad=8)
-    ax.set_ylabel("Decay rate scaling", fontsize=8, labelpad=8)
-    ax.set_zlabel("OER (%)", fontsize=8, labelpad=6)
-    ax.set_title(
-        "3D Sensitivity Surface: OER vs Threshold & Decay Rate", fontsize=9, pad=10
-    )
-
-    ax.view_init(elev=25, azim=-45)
-    ax.tick_params(labelsize=7)
-
-    fig.colorbar(surf, ax=ax, shrink=0.5, aspect=15, pad=0.12, label="OER (%)")
-
-    save(fig, "fig8_3d_sensitivity", outdir)
+# NOTE: A "fig8_3d_sensitivity" generator was removed for research integrity. The
+# 3D surface was produced from a typed-in analytical OER model (constant 3.6 plus
+# linear terms), not from measured data; no perturbation/decay sweep exists in
+# this repository. See REPRODUCIBILITY.md.
 
 
 # =====================================================================
@@ -718,7 +602,7 @@ def fig9_3d_trajectory(outdir: Path):
 
     # Add parent to path for simulator import
     sys.path.insert(0, str(Path(__file__).parent.parent / "src"))
-    from dras5 import generate_trajectory
+    from dras5.simulator import generate_trajectory
 
     # Generate three trajectory types
     traj_types = [
@@ -769,211 +653,17 @@ def fig9_3d_trajectory(outdir: Path):
     save(fig, "fig9_3d_trajectory", outdir)
 
 
-# =====================================================================
-# FIGURE 10: Performance Benchmarks (Table 5)
-# =====================================================================
-def fig10_performance(outdir: Path):
-    fig, (ax1, ax2) = plt.subplots(1, 2, figsize=(DOUBLE_COL, 2.8))
-
-    # Left: latency bars
-    metrics = [
-        "Transition\nlatency",
-        "Constraint\ncheck",
-        "Decay\ncomputation",
-        "Audit\nwrite",
-    ]
-    means = [0.12, 0.08, 0.03, 0.45]
-    ci_lo = [0.09, 0.06, 0.02, 0.38]
-    ci_hi = [0.16, 0.11, 0.05, 0.54]
-    errors = [
-        [m - lo for m, lo in zip(means, ci_lo)],
-        [hi - m for m, hi in zip(means, ci_hi)],
-    ]
-
-    colors_bar = [DRAS_BLUE, DRAS_GREEN, DRAS_ORANGE, DRAS_RED]
-    bars = ax1.barh(
-        metrics,
-        means,
-        xerr=errors,
-        color=colors_bar,
-        edgecolor="#555",
-        linewidth=0.4,
-        capsize=3,
-        error_kw={"lw": 0.8},
-    )
-    for i, (m, bar) in enumerate(zip(means, bars)):
-        ax1.text(m + errors[1][i] + 0.02, i, f"{m:.2f} ms", va="center", fontsize=7)
-
-    ax1.axvline(1.0, color="#ccc", ls=":", lw=0.8)
-    ax1.text(1.02, 3.3, "Target: <1 ms", fontsize=6, color="#999")
-    ax1.set_xlabel("Latency (ms)")
-    ax1.set_xlim(0, 0.75)
-    ax1.set_title("Operation Latency (95% CI)", fontsize=9)
-    ax1.invert_yaxis()
-
-    # Right: throughput gauge
-    throughput = 8333
-    theta = np.linspace(0, np.pi, 100)
-    ax2.plot(np.cos(theta), np.sin(theta), color="#ddd", lw=8, solid_capstyle="round")
-    frac = min(throughput / 10000, 1.0)
-    theta_fill = np.linspace(0, np.pi * frac, 100)
-    ax2.plot(
-        np.cos(theta_fill),
-        np.sin(theta_fill),
-        color=DRAS_BLUE,
-        lw=8,
-        solid_capstyle="round",
-    )
-    ax2.text(
-        0,
-        0.3,
-        f"{throughput:,}",
-        ha="center",
-        fontsize=18,
-        fontweight="bold",
-        color=DRAS_BLUE,
-    )
-    ax2.text(0, 0.05, "updates/sec", ha="center", fontsize=8, color="#666")
-    ax2.set_xlim(-1.3, 1.3)
-    ax2.set_ylim(-0.3, 1.3)
-    ax2.set_aspect("equal")
-    ax2.axis("off")
-    ax2.set_title("Throughput (O(1) per update)", fontsize=9)
-
-    plt.tight_layout()
-    save(fig, "fig10_performance", outdir)
-
-
-# =====================================================================
-# FIGURE 11: Regulatory Compliance Heatmap (Table 10)
-# =====================================================================
-def fig11_regulatory(outdir: Path):
-    fig, ax = plt.subplots(figsize=(DOUBLE_COL, 2.5))
-
-    constraints = [
-        "C1: Monotonic",
-        "C2: Timeout",
-        "C3: Audit",
-        "C4: Human Gate",
-        "C5: De-escalation",
-    ]
-    standards = ["IEC 61508", "IEC 62304", "EU AI Act"]
-
-    # SIL levels / class levels (higher = more coverage)
-    data = np.array(
-        [
-            [3, 3, 2],  # C1
-            [2, 2, 2],  # C2
-            [1, 1, 2],  # C3
-            [3, 3, 3],  # C4
-            [2, 2, 2],  # C5
-        ],
-        dtype=float,
-    )
-
-    cmap = LinearSegmentedColormap.from_list("compliance", ["#e8f8f5", "#1abc9c"], N=4)
-
-    im = ax.imshow(data, cmap=cmap, aspect="auto", vmin=0, vmax=3)
-
-    ax.set_xticks(range(len(standards)))
-    ax.set_xticklabels(standards, fontsize=8)
-    ax.set_yticks(range(len(constraints)))
-    ax.set_yticklabels(constraints, fontsize=8)
-
-    # Cell labels
-    sil_labels = {
-        (0, 0): "SIL 3",
-        (0, 1): "Class C",
-        (0, 2): "Art. 9",
-        (1, 0): "SIL 2",
-        (1, 1): "Class B",
-        (1, 2): "Art. 9",
-        (2, 0): "SIL 1+",
-        (2, 1): "Class A",
-        (2, 2): "Art. 12",
-        (3, 0): "SIL 3",
-        (3, 1): "Class C",
-        (3, 2): "Art. 14",
-        (4, 0): "SIL 2",
-        (4, 1): "Class B",
-        (4, 2): "Art. 9",
-    }
-    for (r, c), label in sil_labels.items():
-        ax.text(
-            c,
-            r,
-            label,
-            ha="center",
-            va="center",
-            fontsize=7,
-            fontweight="bold",
-            color="white" if data[r, c] >= 2 else "#333",
-        )
-
-    ax.set_title("Regulatory Compliance Mapping (Table 10)", fontsize=9, pad=8)
-    fig.colorbar(
-        im,
-        ax=ax,
-        shrink=0.7,
-        aspect=20,
-        pad=0.08,
-        ticks=[0, 1, 2, 3],
-        label="Coverage level",
-    )
-
-    save(fig, "fig11_regulatory", outdir)
-
-
-# =====================================================================
-# FIGURE 12: Constraint Compliance Dashboard (Table 4)
-# =====================================================================
-def fig12_compliance(outdir: Path):
-    fig, ax = plt.subplots(figsize=(SINGLE_COL, 3.5))
-
-    constraints = [
-        "C1\nMonotonic",
-        "C2\nTimeout",
-        "C3\nAudit",
-        "C4\nApproval",
-        "C5\nDe-esc.",
-    ]
-    test_events = [5000, 1500, 50000, 2500, 800]
-    violations = [0, 0, 0, 0, 0]
-
-    colors = [DRAS_GREEN] * 5
-    bars = ax.bar(
-        constraints, test_events, color=colors, edgecolor="#1e8449", linewidth=0.6
-    )
-
-    for i, (bar, n) in enumerate(zip(bars, test_events)):
-        ax.text(
-            bar.get_x() + bar.get_width() / 2,
-            bar.get_height() + 800,
-            f"{n:,}\nevents",
-            ha="center",
-            va="bottom",
-            fontsize=7,
-        )
-        ax.text(
-            bar.get_x() + bar.get_width() / 2,
-            bar.get_height() / 2,
-            "0 violations\n100.00%",
-            ha="center",
-            va="center",
-            fontsize=7,
-            fontweight="bold",
-            color="white",
-        )
-
-    ax.set_ylabel("Test events")
-    ax.set_ylim(0, 58000)
-    ax.set_title(
-        "Constraint Compliance\n(5,000 trajectories, 500,000 evaluations)",
-        fontsize=9,
-        pad=6,
-    )
-
-    save(fig, "fig12_compliance", outdir)
+# NOTE: Three generators were removed for research integrity because their values
+# were typed into the script and could not be sourced from results/:
+#   * fig10_performance  -- the four per-operation latency bars and the throughput
+#     gauge were hardcoded; run_all.py emits only one aggregate transition latency
+#     (results/latency.csv), and the gauge's 8,333 updates/s even contradicted the
+#     measured ~33,000 updates/s.
+#   * fig11_regulatory   -- the IEC 61508 / IEC 62304 / EU AI Act coverage matrix
+#     is an editorial mapping with no computational source in this repository.
+#   * fig12_compliance   -- the per-constraint "test events" counts (5000/1500/
+#     50000/2500/800) were typed in and are not produced by run_all.py.
+# See REPRODUCIBILITY.md and README.md.
 
 
 # =====================================================================
@@ -1002,15 +692,16 @@ def main():
         ("Fig 2", "Constraint pipeline", fig2_pipeline),
         ("Fig 3", "C5 exponential decay (S4 params)", fig3_c5_decay),
         ("Fig 3b", "Multi-state decay comparison", fig3b_decay_comparison),
-        ("Fig 4", "MER bar chart (Table 6)", fig4_mer),
-        ("Fig 5", "OER comparison (Table 7)", fig5_oer),
-        ("Fig 6", "Sensitivity analysis (Table 9)", fig6_sensitivity),
-        ("Fig 7", "C5 rejection breakdown (Table 8)", fig7_c5_rejection),
-        ("Fig 8", "3D sensitivity surface", fig8_3d_sensitivity),
+        ("Fig 4", "MER bar chart (from results/mer_by_type.csv)", fig4_mer),
+        ("Fig 5", "OER comparison (from results/oer_by_type.csv)", fig5_oer),
+        # Removed for research integrity (their generators are gone and the stale
+        # PNG/PDF outputs deleted): Fig 6 / Fig 8 (threshold + 3D sensitivity:
+        # hardcoded, no sweep code) and Fig 10 / Fig 11 / Fig 12 (performance,
+        # regulatory, compliance dashboards: values typed in, not sourced from
+        # results/; Fig 10's throughput even contradicted latency.csv). See
+        # REPRODUCIBILITY.md and README.md.
+        ("Fig 7", "C5 outcomes breakdown (from results/c5_outcomes.csv)", fig7_c5_rejection),
         ("Fig 9", "3D trajectory visualization", fig9_3d_trajectory),
-        ("Fig 10", "Performance benchmarks (Table 5)", fig10_performance),
-        ("Fig 11", "Regulatory compliance heatmap (Table 10)", fig11_regulatory),
-        ("Fig 12", "Constraint compliance dashboard (Table 4)", fig12_compliance),
     ]
 
     for label, desc, fn in generators:
