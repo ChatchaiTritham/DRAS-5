@@ -37,61 +37,74 @@ except Exception:
     FONT_FAMILY = "DejaVu Serif"
 
 PUBLICATION_DPI = 300
-DEFAULT_SAVE_PADDING_INCHES = 0.05
+DEFAULT_SAVE_PADDING_INCHES = 0.02
 DEFAULT_TIGHT_BBOX = "tight"
 FIGURE_1_HEIGHT = 3.2
 FIGURE_2_HEIGHT = 4.5
 STATE_CIRCLE_RADIUS = 0.65
-DEFAULT_AXIS_LINE_WIDTH = 0.6
+DEFAULT_AXIS_LINE_WIDTH = 0.8
 
-plt.rcParams.update(
-    {
-        "font.family": "serif",
-        "font.serif": [FONT_FAMILY],
-        "font.size": 9,
-        "axes.labelsize": 10,
-        "axes.titlesize": 11,
-        "xtick.labelsize": 8,
-        "ytick.labelsize": 8,
-        "legend.fontsize": 8,
-        "figure.dpi": PUBLICATION_DPI,
-        "savefig.dpi": 300,
-        "savefig.bbox": "tight",
-        "savefig.pad_inches": 0.05,
-        "axes.linewidth": 0.6,
-        "lines.linewidth": 1.2,
-        "patch.linewidth": 0.5,
-        "axes.grid": False,
-    }
-)
+# ── Canonical Top-Tier figure style (shared across all PhD repos) ──
+# Color-blind-safe (Okabe-Ito) — use in this order. See
+# _management/FIGURE_STYLE.md for the canonical definition.
+PALETTE = ["#0072B2", "#D55E00", "#009E73", "#CC79A7", "#E69F00", "#56B4E9", "#000000"]
 
-# ── Colour palette (Springer-friendly, colour-blind safe) ────────
+
+def apply_pub_style():
+    matplotlib.rcParams.update(
+        {
+            "figure.dpi": 150,
+            "savefig.dpi": 300,
+            "savefig.bbox": "tight",
+            "savefig.pad_inches": 0.02,
+            "font.family": "serif",
+            "font.serif": [FONT_FAMILY, "Times New Roman", "Times", "DejaVu Serif"],
+            "mathtext.fontset": "stix",
+            "font.size": 10,
+            "axes.titlesize": 11,
+            "axes.labelsize": 10,
+            "xtick.labelsize": 9,
+            "ytick.labelsize": 9,
+            "legend.fontsize": 9,
+            "axes.spines.top": False,
+            "axes.spines.right": False,
+            "axes.linewidth": 0.8,
+            "axes.grid": True,
+            "grid.alpha": 0.3,
+            "grid.linewidth": 0.6,
+            "lines.linewidth": 1.6,
+            "lines.markersize": 5,
+            "legend.frameon": False,
+            "figure.constrained_layout.use": True,
+            "axes.prop_cycle": matplotlib.cycler(color=PALETTE),
+        }
+    )
+
+
+# ── Colour palette (mapped to Okabe-Ito; colour-blind safe) ──────
+# Acuity-state colours: kept ordinal (green→black) for the schematic
+# state machine, but tinted toward Okabe-Ito hues so they harmonise
+# with the data figures' series colours.
 STATE_COLORS = {
-    "S1": "#2ecc71",  # green
-    "S2": "#f1c40f",  # yellow
-    "S3": "#e67e22",  # orange
-    "S4": "#e74c3c",  # red
-    "S5": "#1a1a2e",  # near-black
+    "S1": "#009E73",  # green  (Okabe-Ito bluish green)
+    "S2": "#E69F00",  # amber  (Okabe-Ito orange)
+    "S3": "#D55E00",  # orange (Okabe-Ito vermillion)
+    "S4": "#CC79A7",  # rose   (Okabe-Ito reddish purple)
+    "S5": "#000000",  # black
 }
-DRAS_BLUE = "#2980b9"
-DRAS_RED = "#c0392b"
-DRAS_GREEN = "#27ae60"
-DRAS_GRAY = "#7f8c8d"
-DRAS_ORANGE = "#d35400"
+# Named accents drawn from the shared palette.
+DRAS_BLUE = PALETTE[0]    # "#0072B2" primary accent
+DRAS_RED = "#D55E00"      # vermillion (warning)
+DRAS_GREEN = "#009E73"    # bluish green
+DRAS_GRAY = "#7f8c8d"     # neutral (non-series reference lines)
+DRAS_ORANGE = "#E69F00"   # orange
 LIGHT_BG = "#f8f9fa"
-PUBLICATION_DPI = 300
-DEFAULT_SAVE_PADDING_INCHES = 0.05
-DEFAULT_TIGHT_BBOX = "tight"
-FIGURE_1_HEIGHT = 3.2
-FIGURE_2_HEIGHT = 4.5
-STATE_CIRCLE_RADIUS = 0.65
-DEFAULT_AXIS_LINE_WIDTH = 0.6
 
 COL_SPRINGER = DRAS_BLUE  # primary accent
 
 # Springer column widths
 SINGLE_COL = 3.5  # inches
-DOUBLE_COL = 7.0
+DOUBLE_COL = 7.2
 
 
 def save(fig, name: str, outdir: Path):
@@ -124,7 +137,8 @@ def _read_csv(name: str) -> list[dict]:
 # FIGURE 1: State Machine Diagram (high-quality matplotlib)
 # =====================================================================
 def fig1_state_machine(outdir: Path):
-    fig, ax = plt.subplots(figsize=(DOUBLE_COL, FIGURE_1_HEIGHT))
+    # axis("off") schematic: disable constrained_layout (no decorations to size).
+    fig, ax = plt.subplots(figsize=(DOUBLE_COL, FIGURE_1_HEIGHT), layout=None)
     ax.set_xlim(-0.5, 10.5)
     ax.set_ylim(-1.0, 2.8)
     ax.set_aspect("equal")
@@ -266,7 +280,8 @@ def fig1_state_machine(outdir: Path):
 # FIGURE 2: Constraint Enforcement Pipeline (Algorithm 1)
 # =====================================================================
 def fig2_pipeline(outdir: Path):
-    fig, ax = plt.subplots(figsize=(SINGLE_COL, FIGURE_2_HEIGHT))
+    # axis("off") schematic: disable constrained_layout (no decorations to size).
+    fig, ax = plt.subplots(figsize=(SINGLE_COL, FIGURE_2_HEIGHT), layout=None)
     ax.set_xlim(0, 6)
     ax.set_ylim(-0.5, 10.5)
     ax.axis("off")
@@ -472,19 +487,22 @@ def fig4_mer(outdir: Path):
     fig, ax = plt.subplots(figsize=(DOUBLE_COL, 2.8))
     x = np.arange(len(types))
     w = 0.27
-    ax.bar(x - w, news2, w, label="NEWS2 (stateless)", color="#e74c3c", edgecolor="#922b21", linewidth=0.4)
-    ax.bar(x, mews, w, label="MEWS (stateless)", color="#e67e22", edgecolor="#a04000", linewidth=0.4)
-    bars = ax.bar(x + w, dras, w, label="DRAS-5", color=DRAS_BLUE, edgecolor="#2471a3", linewidth=0.5)
+    ax.bar(x - w, news2, w, label="NEWS2 (stateless)", color=PALETTE[1], edgecolor="#7a3500", linewidth=0.4)
+    ax.bar(x, mews, w, label="MEWS (stateless)", color=PALETTE[4], edgecolor="#8a6300", linewidth=0.4)
+    bars = ax.bar(x + w, dras, w, label="DRAS-5", color=DRAS_BLUE, edgecolor="#004a73", linewidth=0.5)
     for bar, h in zip(bars, dras):
         ax.text(bar.get_x() + bar.get_width() / 2, max(h, 0) + 0.5,
-                f"{h:.1f}", ha="center", va="bottom", fontsize=6,
+                f"{h:.1f}", ha="center", va="bottom", fontsize=7,
                 color=DRAS_BLUE, fontweight="bold")
 
     ax.set_xticks(x)
     ax.set_xticklabels(types)
+    ax.set_xlabel("Trajectory type")
     ax.set_ylabel("Missed Escalation Rate (%)")
     ax.set_ylim(0, max(news2 + mews) * 1.2)
-    ax.legend(loc="upper left", framealpha=0.95, fontsize=7)
+    ax.grid(axis="y", alpha=0.3)
+    ax.grid(axis="x", visible=False)
+    ax.legend(loc="upper left")
     ax.set_title(
         "MER by Trajectory Type: DRAS-5 = 0% (structural C1 guarantee, seed 42)",
         fontsize=9,
@@ -517,11 +535,11 @@ def fig5_oer(outdir: Path):
     w = 0.30
     ax.bar(
         x - w / 2, dras_no_c5, w, label="DRAS (no C5)",
-        color="#e8d5b7", edgecolor="#b7950b", linewidth=0.5,
+        color=PALETTE[4], edgecolor="#8a6300", linewidth=0.5,
     )
     ax.bar(
         x + w / 2, dras_full, w, label="DRAS (with C5)",
-        color=DRAS_BLUE, edgecolor="#2471a3", linewidth=0.5,
+        color=DRAS_BLUE, edgecolor="#004a73", linewidth=0.5,
     )
     for i in range(len(types)):
         ax.text(
@@ -532,9 +550,12 @@ def fig5_oer(outdir: Path):
 
     ax.set_xticks(x)
     ax.set_xticklabels(types)
+    ax.set_xlabel("Trajectory type")
     ax.set_ylabel("Over-Escalation Rate (%)")
     ax.set_ylim(0, max(dras_no_c5 + dras_full) * 1.25)
-    ax.legend(loc="upper left", framealpha=0.95, fontsize=7)
+    ax.grid(axis="y", alpha=0.3)
+    ax.grid(axis="x", visible=False)
+    ax.legend(loc="upper left")
     ax.set_title(
         "Over-Escalation Rate by Trajectory Type (seed 42); "
         "binary OER is near-identical with/without C5",
@@ -582,8 +603,9 @@ def fig7_c5_rejection(outdir: Path):
         fontsize=8.5,
     )
     ax.invert_yaxis()
+    ax.grid(axis="x", alpha=0.3)
+    ax.grid(axis="y", visible=False)
 
-    plt.tight_layout()
     save(fig, "fig7_c5_rejection", outdir)
 
 
@@ -597,7 +619,9 @@ def fig7_c5_rejection(outdir: Path):
 # FIGURE 9: 3D State Trajectory Visualization
 # =====================================================================
 def fig9_3d_trajectory(outdir: Path):
-    fig = plt.figure(figsize=(DOUBLE_COL, 4.0))
+    # constrained_layout is disabled here: it does not support 3D axes well
+    # and clips the z-label. Use a plain figure with manual margins instead.
+    fig = plt.figure(figsize=(DOUBLE_COL, 4.0), layout=None)
     ax = fig.add_subplot(111, projection="3d")
 
     # Add parent to path for simulator import
@@ -685,6 +709,7 @@ def main():
         outdir = Path(__file__).parent.parent / "figures"
 
     outdir.mkdir(parents=True, exist_ok=True)
+    apply_pub_style()  # canonical Top-Tier style, once before plotting
     print(f"Output: {outdir.resolve()}\n")
 
     generators = [
