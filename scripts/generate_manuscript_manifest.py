@@ -32,17 +32,17 @@ FIGURES = [
     },
     {
         "figure_id": "DRAS5-F3",
-        "stem": "fig6_sensitivity",
+        "stem": "fig4_mer",
         "role": "manuscript",
-        "caption": "Sensitivity analysis of DRAS-5 state assignment and governance thresholds.",
-        "article_section": "Sensitivity analysis",
+        "caption": "Missed-escalation rate by trajectory type: DRAS-5 flat at 0% (structural C1 guarantee) beside the stateless NEWS2/MEWS baselines. Driven by results/mer_by_type.csv.",
+        "article_section": "Missed-escalation results",
     },
     {
         "figure_id": "DRAS5-F4",
-        "stem": "fig10_performance",
+        "stem": "fig5_oer",
         "role": "manuscript",
-        "caption": "Performance summary covering latency, throughput, and constraint enforcement evidence.",
-        "article_section": "Performance evaluation",
+        "caption": "Over-escalation rate with and without C5; the two series coincide because C5 grants nothing on this regime. Driven by results/oer_by_type.csv.",
+        "article_section": "Over-escalation results",
     },
     {
         "figure_id": "DRAS5-F5",
@@ -53,10 +53,10 @@ FIGURES = [
     },
     {
         "figure_id": "DRAS5-F6",
-        "stem": "fig11_regulatory",
+        "stem": "fig7_c5_rejection",
         "role": "supplementary",
-        "caption": "Regulatory traceability view for DRAS-5 governance controls.",
-        "article_section": "Supplementary compliance",
+        "caption": "C5 de-escalation request outcomes, with all requests denied for an incomplete cooling window. Driven by results/c5_outcomes.csv.",
+        "article_section": "Supplementary governance analysis",
     },
 ]
 

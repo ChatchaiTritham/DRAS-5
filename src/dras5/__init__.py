@@ -8,7 +8,7 @@ DRAS-5: Dynamic Risk Assessment State Machine
 from .constants import FRAMEWORK_NAME, PACKAGE_VERSION
 
 __version__ = PACKAGE_VERSION
-__author__ = "Clinical AI Research Team"
+__author__ = "Chatchai Tritham"
 
 from .states import RiskState
 from .state_machine import DRAS5StateMachine, StateTransition
