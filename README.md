@@ -37,6 +37,8 @@ data/, models/    placeholders (no external dataset is required)
 ## Installation
 
 ```bash
+git clone https://github.com/ChatchaiTritham/DRAS-5.git
+cd DRAS-5
 python -m venv .venv && source .venv/bin/activate   # Windows: .venv\Scripts\activate
 pip install -e .
 ```
