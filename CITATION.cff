@@ -27,6 +27,13 @@ authors:
 license: MIT
 repository-code: "https://github.com/ChatchaiTritham/DRAS-5"
 version: 1.0.0
+identifiers:
+  - type: doi
+    value: "10.5281/zenodo.XXXXXXX"
+    description: >-
+      Concept DOI for the archived Zenodo snapshot. Minted from the GitHub
+      release once the repository is linked to Zenodo; replace XXXXXXX with the
+      assigned value.
 keywords:
   - clinical decision support systems
   - patient safety
