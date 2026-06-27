@@ -90,7 +90,7 @@ No human-subject data is used. All trajectories are generated synthetically insi
 }
 ```
 
-A public archival snapshot is required at acceptance. The Zenodo DOI will be minted then and inserted here (placeholder: `10.5281/zenodo.XXXXXXX`).
+A permanent, citable archival snapshot of the released code will be provided upon acceptance.
 
 ## License
 
