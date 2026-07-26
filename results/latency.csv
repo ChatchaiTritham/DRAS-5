@@ -1,2 +1,2 @@
 operations,mean_ms,ci95_low_ms,ci95_high_ms,throughput_per_s
-50000,0.0239,0.0029,0.0944,41871
+50000,0.0701,0.0053,0.278,14267

@@ -96,12 +96,12 @@
     }
   ],
   "c5_outcomes": {
-    "granted": 0,
-    "denied_decay": 0,
-    "denied_cooling": 26673,
+    "granted": 1250,
+    "denied_decay": 47407,
+    "denied_cooling": 67100,
     "denied_approval": 0
   },
-  "c5_total_requests": 26673,
+  "c5_total_requests": 115757,
   "ml_wrapper": {
     "gbt_rmse": 0.0563,
     "n_test_trajectories": 1000,
@@ -110,9 +110,9 @@
   },
   "latency": {
     "operations": 50000,
-    "mean_ms": 0.0239,
-    "ci95_low_ms": 0.0029,
-    "ci95_high_ms": 0.0944,
-    "throughput_per_s": 41871
+    "mean_ms": 0.0701,
+    "ci95_low_ms": 0.0053,
+    "ci95_high_ms": 0.278,
+    "throughput_per_s": 14267
   }
 }
