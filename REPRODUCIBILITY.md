@@ -12,9 +12,10 @@ python scripts/generate_figures.py   # redraws the data figures from results/*.c
 
 Every reported number below is regenerated from a single fixed seed (42). The
 per-trajectory seeds are derived from a stable type index (independent of
-`PYTHONHASHSEED`), so a rerun reproduces the byte-identical CSVs (`latency.csv`
-excepted: wall-clock timing is reported but excluded from the byte-stability
-contract).
+`PYTHONHASHSEED`). Cohort counts and safety metrics are deterministic; wall-clock
+latency is machine-dependent, and the GBT RMSE can vary in the fourth decimal
+place across numerical-library versions, so the manuscript reports it to three
+decimal places.
 
 ## What reproduces
 
@@ -24,9 +25,9 @@ contract).
 | Missed Escalation Rate, NEWS2 / MEWS | **74.2% / 75.6%** | `mer_by_type.csv` | reproduced |
 | Graded under-recognition, NEWS2 / MEWS | **65% / 67%** (DRAS-5 0%) | `mer_by_type.csv` (`urr_*`), `summary.json` | reproduced |
 | Over-Escalation Rate, DRAS-5 with / without C5 (binary, Eq. 11) | **69.7% / 69.7%** (0.0% reduction) | `oer_by_type.csv`, `summary.json` (`oer_reduction_pct`) | reproduced |
-| C5 de-escalation outcomes | **0 granted, 0 premature** (0 decay / 26,673 cooling / 0 approval denials; 26,673 requests) | `c5_outcomes.csv` | reproduced |
-| ML-wrapper guarantee (GBT input) | governed MER **0.0%** vs ungoverned **100%**, GBT RMSE 0.0563 | `summary.json` (`ml_wrapper`) | reproduced |
-| Transition latency / throughput | **~0.03 ms/update, ~33,000 updates/s** (O(1)) | `latency.csv` | reproduced (wall-clock; machine-dependent) |
+| C5 de-escalation outcomes | **1,250 granted, 0 premature** (47,407 decay / 67,100 cooling / 0 approval denials; 115,757 requests) | `c5_outcomes.csv` | reproduced |
+| ML-wrapper guarantee (GBT input) | governed MER **0.0%** vs ungoverned **100%**, GBT RMSE **0.056** (three decimals) | `summary.json` (`ml_wrapper`) | reproduced |
+| Transition latency / throughput | **<1 ms/update** (O(1)) | `latency.csv` | reproduced (wall-clock; machine-dependent) |
 
 ### Missed Escalation Rate (memory model)
 
@@ -45,13 +46,11 @@ not read as an all-or-nothing claim.
 ### Over-Escalation Rate (binary vs magnitude)
 
 Under the binary OER definition (Eq. 11: any sample whose system level exceeds the
-instantaneous true level), C5 makes no difference (69.7% with and without). On the
-released parameter regime the reason is simpler than a magnitude effect: C5 grants
-**no** de-escalations at all (0 of 26,673 requests; see below), so the with-C5 and
-without-C5 runs produce the identical state sequence. We therefore make no empirical
-over-escalation-benefit claim on this cohort. The controlled-de-escalation guarantee
-(no premature de-escalation, Theorem 5) holds vacuously here — every request is
-denied for an incomplete cooling window, so there is no premature grant to make.
+instantaneous true level), the rounded rate is 69.7% with and without C5. C5 grants
+1,250 safe single-step de-escalations, but each post-grant state remains above the
+instantaneous recovered true level, so the binary indicator is unchanged. This
+cohort therefore exercises the controlled-de-escalation guarantee directly, with
+zero premature grants, but does not establish an over-escalation benefit.
 
 ## Model refinements applied
 
@@ -69,18 +68,18 @@ refinements (the full test suite still passes):
    `t_cool`, matching Theorem 5(a). `check_c5` itself is unchanged.
 
 The cohort includes a `spike_critical` family (a rise to CRITICAL followed by a
-sustained sub-threshold recovery) intended to exercise controlled de-escalation. On
-the released parameter regime, however, no grant occurs even on this family: each
-state's cooling period is at least twice its timeout, so C2 auto-escalates before
-the cooling window can close, and every C5 request is denied as `denied_cooling`
-(0 granted / 0 `denied_decay` / 26,673 `denied_cooling` / 0 `denied_approval`).
+sustained sub-threshold recovery) intended to exercise controlled de-escalation.
+Across the complete cohort C5 grants 1,250 requests after all guards clear; 47,407
+requests are denied for unsustained decay and 67,100 for an incomplete cooling
+window. No request is denied for approval because the simulation supplies dual
+approval to isolate the temporal guards, and no premature grant occurs.
 
 ## Not reproduced from this repository
 
 | Manuscript result | Reason |
 |-------------------|--------|
 | Threshold sensitivity sweep (Table 9 / Figure 6 OER & MTCS columns; old `fig8_3d_sensitivity`) | no perturbation-sweep code in this repository; the MER = 0% invariance across perturbations is structural. The hardcoded `fig6_sensitivity` / `fig8_3d_sensitivity` figures and their generators have been removed. |
-| Per-operation latency breakdown / throughput gauge (old `fig10_performance`) | `run_all.py` emits only one aggregate transition latency (`latency.csv`, ~0.03 ms, ~33,000 updates/s); the four-bar breakdown and gauge value were typed in and have been removed. |
+| Per-operation latency breakdown / throughput gauge (old `fig10_performance`) | `run_all.py` emits only one host-specific aggregate transition latency (`latency.csv`, below 1 ms in the committed run); the four-bar breakdown and gauge value were typed in and have been removed. |
 | Regulatory coverage matrix / per-constraint event counts (old `fig11_regulatory`, `fig12_compliance`) | editorial/typed-in values with no computational source in this repository; figures and generators removed. |
 
 ## Status
@@ -88,9 +87,8 @@ the cooling window can close, and every C5 request is denied as `denied_cooling`
 Every quantitative claim the manuscript now presents as an empirical result is
 regenerated by `scripts/run_all.py` at seed 42 and committed under `results/`. The
 central structural guarantee (MER = 0%) is both proved and reproduced. On this
-parameter regime C5 grants nothing (0 of 26,673 requests, all denied for an
-incomplete cooling window), so the no-premature-de-escalation guarantee holds
-vacuously and we make no empirical de-escalation-benefit claim here; over-escalation
-is consequently identical with and without C5 (69.7%). The baseline magnitudes are
-properties of this synthetic cohort and its memory model, not clinical-validation
-figures.
+parameter regime C5 grants 1,250 of 115,757 requests after all formal guards clear,
+with zero premature de-escalations. Binary over-escalation remains 69.7% because
+the granted single-step transitions remain above the instantaneous recovered true
+level. The baseline magnitudes are properties of this synthetic cohort and its
+memory model, not clinical-validation figures.
