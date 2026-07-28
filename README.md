@@ -17,10 +17,10 @@ This repository is the artifact behind those claims. It holds the package source
 All figures below come from `python scripts/run_all.py` at seed 42 on the synthetic cohort (5,000 trajectories, 100 steps each, 500,000 evaluations). They are properties of this generated cohort and its observation model, not clinical validation.
 
 - **Missed-escalation rate is 0% for DRAS-5 on every trajectory family.** This is a structural consequence of C1, not a statistical estimate — once a sample crosses an escalation threshold the state cannot fall except through an approved de-escalation.
-- **Stateless baselines miss a large share of escalations under intermittent sampling.** In this run the modelled NEWS2 scorer records 74.2% overall and MEWS 75.6%; graded under-recognition is 64.8% and 67.0% respectively. (These magnitudes are far higher than the values in the manuscript tables — see the caveat below.)
-- **C5 grants no de-escalation on the released parameter regime.** Of 26,673 de-escalation requests, every one is denied for an incomplete cooling window: each state's cooling period is at least twice its timeout, so C2 auto-escalates before the window can close. The "no premature de-escalation" guarantee therefore holds vacuously here, and we make no empirical de-escalation-benefit claim on this cohort.
-- **Over-escalation is identical with and without C5 (69.7% overall).** Because C5 fires zero grants, the two configurations produce the same state sequence. The high binary rate is the deliberate cost of holding an elevated state through a conservative recovery window — the same conservatism that yields 0% missed escalation.
-- **Per-update cost stays well under the 1 ms target.** Mean transition latency is about 0.03 ms (roughly 33,000 updates/s) over 50,000 operations. Timing is wall-clock and machine-dependent, so it is the only output that shifts run to run.
+- **Stateless baselines miss a large share of escalations under intermittent sampling.** In this run the modelled NEWS2 scorer records 74.2% overall and MEWS 75.6%; graded under-recognition is 64.8% and 67.0% respectively. These seed-42 values are the values reported in the current manuscript.
+- **C5 grants 1,250 safe single-step de-escalations on the released parameter regime.** Of 115,757 requests, 67,100 are denied for an incomplete cooling window and 47,407 for unsustained decay; zero grants are premature.
+- **Over-escalation is 69.7% with and without C5.** The valid grants remain above the instantaneous recovered true level, so they do not change the binary over-escalation indicator on this cohort.
+- **Per-update cost stays well under the 1 ms target.** The committed run records 0.0701 ms mean latency (14,267 updates/s) over 50,000 operations. Timing is wall-clock and machine-dependent; reruns should be interpreted against the sub-millisecond target rather than as exact portable timing.
 
 ## Repository structure
 
@@ -50,9 +50,9 @@ python scripts/run_all.py          # fixed seed 42; a few minutes on a standard 
 python scripts/generate_figures.py # redraws the data figures from results/*.csv
 ```
 
-`run_all.py` writes the metric tables in `results/` (`mer_by_type.csv`, `oer_by_type.csv`, `c5_outcomes.csv`, `ml_wrapper.csv`, `latency.csv`) and `summary.json`. Per-trajectory seeds derive from a stable type index, independent of `PYTHONHASHSEED`, so the scientific outputs are byte-identical on rerun. The single exception is `latency.csv`: wall-clock timing drifts by a few hundredths of a millisecond across machines, which leaves the reported throughput and confidence interval slightly variable while every other number stays fixed.
+`run_all.py` writes the metric tables in `results/` (`mer_by_type.csv`, `oer_by_type.csv`, `c5_outcomes.csv`, `ml_wrapper.csv`, `latency.csv`) and `summary.json`. Per-trajectory seeds derive from a stable type index, independent of `PYTHONHASHSEED`, so cohort counts and safety metrics are deterministic. Wall-clock latency is machine-dependent, and GBT RMSE may vary in the fourth decimal place across numerical-library versions; the manuscript therefore reports RMSE to three decimal places.
 
-One honesty note for reviewers: the metric magnitudes regenerated here differ from the corresponding tables in the current manuscript draft (for example, baseline missed-escalation overall 74.2% / 75.6% here versus 6.5% / 22.2% in the paper, and 26,673 de-escalation requests here versus 52,958 in the paper). The *qualitative* findings agree across both — DRAS-5 at 0% missed escalation, C5 granting nothing on this regime, and over-escalation unchanged by C5 — but the exact figures do not. `REPRODUCIBILITY.md` records this discrepancy and which claims reproduce. The over-escalation magnitudes are illustrative and depend on the cohort and parameter regime; we treat them as such and make no portable numeric claim from them.
+The current manuscript tables are reconciled to the committed seed-42 outputs: baseline missed-escalation is 74.2% for NEWS2 and 75.6% for MEWS, DRAS-5 missed escalation is 0%, and C5 grants 1,250 of 115,757 requests with zero premature de-escalations. `REPRODUCIBILITY.md` records the exact commands, artifacts, and scope of each reproducible claim. Over-escalation magnitudes remain cohort- and parameter-dependent and are reported as illustrative rather than portable constants.
 
 ## Results and figures
 
@@ -63,13 +63,13 @@ The curated set is tracked in `FIGURE_MANIFEST.csv`. Two of the data figures (`f
 - `figures/fig3_c5_decay.png` and `figures/fig3b_decay_comparison.png` — the exponential-decay envelope that gates C5, and how the per-state decay rates compare. Analytical curves from the published λ values; they do not depend on `run_all.py`.
 - `figures/fig4_mer.png` — missed-escalation rate by trajectory type, with DRAS-5 flat at 0% beside the stateless baselines. Driven by `results/mer_by_type.csv`.
 - `figures/fig5_oer.png` — over-escalation rate with and without C5; the two series coincide, the visual counterpart of C5 granting nothing here. Driven by `results/oer_by_type.csv`.
-- `figures/fig7_c5_rejection.png` — the C5 outcome breakdown, showing all requests denied for an incomplete cooling window. Driven by `results/c5_outcomes.csv`.
+- `figures/fig7_c5_rejection.png` — the C5 outcome breakdown, showing 1,250 grants and the cooling/decay denial counts. Driven by `results/c5_outcomes.csv`.
 - `figures/fig9_3d_trajectory.png` — three example trajectories regenerated from the simulator at seed 42 (computed, not hardcoded).
 
 **Removed figures.** Five figures whose values were typed into the script rather than produced by any analysis have been removed, along with both their generator functions and their committed `.png`/`.pdf` outputs:
 
 - `fig6_sensitivity` / `fig8_3d_sensitivity` — threshold and 3D sensitivity panels. The OER/MTCS curves and the 3D OER surface were typed in; no perturbation sweep exists in this repository, and the values contradicted the seed-42 results. The only reproducible part of the sensitivity claim (MER stays 0% under perturbation) is structural.
-- `fig10_performance` / `fig11_regulatory` / `fig12_compliance` — the per-operation latency bars, throughput gauge, IEC/EU-AI-Act regulatory mapping, and per-constraint event counts were all written into the script. `run_all.py` emits only one aggregate transition latency (`results/latency.csv`); the rest had no computational source, and `fig10`'s gauge (8,333 updates/s) even contradicted the measured ~33,000 updates/s.
+- `fig10_performance` / `fig11_regulatory` / `fig12_compliance` — the per-operation latency bars, throughput gauge, IEC/EU-AI-Act regulatory mapping, and per-constraint event counts were all written into the script. `run_all.py` emits only one aggregate transition latency (`results/latency.csv`); the rest had no computational source, and `fig10`'s 8,333-updates/s gauge contradicted the committed aggregate measurement.
 
 `run_all.py` is the authoritative source for any quoted metric; only figures that read from `results/` (or are clearly labelled schematic/analytical diagrams) are retained.
 
@@ -90,7 +90,13 @@ No human-subject data is used. All trajectories are generated synthetically insi
 }
 ```
 
-A permanent, citable archival snapshot of the released code will be provided upon acceptance.
+This release is archived on Zenodo, which mints a permanent DOI for the exact snapshot cited
+by the manuscript. Cite the archived version, not the mutable `main` branch:
+
+- Archived snapshot: `10.5281/zenodo.PENDING` (DOI is minted when the GitHub release is
+  published; replace this placeholder with the concrete DOI before it is cited anywhere)
+- Release tag: `v1.0.0`
+- Deposit metadata: `.zenodo.json`; citation metadata: `CITATION.cff`
 
 ## License
 
