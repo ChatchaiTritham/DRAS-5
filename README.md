@@ -93,8 +93,8 @@ No human-subject data is used. All trajectories are generated synthetically insi
 This release is archived on Zenodo, which mints a permanent DOI for the exact snapshot cited
 by the manuscript. Cite the archived version, not the mutable `main` branch:
 
-- Archived snapshot: `10.5281/zenodo.PENDING` (DOI is minted when the GitHub release is
-  published; replace this placeholder with the concrete DOI before it is cited anywhere)
+- Archived snapshot: [10.5281/zenodo.21881957](https://doi.org/10.5281/zenodo.21881957)
+  (the immutable DOI for release `v1.0.0`)
 - Release tag: `v1.0.0`
 - Deposit metadata: `.zenodo.json`; citation metadata: `CITATION.cff`
 
