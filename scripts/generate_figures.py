@@ -74,10 +74,10 @@ LIGHT_BG = "#f8f9fa"
 # Springer column widths
 SINGLE_COL = 3.5  # inches
 DOUBLE_COL = 7.2
-# Width of the PeerJ manuscript text block (measured: 433.5 pt). Figures used in
+# Width of the PeerJ manuscript text block, measured from wlpeerj.cls with
 # the manuscript are generated at this width and included at \textwidth, so the
-# in-figure type is never rescaled and renders at its true point size.
-MS_COL = 6.0
+# included at 	extwidth, so in-figure type is never rescaled.
+MS_COL = 5.766
 
 
 # ── Results loader ────────────────────────────────────────────────
