@@ -74,6 +74,10 @@ LIGHT_BG = "#f8f9fa"
 # Springer column widths
 SINGLE_COL = 3.5  # inches
 DOUBLE_COL = 7.2
+# Width of the PeerJ manuscript text block (measured: 433.5 pt). Figures used in
+# the manuscript are generated at this width and included at \textwidth, so the
+# in-figure type is never rescaled and renders at its true point size.
+MS_COL = 6.0
 
 
 # ── Results loader ────────────────────────────────────────────────
@@ -271,7 +275,7 @@ def fig2_pipeline(outdir: Path):
 # FIGURE 3: C5 Exponential Risk Decay (corrected S4 parameters)
 # =====================================================================
 def fig3_c5_decay(outdir: Path):
-    fig, ax = plt.subplots(figsize=(DOUBLE_COL, 3.0))
+    fig, ax = plt.subplots(figsize=(MS_COL, 3.1))
 
     rho_peak = 0.85
     lam = 0.001  # S4 lambda
@@ -314,7 +318,7 @@ def fig3_c5_decay(outdir: Path):
 
     # Threshold
     ax.axhline(theta_target, color=DRAS_GREEN, ls="-.", lw=0.9, alpha=0.8)
-    ax.text(10, theta_target + 0.02, r"$\theta_3 = 0.50$", fontsize=7, color=DRAS_GREEN)
+    ax.text(10, theta_target + 0.02, r"$\theta_3 = 0.50$", fontsize=8, color=DRAS_GREEN)
 
     # Crossing point
     ax.plot(t_cross, theta_target, "o", color=DRAS_BLUE, ms=5, zorder=5)
@@ -322,7 +326,7 @@ def fig3_c5_decay(outdir: Path):
         f"t = {t_cross:.0f}s",
         xy=(t_cross, theta_target),
         xytext=(t_cross + 40, 0.58),
-        fontsize=7,
+        fontsize=8,
         arrowprops=dict(arrowstyle="->", color="#555", lw=0.6),
     )
 
@@ -334,7 +338,7 @@ def fig3_c5_decay(outdir: Path):
         f"$t_{{1/2}}$ = {t_half:.0f}s",
         xy=(t_half, rho_half),
         xytext=(t_half + 30, rho_half + 0.06),
-        fontsize=7,
+        fontsize=8,
         arrowprops=dict(arrowstyle="->", color="#555", lw=0.6),
     )
 
@@ -358,7 +362,7 @@ def fig3_c5_decay(outdir: Path):
 # FIGURE 3b: Multi-state Decay Comparison
 # =====================================================================
 def fig3b_decay_comparison(outdir: Path):
-    fig, ax = plt.subplots(figsize=(SINGLE_COL, 3.0))
+    fig, ax = plt.subplots(figsize=(MS_COL, 3.2))
 
     rho_peak = 0.85
     t = np.linspace(0, 1400, 600)
@@ -374,15 +378,13 @@ def fig3b_decay_comparison(outdir: Path):
         ax.plot(t, decay, color=color, ls=ls, lw=1.5, label=label)
 
     ax.axhline(0.5, color="#aaa", ls=":", lw=0.7)
-    ax.text(1350, 0.52, "0.5", fontsize=6, color="#999", ha="right")
+    ax.text(1350, 0.52, "0.5", fontsize=8, color="#666", ha="right")
 
     ax.set_xlabel("Time since peak (s)")
     ax.set_ylabel("Decayed risk")
     ax.set_xlim(0, 1400)
     ax.set_ylim(0, 0.9)
-    ax.legend(loc="upper right", framealpha=0.95, fontsize=7)
-    ax.set_title("Exponential Decay Rates by State", fontsize=9, pad=6)
-
+    ax.legend(loc="upper right", framealpha=0.95, fontsize=8)
     save(fig, "fig3b_decay_comparison", outdir)
 
 
@@ -424,7 +426,7 @@ def fig4_mer(outdir: Path):
     mews, m_lo, m_hi = series["mews"]
     dras, d_lo, d_hi = series["dras"]
 
-    fig, ax = plt.subplots(figsize=(DOUBLE_COL, 2.8))
+    fig, ax = plt.subplots(figsize=(MS_COL, 2.9))
     x = np.arange(len(types))
     w = 0.27
     ebar = dict(ecolor="#333", elinewidth=0.8, capsize=2.5, capthick=0.8)
@@ -436,7 +438,7 @@ def fig4_mer(outdir: Path):
                   label="DRAS-5", color=DRAS_BLUE, edgecolor="#004a73", linewidth=0.5)
     for bar, h in zip(bars, dras):
         ax.text(bar.get_x() + bar.get_width() / 2, max(h, 0) + 0.5,
-                f"{h:.1f}", ha="center", va="bottom", fontsize=7,
+                f"{h:.1f}", ha="center", va="bottom", fontsize=8,
                 color=DRAS_BLUE, fontweight="bold")
 
     ax.set_xticks(x)
@@ -487,7 +489,7 @@ def fig5_oer(outdir: Path):
         return np.array([[max(0.0, v - lo) for v, lo in zip(vals, los)],
                          [max(0.0, hi - v) for v, hi in zip(vals, his)]])
 
-    fig, ax = plt.subplots(figsize=(DOUBLE_COL, 2.8))
+    fig, ax = plt.subplots(figsize=(MS_COL, 2.9))
     x = np.arange(len(types))
     w = 0.30
     ebar = dict(ecolor="#333", elinewidth=0.8, capsize=2.5, capthick=0.8)
@@ -503,7 +505,7 @@ def fig5_oer(outdir: Path):
         ax.text(
             x[i], max(no_hi[i], wi_hi[i]) + 1.5,
             f"{dras_full[i]:.1f}%",
-            ha="center", fontsize=7, color="#333",
+            ha="center", fontsize=8, color="#333",
         )
 
     ax.set_xticks(x)
@@ -514,12 +516,6 @@ def fig5_oer(outdir: Path):
     ax.grid(axis="y", alpha=0.3)
     ax.grid(axis="x", visible=False)
     ax.legend(loc="upper left")
-    ax.set_title(
-        "Over-Escalation Rate by Trajectory Type (seed 42; error bars = bootstrap "
-        "95% CI, N=1000); binary OER is near-identical with/without C5",
-        fontsize=8,
-        pad=6,
-    )
 
     save(fig, "fig5_oer", outdir)
 
@@ -557,14 +553,14 @@ def fig7_c5_rejection(outdir: Path):
     # denial debits the running pool, the final "Granted" bar is what remains.
     labels = ["C5 requests"] + [lbl for _, lbl, _ in denial_order] + ["Granted"]
     debits = [rows.get(k, 0) for k, _, _ in denial_order]
-    fig, ax = plt.subplots(figsize=(DOUBLE_COL, 3.2))
+    fig, ax = plt.subplots(figsize=(MS_COL, 3.3))
     x = np.arange(len(labels))
 
     running = total
     # Opening bar (full request volume).
     ax.bar(0, total, 0.62, color=DRAS_BLUE, edgecolor="#004a73", linewidth=0.5, zorder=3)
     ax.text(0, total + total * 0.02, f"{total:,}\n(100%)", ha="center", va="bottom",
-            fontsize=7, color=DRAS_BLUE, fontweight="bold")
+            fontsize=8, color=DRAS_BLUE, fontweight="bold")
     for i, ((_, lbl, col), d) in enumerate(zip(denial_order, debits), start=1):
         bottom = running - d
         ax.bar(i, d, 0.62, bottom=bottom, color=col, edgecolor="#555",
@@ -574,7 +570,7 @@ def fig7_c5_rejection(outdir: Path):
                 color="#999", lw=0.7, ls="--", zorder=1)
         pct = 100.0 * d / total if total else 0.0
         ax.text(i, running + total * 0.02, f"-{d:,}\n({pct:.1f}%)", ha="center",
-                va="bottom", fontsize=7, color=col)
+                va="bottom", fontsize=8, color=col)
         running = bottom
     # Terminal "Granted" bar (what survives the funnel).
     ax.plot([len(labels) - 2 + 0.31, len(labels) - 1 - 0.31], [running, running],
@@ -583,20 +579,14 @@ def fig7_c5_rejection(outdir: Path):
            edgecolor="#055", linewidth=0.5, zorder=3)
     gpct = 100.0 * granted / total if total else 0.0
     ax.text(len(labels) - 1, total * 0.02, f"{granted:,}\n({gpct:.1f}%)", ha="center",
-            va="bottom", fontsize=7, color="#0a6", fontweight="bold")
+            va="bottom", fontsize=8, color="#0a6", fontweight="bold")
 
     ax.set_xticks(x)
-    ax.set_xticklabels(labels, fontsize=7.5)
+    ax.set_xticklabels(labels, fontsize=8)
     ax.set_ylabel("De-escalation requests")
     ax.set_ylim(0, total * 1.18)
     ax.grid(axis="y", alpha=0.3)
     ax.grid(axis="x", visible=False)
-    ax.set_title(
-        f"C5 De-escalation Outcome Funnel (n = {total:,}, seed 42): "
-        f"{granted:,} granted, each clearing the cooling/decay/dual-approval guards (0 premature)",
-        fontsize=8,
-        pad=6,
-    )
 
     save(fig, "fig7_c5_rejection", outdir)
 
@@ -619,27 +609,21 @@ def fig8_oer_locator(outdir: Path):
     over = [int(r["over_escalated_steps"]) for r in rows]
     colors = [color_for.get(n, DRAS_GRAY) for n in names]
 
-    fig, ax = plt.subplots(figsize=(DOUBLE_COL, 3.0))
+    fig, ax = plt.subplots(figsize=(MS_COL, 3.1))
     x = np.arange(len(names))
     bars = ax.bar(x, oer, 0.62, color=colors, edgecolor="#444", linewidth=0.4, zorder=3)
     for xi, h, ov, st in zip(x, oer, over, steps):
         share = f"{ov:,}/{st:,}" if st else "0/0"
         ax.text(xi, h + 1.5, f"{h:.1f}%\n{share}", ha="center", va="bottom",
-                fontsize=6.8, color="#333")
+                fontsize=8, color="#333")
 
     ax.set_xticks(x)
-    ax.set_xticklabels([f"S{i+1}\n{n.title()}" for i, n in enumerate(names)], fontsize=7.5)
+    ax.set_xticklabels([f"S{i+1}\n{n.title()}" for i, n in enumerate(names)], fontsize=8)
     ax.set_xlabel("Patient's true acuity level  $\\tau(\\rho)$")
     ax.set_ylabel("Over-escalation rate at level (%)")
     ax.set_ylim(0, max(oer + [1]) * 1.25)
     ax.grid(axis="y", alpha=0.3)
     ax.grid(axis="x", visible=False)
-    ax.set_title(
-        "Over-escalation locator (seed 42): share of sample-steps where the "
-        "system sits above the true level, by true acuity",
-        fontsize=8,
-        pad=6,
-    )
     save(fig, "fig8_oer_locator", outdir)
 
 
