@@ -77,6 +77,59 @@ The curated set is tracked in `FIGURE_MANIFEST.csv`. Two of the data figures (`f
 
 No human-subject data is used. All trajectories are generated synthetically inside `src/dras5/simulator.py` from parametric profiles (monotonic, oscillating, spike-and-recover) seeded at 42. Because there are no patient records, no ethics approval or IRB review applies.
 
+## Dataset information
+
+No external or clinical dataset is distributed or required. Every input is synthetic and is
+generated inside `src/dras5/simulator.py` at seed 42: 5,000 trajectories of 100 steps each
+(500,000 risk-score evaluations), drawn from four families of 1,250 trajectories — monotonic
+deterioration, oscillating deterioration, spike-to-emergency and spike-to-critical. Each sample is a
+scalar risk score in [0, 1] with its timestamp; the state machine consumes it unchanged. The
+committed outputs of a seeded run are the CSV and JSON tables in `results/` (`summary.json`,
+`mer_by_type.csv`, `oer_by_type.csv`, `oer_by_truelevel.csv`, `c5_outcomes.csv`, `latency.csv`,
+`ml_wrapper.csv`). `data/` and `models/` are placeholders kept for structural consistency with the
+other repositories in this portfolio.
+
+## Code information
+
+- `src/dras5/` — the package: state machine, the five constraints (C1–C5), the exponential-decay
+  gate, the trajectory simulator, the append-only audit log and a command-line interface.
+- `scripts/run_all.py` — the single deterministic driver (seed 42) that regenerates every number in
+  `results/`.
+- `scripts/generate_figures.py` — redraws the manuscript figures from `results/`.
+- `tests/` — unit and behaviour tests, one group per constraint.
+- `notebooks/` — worked examples of the state machine and the governance workflow.
+
+## Requirements
+
+Python 3.9 or newer (tested on CPython; no GPU required). Runtime dependencies are NumPy,
+Matplotlib and Seaborn; tests additionally need pytest and pytest-cov. Exact versions are pinned in
+`requirements.txt`, and `Dockerfile` / `docker-compose.yml` provide a container with the same stack.
+The state machine itself is pure Python, so results are host-independent; only the latency table
+depends on hardware.
+
+## Methodology
+
+1. Generate the seeded synthetic cohort with the four trajectory families (`simulator.py`).
+2. Feed each score, in order, to the five-state machine; every transition is checked against C1–C5
+   and appended to the audit log.
+3. Score the stateless baselines (NEWS2, MEWS) on the same cohort under intermittent observation
+   (every second and third step) for comparison.
+4. Compute the missed-escalation rate, over-escalation rate, de-escalation outcomes, per-update
+   latency and the machine-learning wrapper experiment, with bootstrap confidence intervals
+   (1,000 resamples, seed 42).
+5. Write every table to `results/` and redraw the figures from those tables.
+
+No data cleaning, imputation, scaling or feature engineering is applied at any step.
+
+## Usage instructions
+
+```bash
+pip install -e .            # install the package
+python scripts/run_all.py   # regenerate every table in results/ (seed 42)
+python scripts/generate_figures.py
+pytest -q                   # run the constraint test suite
+```
+
 ## Citation
 
 ```bibtex
@@ -98,9 +151,9 @@ by the manuscript. Cite the archived version, not the mutable `main` branch:
 - Release tag: `v1.0.0`
 - Deposit metadata: `.zenodo.json`; citation metadata: `CITATION.cff`
 
-## License
+## License and contribution guidelines
 
-Released under the MIT License (see `LICENSE`).
+Released under the MIT License (see `LICENSE`). Contributions are welcome: please read `CONTRIBUTING.md` and `CODE_OF_CONDUCT.md` before opening an issue or a pull request.
 
 ## Contact
 
