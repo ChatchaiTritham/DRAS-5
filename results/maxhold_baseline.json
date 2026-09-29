@@ -1,0 +1,203 @@
+{
+  "seed": 42,
+  "n_trajectories": 5000,
+  "rows": [
+    {
+      "system": "max-hold(1)",
+      "trajectory_type": "monotonic",
+      "n": 1250,
+      "mer_end_pct": 0.0,
+      "mer_ever_pct": 0.0,
+      "oer_pct": 4.93
+    },
+    {
+      "system": "max-hold(1)",
+      "trajectory_type": "oscillating",
+      "n": 1250,
+      "mer_end_pct": 0.0,
+      "mer_ever_pct": 0.0,
+      "oer_pct": 79.6
+    },
+    {
+      "system": "max-hold(1)",
+      "trajectory_type": "spike_emergency",
+      "n": 1250,
+      "mer_end_pct": 0.0,
+      "mer_ever_pct": 0.0,
+      "oer_pct": 74.65
+    },
+    {
+      "system": "max-hold(1)",
+      "trajectory_type": "spike_critical",
+      "n": 1250,
+      "mer_end_pct": 0.0,
+      "mer_ever_pct": 0.0,
+      "oer_pct": 75.6
+    },
+    {
+      "system": "max-hold(1)",
+      "trajectory_type": "OVERALL",
+      "n": 5000,
+      "mer_end_pct": 0.0,
+      "mer_ever_pct": 0.0,
+      "oer_pct": 58.69
+    },
+    {
+      "system": "max-hold(1)",
+      "trajectory_type": "OVERALL_second_half",
+      "n": 5000,
+      "mer_end_pct": 0.0,
+      "mer_ever_pct": 0.0,
+      "oer_pct": 74.13
+    },
+    {
+      "system": "max-hold(2)",
+      "trajectory_type": "monotonic",
+      "n": 1250,
+      "mer_end_pct": 0.0,
+      "mer_ever_pct": 0.0,
+      "oer_pct": 3.15
+    },
+    {
+      "system": "max-hold(2)",
+      "trajectory_type": "oscillating",
+      "n": 1250,
+      "mer_end_pct": 0.0,
+      "mer_ever_pct": 0.0,
+      "oer_pct": 72.97
+    },
+    {
+      "system": "max-hold(2)",
+      "trajectory_type": "spike_emergency",
+      "n": 1250,
+      "mer_end_pct": 0.0,
+      "mer_ever_pct": 0.0,
+      "oer_pct": 68.61
+    },
+    {
+      "system": "max-hold(2)",
+      "trajectory_type": "spike_critical",
+      "n": 1250,
+      "mer_end_pct": 0.0,
+      "mer_ever_pct": 0.0,
+      "oer_pct": 73.63
+    },
+    {
+      "system": "max-hold(2)",
+      "trajectory_type": "OVERALL",
+      "n": 5000,
+      "mer_end_pct": 0.0,
+      "mer_ever_pct": 0.0,
+      "oer_pct": 54.59
+    },
+    {
+      "system": "max-hold(2)",
+      "trajectory_type": "OVERALL_second_half",
+      "n": 5000,
+      "mer_end_pct": 0.0,
+      "mer_ever_pct": 0.0,
+      "oer_pct": 71.57
+    },
+    {
+      "system": "DRAS-5 (full)",
+      "trajectory_type": "monotonic",
+      "n": 1250,
+      "mer_end_pct": 0.0,
+      "mer_ever_pct": 0.0,
+      "oer_pct": 40.24
+    },
+    {
+      "system": "DRAS-5 (full)",
+      "trajectory_type": "oscillating",
+      "n": 1250,
+      "mer_end_pct": 0.0,
+      "mer_ever_pct": 0.0,
+      "oer_pct": 88.04
+    },
+    {
+      "system": "DRAS-5 (full)",
+      "trajectory_type": "spike_emergency",
+      "n": 1250,
+      "mer_end_pct": 0.0,
+      "mer_ever_pct": 0.0,
+      "oer_pct": 74.98
+    },
+    {
+      "system": "DRAS-5 (full)",
+      "trajectory_type": "spike_critical",
+      "n": 1250,
+      "mer_end_pct": 81.84,
+      "mer_ever_pct": 0.0,
+      "oer_pct": 75.6
+    },
+    {
+      "system": "DRAS-5 (full)",
+      "trajectory_type": "OVERALL",
+      "n": 5000,
+      "mer_end_pct": 20.46,
+      "mer_ever_pct": 0.0,
+      "oer_pct": 69.71
+    },
+    {
+      "system": "DRAS-5 (full)",
+      "trajectory_type": "OVERALL_second_half",
+      "n": 5000,
+      "mer_end_pct": 20.46,
+      "mer_ever_pct": 0.0,
+      "oer_pct": 93.56
+    },
+    {
+      "system": "DRAS-5 (no C5)",
+      "trajectory_type": "monotonic",
+      "n": 1250,
+      "mer_end_pct": 0.0,
+      "mer_ever_pct": 0.0,
+      "oer_pct": 40.24
+    },
+    {
+      "system": "DRAS-5 (no C5)",
+      "trajectory_type": "oscillating",
+      "n": 1250,
+      "mer_end_pct": 0.0,
+      "mer_ever_pct": 0.0,
+      "oer_pct": 88.04
+    },
+    {
+      "system": "DRAS-5 (no C5)",
+      "trajectory_type": "spike_emergency",
+      "n": 1250,
+      "mer_end_pct": 0.0,
+      "mer_ever_pct": 0.0,
+      "oer_pct": 74.98
+    },
+    {
+      "system": "DRAS-5 (no C5)",
+      "trajectory_type": "spike_critical",
+      "n": 1250,
+      "mer_end_pct": 0.0,
+      "mer_ever_pct": 0.0,
+      "oer_pct": 75.6
+    },
+    {
+      "system": "DRAS-5 (no C5)",
+      "trajectory_type": "OVERALL",
+      "n": 5000,
+      "mer_end_pct": 0.0,
+      "mer_ever_pct": 0.0,
+      "oer_pct": 69.71
+    },
+    {
+      "system": "DRAS-5 (no C5)",
+      "trajectory_type": "OVERALL_second_half",
+      "n": 5000,
+      "mer_end_pct": 0.0,
+      "mer_ever_pct": 0.0,
+      "oer_pct": 93.56
+    }
+  ],
+  "dras5_reference": {
+    "mer_pct": 0.0,
+    "oer_with_c5_pct": 69.71,
+    "c5_grants": 1250
+  }
+}
