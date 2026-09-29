@@ -367,10 +367,11 @@ def fig3b_decay_comparison(outdir: Path):
     rho_peak = 0.85
     t = np.linspace(0, 1400, 600)
 
+    # Colourblind-safe and grayscale-separable: distinct hue AND distinct dash per state.
     params = [
-        (0.005, "S2: $\\lambda_2$ = 0.005", STATE_COLORS["S2"], "-"),
-        (0.003, "S3: $\\lambda_3$ = 0.003", STATE_COLORS["S3"], "--"),
-        (0.001, "S4: $\\lambda_4$ = 0.001", STATE_COLORS["S4"], "-."),
+        (0.005, "S2: $\\lambda_2$ = 0.005", DRAS_BLUE, "-"),
+        (0.003, "S3: $\\lambda_3$ = 0.003", DRAS_ORANGE, "--"),
+        (0.001, "S4: $\\lambda_4$ = 0.001", DRAS_RED, "-."),
     ]
 
     for lam, label, color, ls in params:
@@ -542,9 +543,12 @@ def fig7_c5_rejection(outdir: Path):
     rows = {r["reason"]: int(r["count"]) for r in _read_csv("c5_outcomes.csv")}
     denial_order = [
         ("denied_cooling", "Denied:\ncooling\nincomplete", DRAS_ORANGE),
-        ("denied_decay", "Denied:\ndecay not\nsustained", DRAS_RED),
-        ("denied_approval", "Denied:\nsingle\napproval", DRAS_GRAY),
+        ("denied_decay", "Denied:\ndecay not\nsustained", DRAS_GRAY),
+        ("denied_approval", "Denied:\nsingle\napproval", DRAS_RED),
     ]
+    # A category with no observations would draw a zero-height bar with a
+    # "-0 (0.0%)" label; state those in the caption instead of plotting them.
+    denial_order = [d for d in denial_order if rows.get(d[0], 0) > 0]
     total = sum(rows.get(k, 0) for k in
                 ("granted", "denied_decay", "denied_cooling", "denied_approval"))
     granted = rows.get("granted", 0)
@@ -585,6 +589,8 @@ def fig7_c5_rejection(outdir: Path):
     ax.set_xticklabels(labels, fontsize=8)
     ax.set_ylabel("De-escalation requests")
     ax.set_ylim(0, total * 1.18)
+    ax.yaxis.set_major_formatter(
+        matplotlib.ticker.FuncFormatter(lambda v, _pos: f"{int(v):,}"))
     ax.grid(axis="y", alpha=0.3)
     ax.grid(axis="x", visible=False)
 
