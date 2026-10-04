@@ -92,3 +92,13 @@ with zero premature de-escalations. Binary over-escalation remains 69.7% because
 the granted single-step transitions remain above the instantaneous recovered true
 level. The baseline magnitudes are properties of this synthetic cohort and its
 memory model, not clinical-validation figures.
+
+## Revision of 2026-10-04: approval gate on every route into EMERGENCY
+
+The C4 gate previously covered only a risk-driven CRITICAL -> EMERGENCY step. An overrun CRITICAL
+timeout could promote a patient to EMERGENCY without approval, and a jump from ALERT straight to
+EMERGENCY bypassed the gate. `state_machine.py` now gates every entry into EMERGENCY; at CRITICAL the
+timeout raises an approval request instead of promoting, and timeout transitions record the approval
+flag actually supplied. `scripts/compliance_audit.py` counts every constraint on the seeded cohort
+(`results/compliance.csv`). The main driver runs with approval granted, so `run_all.py` outputs are
+unchanged.

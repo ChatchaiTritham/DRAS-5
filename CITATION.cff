@@ -26,7 +26,7 @@ authors:
       Science, Naresuan University, Phitsanulok 65000, Thailand
 license: MIT
 repository-code: "https://github.com/ChatchaiTritham/DRAS-5"
-version: 1.0.0
+version: 1.2.0
 doi: "10.5281/zenodo.21881957"
 keywords:
   - clinical decision support systems

@@ -205,16 +205,17 @@ class DRAS5StateMachine:
                 )
                 new_state = old_state
 
-        # Check human approval for S4→S5
+        # C4: every entry into EMERGENCY needs human approval, whichever state it
+        # comes from; without approval the state is capped at CRITICAL.
         if (
             self.require_human_approval
-            and old_state == RiskState.CRITICAL
+            and old_state < RiskState.EMERGENCY
             and new_state == RiskState.EMERGENCY
             and not human_approved
             and not force
         ):
-            logger.warning("Human approval required for CRITICAL→EMERGENCY transition")
-            new_state = RiskState.CRITICAL  # Stay in critical
+            logger.warning("Human approval required for entry into EMERGENCY")
+            new_state = max(old_state, RiskState.CRITICAL)
 
         # Perform transition
         if new_state != old_state:
@@ -230,11 +231,11 @@ class DRAS5StateMachine:
         self.last_risk_score = risk_score
 
         # Check for timeout and auto-escalate
-        self._check_and_auto_escalate(current_time)
+        self._check_and_auto_escalate(current_time, approved=human_approved or force)
 
         return self.current_state
 
-    def _check_and_auto_escalate(self, current_time: float):
+    def _check_and_auto_escalate(self, current_time: float, approved: bool = False):
         """Check for timeout and auto-escalate if needed.
 
         C2 timeout escalation targets a patient who remains at elevated risk
@@ -246,7 +247,7 @@ class DRAS5StateMachine:
             return
         if self._calculate_target_state(self.last_risk_score) < self.current_state:
             return
-        self.auto_escalate(t=current_time)
+        self.auto_escalate(t=current_time, approved=approved)
 
     def _calculate_target_state(self, risk_score: float) -> RiskState:
         """Calculate target state based on risk score"""
@@ -317,7 +318,7 @@ class DRAS5StateMachine:
             return True
         return False
 
-    def auto_escalate(self, t: Optional[float] = None):
+    def auto_escalate(self, t: Optional[float] = None, approved: bool = False):
         """Auto-escalate if timeout occurred.
 
         Note: This method checks timeout internally so it can be called
@@ -330,11 +331,20 @@ class DRAS5StateMachine:
         if self.current_state >= RiskState.EMERGENCY:
             return
         next_state = RiskState(self.current_state + 1)
+        # C4 also governs the timeout path: at CRITICAL the timeout raises an
+        # approval request instead of promoting to EMERGENCY on its own.
+        if (
+            next_state == RiskState.EMERGENCY
+            and self.require_human_approval
+            and not approved
+        ):
+            logger.warning("CRITICAL timeout: approval required before EMERGENCY")
+            return
         self._transition(
             next_state,
             self.last_risk_score,
             trigger=TIMEOUT_ESCALATION_TRIGGER,
-            approved=True,
+            approved=approved,
             timestamp=current_time,
         )
 
