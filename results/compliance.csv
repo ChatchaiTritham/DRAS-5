@@ -1,0 +1,6 @@
+constraint,unit,events,violations,note
+C1,steps checked,500000,0,"1250 state decreases, all C5 grants"
+C2,timeout escalations,3225,0,1228 fired after a recovery-exempt interval; 71636 overdue steps exempt (risk already below state)
+C3,logged transitions,15492,0,"state change without entry, or broken from/to chain"
+C4,"attempts to enter EMERGENCY, approval withheld",322821,0,"6036 risk-driven, 316785 CRITICAL timeouts"
+C5,de-escalation grants audited by independent oracle,1250,0,"115757 requests; dual-approval withheld: 115757 requests, 0 de-escalations"

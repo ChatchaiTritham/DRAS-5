@@ -238,3 +238,24 @@ class TestEdgeCases:
         """Jumping from SAFE to CRITICAL in one step."""
         sm = DRAS5StateMachine(require_human_approval=False)
         assert sm.update(risk_score=0.75, t=10) == RiskState.CRITICAL
+
+
+class TestC4AllRoutes:
+    """Theorem 4 (revised): no route into EMERGENCY without approval."""
+
+    def test_skip_from_alert_blocked(self):
+        sm = DRAS5StateMachine()
+        sm.update(risk_score=0.55, t=0)
+        assert sm.update(risk_score=0.95, t=10) == RiskState.CRITICAL
+
+    def test_critical_timeout_waits_for_approval(self):
+        sm = DRAS5StateMachine()
+        sm.update(risk_score=0.75, t=0)
+        assert sm.update(risk_score=0.75, t=62) == RiskState.CRITICAL
+        assert sm.update(risk_score=0.75, t=72, human_approved=True) == RiskState.EMERGENCY
+
+    def test_timeout_audit_records_real_approval(self):
+        sm = DRAS5StateMachine(require_human_approval=False)
+        sm.update(risk_score=0.35, t=0)
+        sm.update(risk_score=0.35, t=302)
+        assert sm.transition_history[-1].approved is False

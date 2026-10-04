@@ -1,0 +1,32 @@
+{
+  "main": {
+    "steps": 500000,
+    "c1_decreases": 1250,
+    "c1_violations": 0,
+    "c5_requests": 115757,
+    "c5_grants": 1250,
+    "c5_not_single_step": 0,
+    "c5_oracle_disagree": 0,
+    "transitions": 15492,
+    "c3_unlogged": 0,
+    "c3_chain_breaks": 0,
+    "timeout_events": 3225,
+    "c2_after_recovery": 1228,
+    "c2_early": 0,
+    "c2_overdue_steps": 0,
+    "c2_recovery_exempt_steps": 71636,
+    "trajectories": 5000
+  },
+  "approval_gate": {
+    "attempts": 322821,
+    "risk_attempts": 6036,
+    "timeout_attempts": 316785,
+    "violations": 0,
+    "trajectories": 5000
+  },
+  "dual_approval": {
+    "requests": 115757,
+    "deescalations": 0,
+    "trajectories": 5000
+  }
+}
