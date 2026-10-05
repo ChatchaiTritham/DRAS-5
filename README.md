@@ -4,7 +4,7 @@
 
 ![License](https://img.shields.io/badge/license-MIT-blue) ![Python](https://img.shields.io/badge/python-3.10%2B-blue) ![Reproducible](https://img.shields.io/badge/reproducible-seed--42-success)
 
-## Overview
+## Description
 
 Bedside risk monitoring still leans on stateless early-warning scores. Each new measurement is judged on its own, so a brief dip after a critical reading can quietly reset the patient to a lower acuity. When the next deterioration falls between observations, the earlier crisis has already been forgotten. Probabilistic models raise sensitivity but inherit the same blind spot: they emit a fresh estimate per step without any memory of how the patient's state has moved.
 
@@ -16,7 +16,7 @@ This repository is the artifact behind those claims. It holds the package source
 
 All figures below come from `python scripts/run_all.py` at seed 42 on the synthetic cohort (5,000 trajectories, 100 steps each, 500,000 evaluations). They are properties of this generated cohort and its observation model, not clinical validation.
 
-- **Missed-escalation rate is 0% for DRAS-5 on every trajectory family.** This is a structural consequence of C1, not a statistical estimate — once a sample crosses an escalation threshold the state cannot fall except through an approved de-escalation.
+- **Reach form of the missed-escalation rate (MER_reach) is 0% for DRAS-5 on every trajectory family, relative to the scores it receives.** This is a structural consequence of C1, not a statistical estimate, and a running maximum shares it. It does not repair an upstream model that under-reports risk (see `results/revision_biased_upstream.csv`), and the end-of-episode form (MER_end) is 20.5% for full DRAS-5 because C5 lowers a state after a verified recovery (`results/revision_like_for_like.csv`).
 - **Stateless baselines miss a large share of escalations under intermittent sampling.** In this run the modelled NEWS2 scorer records 74.2% overall and MEWS 75.6%; graded under-recognition is 64.8% and 67.0% respectively. These seed-42 values are the values reported in the current manuscript.
 - **C5 grants 1,250 safe single-step de-escalations on the released parameter regime.** Of 115,757 requests, 67,100 are denied for an incomplete cooling window and 47,407 for unsustained decay; zero grants are premature.
 - **Over-escalation is 69.7% with and without C5.** The valid grants remain above the instantaneous recovered true level, so they do not change the binary over-escalation indicator on this cohort.
@@ -134,8 +134,8 @@ pytest -q                   # run the constraint test suite
 
 ```bibtex
 @article{tritham_dras5,
-  title   = {{DRAS-5}: A Formally Verified Runtime Safety Layer for Clinical
-             Decision-Support Systems},
+  title   = {{DRAS-5}: A Runtime Safety Layer for Clinical Decision Support
+             with Bounded, Decay-Gated De-escalation},
   author  = {Tritham, Chatchai and Namahoot, Chakkrit Snae},
   journal = {PeerJ Computer Science},
   year    = {2026},

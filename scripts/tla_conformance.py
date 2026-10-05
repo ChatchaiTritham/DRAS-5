@@ -1,6 +1,6 @@
 """Differential conformance test: released state machine vs the TLA+ specification.
 
-formal/DRAS5.tla was written from the manuscript, not from this code. Here a line-by-line
+formal/DRAS5.tla was drafted from the manuscript but not independently of this code (see formal/README.md). Here a line-by-line
 Python transcription of its Step relation (FIX = TRUE) is driven by the same inputs as the
 released machine. Whatever the machine does with rho_eff (the exponential decay) is read off
 the machine and fed to the model as the nondeterministic `effNew`, after checking that it lies

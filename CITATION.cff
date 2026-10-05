@@ -2,12 +2,13 @@ cff-version: 1.2.0
 message: "If you use this software, please cite it as below."
 title: "DRAS-5: Dynamic Risk Assessment State Machine for Clinical Decision Support"
 abstract: >-
-  A formally verified five-state risk-assessment state machine that guarantees
-  zero missed escalations (constraint C1) while permitting controlled,
-  cooling-period-gated de-escalation (constraint C5). The repository contains the
-  reference implementation, a deterministic seed-42 evaluation driver
-  (scripts/run_all.py) that regenerates every reported metric to committed CSVs,
-  and the figure generators.
+  A five-state runtime safety layer for clinical decision-support risk scores. It
+  never lowers a registered escalation except through a bounded,
+  cooling-window-gated de-escalation that needs two distinct approvals
+  (constraint C5). The guarantee is relative to the scores the layer receives and
+  is evaluated on synthetic data only. The repository contains the reference
+  implementation, a seed-42 evaluation driver (scripts/run_all.py), a TLA+
+  specification with model-checking outputs (formal/), and the figure generators.
 type: software
 authors:
   - given-names: Chatchai

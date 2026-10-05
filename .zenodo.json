@@ -1,6 +1,6 @@
 {
   "title": "DRAS-5: Dynamic Risk Assessment State Machine for Clinical Decision Support",
-  "description": "A formally verified five-state risk-assessment state machine that guarantees zero missed escalations (constraint C1) while permitting controlled, cooling-period-gated de-escalation (constraint C5). Includes the reference implementation, a deterministic seed-42 evaluation driver (scripts/run_all.py) that regenerates every reported metric to committed CSVs under results/, the figure generators, and REPRODUCIBILITY.md documenting exactly which manuscript results are reproducible.",
+  "description": "A five-state runtime safety layer for clinical decision-support risk scores. It never lowers a registered escalation except through a bounded, cooling-window-gated de-escalation that needs two distinct approvals (constraint C5). The guarantee is relative to the scores the layer receives and is evaluated on synthetic data only; it is not clinical validation. Includes the reference implementation, a deterministic seed-42 evaluation driver (scripts/run_all.py) that regenerates every reported metric to committed CSVs under results/, a TLA+ specification with TLC model-checking outputs and a differential conformance test (formal/, scripts/tla_conformance.py), the figure generators, and REPRODUCIBILITY.md.",
   "upload_type": "software",
   "license": "MIT",
   "access_right": "open",
@@ -20,7 +20,7 @@
   "keywords": [
     "clinical decision support systems",
     "patient safety",
-    "formal verification",
+    "model checking",
     "risk assessment state machine",
     "runtime safety assurance",
     "medical device software"

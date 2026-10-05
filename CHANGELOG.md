@@ -24,11 +24,12 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ### Formal verification
 
-- `formal/DRAS5.tla`: TLA+ specification written from the manuscript, model-checked with TLC at dt = 10, 60 and 300 s for C1-C5 and reach (all hold) and Corollary 1 (violated before the fix, holds after). `formal/mutate_spec.py` confirms six injected faults are all rejected.
+- `formal/DRAS5.tla`: TLA+ specification drafted from the manuscript (not independent of the code; see `formal/README.md`), model-checked with TLC at dt = 10, 60 and 300 s for C1-C5 and reach (all hold) and Corollary 1 (violated before the fix, holds after). `formal/mutate_spec.py` confirms six injected faults are all rejected.
 - `scripts/tla_conformance.py`: differential test of the released machine against the specification (1,795,659 steps, no level divergence; the code is stricter than the specification in one documented respect: it requires a non-increasing rho_eff window).
 
 ### Changed
 
+- Metadata (`.zenodo.json`, `CITATION.cff`, README citation) no longer says "formally verified" or "guarantees zero missed escalations"; the guarantee is stated relative to the scores the layer receives, and the evaluation is synthetic only.
 - `scripts/compliance_audit.py` withholds alpha_2, alpha_1 and approver independence in three separate passes.
 
 [1.3.0]: https://github.com/ChatchaiTritham/DRAS-5/releases/tag/v1.3.0
