@@ -1,0 +1,5 @@
+upstream_gain,mer_reach_vs_true_pct,mer_reach_vs_input_pct
+1.0,0.0,0.0
+0.8,34.64,0.0
+0.6,56.56,0.0
+0.4,100.0,0.0
