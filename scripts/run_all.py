@@ -55,7 +55,7 @@ from pathlib import Path
 from typing import Dict, List, Tuple
 
 from dras5.state_machine import DRAS5StateMachine
-from dras5.states import RiskState, risk_to_state, STATE_CONFIG
+from dras5.states import RiskState, risk_to_state, STATE_CONFIG, deescalation_threshold
 
 # ------------------------------------------------------------------ config
 BASE_SEED = 42
@@ -189,7 +189,7 @@ def run_dras5(rho: List[float], enable_c5: bool) -> Tuple[List[RiskState], Dict[
                         if t - ti <= t_cool
                     ]
                     target = RiskState(before - 1)
-                    theta = STATE_CONFIG[target]["theta"]
+                    theta = deescalation_threshold(before)
                     if not series:
                         c5["denied_cooling"] += 1
                     elif not all(v < theta for v in series):

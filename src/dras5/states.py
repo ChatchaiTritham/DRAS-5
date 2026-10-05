@@ -102,6 +102,19 @@ def risk_to_state(rho: float) -> RiskState:
     return RiskState.SAFE
 
 
+def deescalation_threshold(from_state: RiskState) -> float:
+    """Threshold rho_eff must stay below for a C5 step S_k -> S_{k-1} (Def. C5, item 1).
+
+    The paper's rule is theta_{k-1}. For k = 2 that is theta_1 = 0, which no effective
+    risk can satisfy, so S2 -> S1 was unreachable (found by model checking, Corollary 1).
+    For that one step the threshold is theta_2: the patient's risk must sit in the S1 band.
+    """
+    target = RiskState(from_state - 1)
+    if target == RiskState.SAFE:
+        return STATE_CONFIG[from_state]["theta"]
+    return STATE_CONFIG[target]["theta"]
+
+
 def half_life(state: RiskState) -> Optional[float]:
     """Proposition 1: t_{1/2} = ln(2) / lambda_k."""
     lam = STATE_CONFIG[state]["lam"]

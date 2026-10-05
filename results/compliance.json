@@ -25,6 +25,19 @@
     "trajectories": 5000
   },
   "dual_approval": {
+    "mode": "second_withheld",
+    "requests": 115757,
+    "deescalations": 0,
+    "trajectories": 5000
+  },
+  "first_withheld": {
+    "mode": "first_withheld",
+    "requests": 115757,
+    "deescalations": 0,
+    "trajectories": 5000
+  },
+  "same_approver": {
+    "mode": "same_approver",
     "requests": 115757,
     "deescalations": 0,
     "trajectories": 5000

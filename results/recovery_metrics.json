@@ -1,0 +1,252 @@
+[
+  {
+    "system": "Stateless (every sample)",
+    "trajectory_type": "monotonic",
+    "n": 1250,
+    "silent_downclass_traj_pct": 98.16,
+    "audited_stepdown_traj_pct": 0.0,
+    "stepdown_events": 0,
+    "premature_stepdowns": 0,
+    "end_excess_levels_mean": 0.0
+  },
+  {
+    "system": "Stateless (every sample)",
+    "trajectory_type": "oscillating",
+    "n": 1250,
+    "silent_downclass_traj_pct": 100.0,
+    "audited_stepdown_traj_pct": 0.0,
+    "stepdown_events": 0,
+    "premature_stepdowns": 0,
+    "end_excess_levels_mean": 0.0
+  },
+  {
+    "system": "Stateless (every sample)",
+    "trajectory_type": "spike_emergency",
+    "n": 1250,
+    "silent_downclass_traj_pct": 100.0,
+    "audited_stepdown_traj_pct": 0.0,
+    "stepdown_events": 0,
+    "premature_stepdowns": 0,
+    "end_excess_levels_mean": 0.0
+  },
+  {
+    "system": "Stateless (every sample)",
+    "trajectory_type": "spike_critical",
+    "n": 1250,
+    "silent_downclass_traj_pct": 100.0,
+    "audited_stepdown_traj_pct": 0.0,
+    "stepdown_events": 0,
+    "premature_stepdowns": 0,
+    "end_excess_levels_mean": 0.0
+  },
+  {
+    "system": "Stateless (every sample)",
+    "trajectory_type": "OVERALL",
+    "n": 5000,
+    "silent_downclass_traj_pct": 99.54,
+    "audited_stepdown_traj_pct": 0.0,
+    "stepdown_events": 0,
+    "premature_stepdowns": 0,
+    "end_excess_levels_mean": 0.0
+  },
+  {
+    "system": "NEWS2 (every 2nd)",
+    "trajectory_type": "monotonic",
+    "n": 1250,
+    "silent_downclass_traj_pct": 65.6,
+    "audited_stepdown_traj_pct": 0.0,
+    "stepdown_events": 0,
+    "premature_stepdowns": 0,
+    "end_excess_levels_mean": 0.149
+  },
+  {
+    "system": "NEWS2 (every 2nd)",
+    "trajectory_type": "oscillating",
+    "n": 1250,
+    "silent_downclass_traj_pct": 100.0,
+    "audited_stepdown_traj_pct": 0.0,
+    "stepdown_events": 0,
+    "premature_stepdowns": 0,
+    "end_excess_levels_mean": 0.183
+  },
+  {
+    "system": "NEWS2 (every 2nd)",
+    "trajectory_type": "spike_emergency",
+    "n": 1250,
+    "silent_downclass_traj_pct": 100.0,
+    "audited_stepdown_traj_pct": 0.0,
+    "stepdown_events": 0,
+    "premature_stepdowns": 0,
+    "end_excess_levels_mean": 0.28
+  },
+  {
+    "system": "NEWS2 (every 2nd)",
+    "trajectory_type": "spike_critical",
+    "n": 1250,
+    "silent_downclass_traj_pct": 100.0,
+    "audited_stepdown_traj_pct": 0.0,
+    "stepdown_events": 0,
+    "premature_stepdowns": 0,
+    "end_excess_levels_mean": 0.0
+  },
+  {
+    "system": "NEWS2 (every 2nd)",
+    "trajectory_type": "OVERALL",
+    "n": 5000,
+    "silent_downclass_traj_pct": 91.4,
+    "audited_stepdown_traj_pct": 0.0,
+    "stepdown_events": 0,
+    "premature_stepdowns": 0,
+    "end_excess_levels_mean": 0.153
+  },
+  {
+    "system": "Max-hold",
+    "trajectory_type": "monotonic",
+    "n": 1250,
+    "silent_downclass_traj_pct": 0.0,
+    "audited_stepdown_traj_pct": 0.0,
+    "stepdown_events": 0,
+    "premature_stepdowns": 0,
+    "end_excess_levels_mean": 0.233
+  },
+  {
+    "system": "Max-hold",
+    "trajectory_type": "oscillating",
+    "n": 1250,
+    "silent_downclass_traj_pct": 0.0,
+    "audited_stepdown_traj_pct": 0.0,
+    "stepdown_events": 0,
+    "premature_stepdowns": 0,
+    "end_excess_levels_mean": 2.031
+  },
+  {
+    "system": "Max-hold",
+    "trajectory_type": "spike_emergency",
+    "n": 1250,
+    "silent_downclass_traj_pct": 0.0,
+    "audited_stepdown_traj_pct": 0.0,
+    "stepdown_events": 0,
+    "premature_stepdowns": 0,
+    "end_excess_levels_mean": 3.398
+  },
+  {
+    "system": "Max-hold",
+    "trajectory_type": "spike_critical",
+    "n": 1250,
+    "silent_downclass_traj_pct": 0.0,
+    "audited_stepdown_traj_pct": 0.0,
+    "stepdown_events": 0,
+    "premature_stepdowns": 0,
+    "end_excess_levels_mean": 3.0
+  },
+  {
+    "system": "Max-hold",
+    "trajectory_type": "OVERALL",
+    "n": 5000,
+    "silent_downclass_traj_pct": 0.0,
+    "audited_stepdown_traj_pct": 0.0,
+    "stepdown_events": 0,
+    "premature_stepdowns": 0,
+    "end_excess_levels_mean": 2.166
+  },
+  {
+    "system": "DRAS-5 (no C5)",
+    "trajectory_type": "monotonic",
+    "n": 1250,
+    "silent_downclass_traj_pct": 0.0,
+    "audited_stepdown_traj_pct": 0.0,
+    "stepdown_events": 0,
+    "premature_stepdowns": 0,
+    "end_excess_levels_mean": 0.665
+  },
+  {
+    "system": "DRAS-5 (no C5)",
+    "trajectory_type": "oscillating",
+    "n": 1250,
+    "silent_downclass_traj_pct": 0.0,
+    "audited_stepdown_traj_pct": 0.0,
+    "stepdown_events": 0,
+    "premature_stepdowns": 0,
+    "end_excess_levels_mean": 2.141
+  },
+  {
+    "system": "DRAS-5 (no C5)",
+    "trajectory_type": "spike_emergency",
+    "n": 1250,
+    "silent_downclass_traj_pct": 0.0,
+    "audited_stepdown_traj_pct": 0.0,
+    "stepdown_events": 0,
+    "premature_stepdowns": 0,
+    "end_excess_levels_mean": 3.426
+  },
+  {
+    "system": "DRAS-5 (no C5)",
+    "trajectory_type": "spike_critical",
+    "n": 1250,
+    "silent_downclass_traj_pct": 0.0,
+    "audited_stepdown_traj_pct": 0.0,
+    "stepdown_events": 0,
+    "premature_stepdowns": 0,
+    "end_excess_levels_mean": 3.0
+  },
+  {
+    "system": "DRAS-5 (no C5)",
+    "trajectory_type": "OVERALL",
+    "n": 5000,
+    "silent_downclass_traj_pct": 0.0,
+    "audited_stepdown_traj_pct": 0.0,
+    "stepdown_events": 0,
+    "premature_stepdowns": 0,
+    "end_excess_levels_mean": 2.308
+  },
+  {
+    "system": "DRAS-5 (full)",
+    "trajectory_type": "monotonic",
+    "n": 1250,
+    "silent_downclass_traj_pct": 0.0,
+    "audited_stepdown_traj_pct": 0.0,
+    "stepdown_events": 0,
+    "premature_stepdowns": 0,
+    "end_excess_levels_mean": 0.665
+  },
+  {
+    "system": "DRAS-5 (full)",
+    "trajectory_type": "oscillating",
+    "n": 1250,
+    "silent_downclass_traj_pct": 0.0,
+    "audited_stepdown_traj_pct": 0.0,
+    "stepdown_events": 0,
+    "premature_stepdowns": 0,
+    "end_excess_levels_mean": 2.141
+  },
+  {
+    "system": "DRAS-5 (full)",
+    "trajectory_type": "spike_emergency",
+    "n": 1250,
+    "silent_downclass_traj_pct": 0.0,
+    "audited_stepdown_traj_pct": 0.0,
+    "stepdown_events": 0,
+    "premature_stepdowns": 0,
+    "end_excess_levels_mean": 3.426
+  },
+  {
+    "system": "DRAS-5 (full)",
+    "trajectory_type": "spike_critical",
+    "n": 1250,
+    "silent_downclass_traj_pct": 0.0,
+    "audited_stepdown_traj_pct": 100.0,
+    "stepdown_events": 1250,
+    "premature_stepdowns": 0,
+    "end_excess_levels_mean": 2.0
+  },
+  {
+    "system": "DRAS-5 (full)",
+    "trajectory_type": "OVERALL",
+    "n": 5000,
+    "silent_downclass_traj_pct": 0.0,
+    "audited_stepdown_traj_pct": 25.0,
+    "stepdown_events": 1250,
+    "premature_stepdowns": 0,
+    "end_excess_levels_mean": 2.058
+  }
+]

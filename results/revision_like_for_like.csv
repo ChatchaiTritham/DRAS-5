@@ -1,0 +1,7 @@
+system,mer_end_monotonic,mer_end_oscillating,mer_end_spike_emergency,mer_end_spike_critical,mer_end_overall,mer_reach_monotonic,mer_reach_oscillating,mer_reach_spike_emergency,mer_reach_spike_critical,mer_reach_overall
+NEWS2 (every 2nd),0.56,96.32,100.0,100.0,74.22,0.0,0.0,0.0,0.0,0.0
+MEWS (every 3rd),2.56,99.84,100.0,100.0,75.6,1.84,3.2,32.88,78.56,29.12
+Stateless (every sample),2.56,99.84,100.0,100.0,75.6,0.0,0.0,0.0,0.0,0.0
+Max-hold (every sample),0.0,0.0,0.0,0.0,0.0,0.0,0.0,0.0,0.0,0.0
+DRAS-5 (no C5),0.0,0.0,0.0,0.0,0.0,0.0,0.0,0.0,0.0,0.0
+DRAS-5 (full),0.0,0.0,0.0,81.84,20.46,0.0,0.0,0.0,0.0,0.0

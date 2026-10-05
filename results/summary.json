@@ -103,16 +103,16 @@
   },
   "c5_total_requests": 115757,
   "ml_wrapper": {
-    "gbt_rmse": 0.0563,
+    "gbt_rmse": 0.0562,
     "n_test_trajectories": 1000,
     "mer_governed_pct": 0.0,
     "mer_ungoverned_pct": 100.0
   },
   "latency": {
     "operations": 50000,
-    "mean_ms": 0.0701,
-    "ci95_low_ms": 0.0053,
-    "ci95_high_ms": 0.278,
-    "throughput_per_s": 14267
+    "mean_ms": 0.0307,
+    "ci95_low_ms": 0.0041,
+    "ci95_high_ms": 0.0831,
+    "throughput_per_s": 32576
   }
 }

@@ -124,6 +124,10 @@ class DRAS5StateMachine:
         deescalation_request: bool = False,
         dual_approval: bool = False,
         rho_eff_series: Optional[List[float]] = None,
+        approval_1: Optional[bool] = None,
+        approval_2: Optional[bool] = None,
+        approver_1: Optional[str] = None,
+        approver_2: Optional[str] = None,
     ) -> RiskState:
         """
         Update state based on risk score.
@@ -134,8 +138,15 @@ class DRAS5StateMachine:
             force: Force transition (override constraints)
             human_approved: Human approval for critical transitions
             deescalation_request: Request for controlled de-escalation
-            dual_approval: Require dual approval for de-escalation
+            dual_approval: Legacy shorthand: sets both approval signals at once
+                when ``approval_1`` / ``approval_2`` are not given
             rho_eff_series: Series of effective risk scores for de-escalation validation
+            approval_1: First clinician approval signal (alpha_1) for C5
+            approval_2: Second, independent clinician approval signal (alpha_2)
+            approver_1: Identifier of the first approver (recorded in the audit log)
+            approver_2: Identifier of the second approver. When both identifiers
+                are given they must differ, otherwise the two signals are not
+                independent and the request is denied.
 
         Returns:
             New state after update
@@ -148,6 +159,16 @@ class DRAS5StateMachine:
             raise ValueError(f"risk_score must be in [0, 1], got {risk_score}")
 
         current_time = t if t is not None else time.time()
+
+        # Resolve the two C5 approval signals. They are separate inputs: either
+        # one missing denies the request, and identical approver ids are not
+        # independent.
+        a1 = bool(dual_approval if approval_1 is None else approval_1)
+        a2 = bool(dual_approval if approval_2 is None else approval_2)
+        if approver_1 is not None and approver_2 is not None and approver_1 == approver_2:
+            a2 = False
+        both_approved = a1 and a2
+        approvers = {"approver_1": approver_1, "approver_2": approver_2} if (approver_1 or approver_2) else {}
 
         # Update decay tracker with current observation (Eq. 5)
         self._decay_tracker.update_peak(risk_score, current_time)
@@ -162,8 +183,8 @@ class DRAS5StateMachine:
 
         # Handle de-escalation request
         if deescalation_request and new_state < old_state:
-            if not dual_approval:
-                logger.warning("De-escalation denied: dual approval required")
+            if not both_approved:
+                logger.warning("De-escalation denied: two independent approvals required")
                 new_state = old_state
             else:
                 if rho_eff_series:
@@ -185,7 +206,7 @@ class DRAS5StateMachine:
                             if current_time - ti <= t_cool
                         ]
                 from dras5.constraints import check_c5
-                allowed, _ = check_c5(old_state, series, alpha1=True, alpha2=True)
+                allowed, _ = check_c5(old_state, series, alpha1=a1, alpha2=a2)
                 if not allowed:
                     logger.warning("De-escalation denied: C5 constraint not met")
                     new_state = old_state
@@ -196,7 +217,7 @@ class DRAS5StateMachine:
                         new_state = min_allowed_state
 
         # Check monotonic constraint (skip if de-escalation was explicitly approved)
-        deescalation_approved = deescalation_request and dual_approval
+        deescalation_approved = deescalation_request and both_approved
         if self.enable_constraints and not force and not deescalation_approved:
             if new_state < old_state:
                 logger.warning(
@@ -225,6 +246,8 @@ class DRAS5StateMachine:
                 trigger="escalation",
                 approved=human_approved or force,
                 timestamp=current_time,
+                rho_eff=rho_eff,
+                extra=approvers if (deescalation_request and new_state < old_state) else None,
             )
 
         # Update last risk score before timeout check so auto_escalate uses current value
@@ -257,7 +280,9 @@ class DRAS5StateMachine:
         return RiskState.SAFE
 
     def _transition(
-        self, new_state: RiskState, risk_score: float, trigger: str, approved: bool, timestamp: Optional[float] = None
+        self, new_state: RiskState, risk_score: float, trigger: str, approved: bool,
+        timestamp: Optional[float] = None, rho_eff: float = 0.0,
+        extra: Optional[Dict[str, Any]] = None,
     ):
         """Execute state transition"""
         old_state = self.current_state
@@ -273,6 +298,8 @@ class DRAS5StateMachine:
             approved=approved,
             metadata={
                 "duration_in_state": current_time - self.state_entry_time,
+                "rho_eff": rho_eff,
+                **(extra or {}),
             },
             session_id=self.session_id,
         )
@@ -295,6 +322,8 @@ class DRAS5StateMachine:
                 trigger=trigger,
                 approved=approved,
                 user_id=self.session_id,
+                rho_eff=rho_eff,
+                metadata=extra,
             )
 
         logger.info(

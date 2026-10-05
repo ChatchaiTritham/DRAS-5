@@ -288,7 +288,8 @@ def check_c5(
     from dras5.states import STATE_CONFIG
     # Use the TARGET state's theta (S_{k-1}), not the current state's theta
     target_state = RiskState(from_state - 1)
-    theta = STATE_CONFIG[target_state].get("theta", 0.5)
+    from dras5.states import deescalation_threshold
+    theta = deescalation_threshold(from_state)
     if not all(r < theta for r in series):
         return False, "DENY: some values above threshold"
     # Theorem 5a requires rho_eff < theta_{k-1} sustained over the FULL cooling

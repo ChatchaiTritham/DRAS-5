@@ -1,0 +1,5 @@
+length,dt_s,sequences,alphabet,c1_c5c_violations,c4_violations,input_relative_reach_violations
+4,10.0,160000,20,0,0,0
+4,70.0,160000,20,0,0,0
+4,250.0,160000,20,0,0,0
+4,700.0,160000,20,0,0,0

@@ -1,0 +1,182 @@
+{
+  "seed": 42,
+  "n": 5000,
+  "like_for_like": [
+    {
+      "system": "NEWS2 (every 2nd)",
+      "mer_end_monotonic": 0.56,
+      "mer_end_oscillating": 96.32,
+      "mer_end_spike_emergency": 100.0,
+      "mer_end_spike_critical": 100.0,
+      "mer_end_overall": 74.22,
+      "mer_reach_monotonic": 0.0,
+      "mer_reach_oscillating": 0.0,
+      "mer_reach_spike_emergency": 0.0,
+      "mer_reach_spike_critical": 0.0,
+      "mer_reach_overall": 0.0
+    },
+    {
+      "system": "MEWS (every 3rd)",
+      "mer_end_monotonic": 2.56,
+      "mer_end_oscillating": 99.84,
+      "mer_end_spike_emergency": 100.0,
+      "mer_end_spike_critical": 100.0,
+      "mer_end_overall": 75.6,
+      "mer_reach_monotonic": 1.84,
+      "mer_reach_oscillating": 3.2,
+      "mer_reach_spike_emergency": 32.88,
+      "mer_reach_spike_critical": 78.56,
+      "mer_reach_overall": 29.12
+    },
+    {
+      "system": "Stateless (every sample)",
+      "mer_end_monotonic": 2.56,
+      "mer_end_oscillating": 99.84,
+      "mer_end_spike_emergency": 100.0,
+      "mer_end_spike_critical": 100.0,
+      "mer_end_overall": 75.6,
+      "mer_reach_monotonic": 0.0,
+      "mer_reach_oscillating": 0.0,
+      "mer_reach_spike_emergency": 0.0,
+      "mer_reach_spike_critical": 0.0,
+      "mer_reach_overall": 0.0
+    },
+    {
+      "system": "Max-hold (every sample)",
+      "mer_end_monotonic": 0.0,
+      "mer_end_oscillating": 0.0,
+      "mer_end_spike_emergency": 0.0,
+      "mer_end_spike_critical": 0.0,
+      "mer_end_overall": 0.0,
+      "mer_reach_monotonic": 0.0,
+      "mer_reach_oscillating": 0.0,
+      "mer_reach_spike_emergency": 0.0,
+      "mer_reach_spike_critical": 0.0,
+      "mer_reach_overall": 0.0
+    },
+    {
+      "system": "DRAS-5 (no C5)",
+      "mer_end_monotonic": 0.0,
+      "mer_end_oscillating": 0.0,
+      "mer_end_spike_emergency": 0.0,
+      "mer_end_spike_critical": 0.0,
+      "mer_end_overall": 0.0,
+      "mer_reach_monotonic": 0.0,
+      "mer_reach_oscillating": 0.0,
+      "mer_reach_spike_emergency": 0.0,
+      "mer_reach_spike_critical": 0.0,
+      "mer_reach_overall": 0.0
+    },
+    {
+      "system": "DRAS-5 (full)",
+      "mer_end_monotonic": 0.0,
+      "mer_end_oscillating": 0.0,
+      "mer_end_spike_emergency": 0.0,
+      "mer_end_spike_critical": 81.84,
+      "mer_end_overall": 20.46,
+      "mer_reach_monotonic": 0.0,
+      "mer_reach_oscillating": 0.0,
+      "mer_reach_spike_emergency": 0.0,
+      "mer_reach_spike_critical": 0.0,
+      "mer_reach_overall": 0.0
+    }
+  ],
+  "biased_upstream": [
+    {
+      "upstream_gain": 1.0,
+      "mer_reach_vs_true_pct": 0.0,
+      "mer_reach_vs_input_pct": 0.0
+    },
+    {
+      "upstream_gain": 0.8,
+      "mer_reach_vs_true_pct": 34.64,
+      "mer_reach_vs_input_pct": 0.0
+    },
+    {
+      "upstream_gain": 0.6,
+      "mer_reach_vs_true_pct": 56.56,
+      "mer_reach_vs_input_pct": 0.0
+    },
+    {
+      "upstream_gain": 0.4,
+      "mer_reach_vs_true_pct": 100.0,
+      "mer_reach_vs_input_pct": 0.0
+    }
+  ],
+  "c4_cap_mer_vs_sustained_peak_pct": {
+    "approval_given": 0.0,
+    "approval_withheld": 56.24
+  },
+  "magnitude_oer": [
+    {
+      "t_cool_scale": 0.1,
+      "c5_grants": 2500,
+      "excess_levels_per_sample_no_c5": 1.5672,
+      "excess_levels_per_sample_c5": 1.4025,
+      "binary_oer_no_c5_pct": 69.71,
+      "binary_oer_c5_pct": 69.71
+    },
+    {
+      "t_cool_scale": 0.25,
+      "c5_grants": 1931,
+      "excess_levels_per_sample_no_c5": 1.5672,
+      "excess_levels_per_sample_c5": 1.4632,
+      "binary_oer_no_c5_pct": 69.71,
+      "binary_oer_c5_pct": 69.71
+    },
+    {
+      "t_cool_scale": 0.5,
+      "c5_grants": 1253,
+      "excess_levels_per_sample_no_c5": 1.5672,
+      "excess_levels_per_sample_c5": 1.4969,
+      "binary_oer_no_c5_pct": 69.71,
+      "binary_oer_c5_pct": 69.71
+    },
+    {
+      "t_cool_scale": 1.0,
+      "c5_grants": 1250,
+      "excess_levels_per_sample_no_c5": 1.5672,
+      "excess_levels_per_sample_c5": 1.5195,
+      "binary_oer_no_c5_pct": 69.71,
+      "binary_oer_c5_pct": 69.71
+    }
+  ],
+  "exhaustive": [
+    {
+      "length": 4,
+      "dt_s": 10.0,
+      "sequences": 160000,
+      "alphabet": 20,
+      "c1_c5c_violations": 0,
+      "c4_violations": 0,
+      "input_relative_reach_violations": 0
+    },
+    {
+      "length": 4,
+      "dt_s": 70.0,
+      "sequences": 160000,
+      "alphabet": 20,
+      "c1_c5c_violations": 0,
+      "c4_violations": 0,
+      "input_relative_reach_violations": 0
+    },
+    {
+      "length": 4,
+      "dt_s": 250.0,
+      "sequences": 160000,
+      "alphabet": 20,
+      "c1_c5c_violations": 0,
+      "c4_violations": 0,
+      "input_relative_reach_violations": 0
+    },
+    {
+      "length": 4,
+      "dt_s": 700.0,
+      "sequences": 160000,
+      "alphabet": 20,
+      "c1_c5c_violations": 0,
+      "c4_violations": 0,
+      "input_relative_reach_violations": 0
+    }
+  ]
+}

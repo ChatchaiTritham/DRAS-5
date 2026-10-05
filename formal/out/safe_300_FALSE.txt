@@ -1,0 +1,17 @@
+TLC2 Version 2.19 of 08 August 2024 (rev: 5a47802)
+Running breadth-first search Model-Checking with fp 98 and seed 5837921025126157007 with 8 workers on 8 cores with 5461MB heap and 64MB offheap memory [pid: 17660] (Windows 11 10.0 amd64, Microsoft 17.0.16 x86_64, MSBDiskFPSet, DiskStateQueue).
+Parsing file D:\PhD-NU\LaTeX\PeerJCS\tla\DRAS5.tla
+Parsing file C:\Users\chatc\AppData\Local\Temp\Naturals.tla
+Semantic processing of module Naturals
+Semantic processing of module DRAS5
+Starting... (2026-10-05 22:45:01)
+Computing initial states...
+Finished computing initial states: 1 distinct state generated at 2026-10-05 22:45:02.
+Model checking completed. No error has been found.
+  Estimates of the probability that TLC did not check all reachable states
+  because two distinct states had the same fingerprint:
+  calculated (optimistic):  val = 3.0E-11
+192393 states generated, 2937 distinct states found, 0 states left on queue.
+The depth of the complete state graph search is 10.
+The average outdegree of the complete state graph is 1 (minimum is 0, the maximum 31 and the 95th percentile is 6).
+Finished in 02s at (2026-10-05 22:45:03)

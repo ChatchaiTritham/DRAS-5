@@ -1,0 +1,203 @@
+TLC2 Version 2.19 of 08 August 2024 (rev: 5a47802)
+Running breadth-first search Model-Checking with fp 115 and seed 3819880680644546084 with 8 workers on 8 cores with 5461MB heap and 64MB offheap memory [pid: 17388] (Windows 11 10.0 amd64, Microsoft 17.0.16 x86_64, MSBDiskFPSet, DiskStateQueue).
+Parsing file D:\PhD-NU\LaTeX\PeerJCS\tla\DRAS5.tla
+Parsing file C:\Users\chatc\AppData\Local\Temp\Naturals.tla
+Semantic processing of module Naturals
+Semantic processing of module DRAS5
+Starting... (2026-10-05 22:49:11)
+Implied-temporal checking--satisfiability problem has 1 branches.
+Computing initial states...
+Computed 2 initial states...
+Finished computing initial states: 3 distinct states generated at 2026-10-05 22:49:12.
+Progress(21) at 2026-10-05 22:49:12: 368 states generated, 219 distinct states found, 0 states left on queue.
+Checking temporal properties for the complete state space with 219 total distinct states at (2026-10-05 22:49:12)
+Error: Temporal properties were violated.
+
+Error: The following behavior constitutes a counter-example:
+
+State 1: <Initial predicate>
+/\ dwell = 0
+/\ low = 0
+/\ min = 0
+/\ eff = 2
+/\ tin = 1
+/\ maxs = 2
+/\ logged = FALSE
+/\ s = 2
+/\ granted = FALSE
+/\ maxreg = 2
+/\ prev = 2
+/\ ain = FALSE
+
+State 2: <LiveNext line 113, col 13 to line 113, col 49 of module DRAS5>
+/\ dwell = 1
+/\ low = 0
+/\ min = 1
+/\ eff = 1
+/\ tin = 1
+/\ maxs = 2
+/\ logged = FALSE
+/\ s = 2
+/\ granted = FALSE
+/\ maxreg = 2
+/\ prev = 2
+/\ ain = TRUE
+
+State 3: <LiveNext line 113, col 13 to line 113, col 49 of module DRAS5>
+/\ dwell = 2
+/\ low = 0
+/\ min = 1
+/\ eff = 1
+/\ tin = 1
+/\ maxs = 2
+/\ logged = FALSE
+/\ s = 2
+/\ granted = FALSE
+/\ maxreg = 2
+/\ prev = 2
+/\ ain = TRUE
+
+State 4: <LiveNext line 113, col 13 to line 113, col 49 of module DRAS5>
+/\ dwell = 3
+/\ low = 0
+/\ min = 1
+/\ eff = 1
+/\ tin = 1
+/\ maxs = 2
+/\ logged = FALSE
+/\ s = 2
+/\ granted = FALSE
+/\ maxreg = 2
+/\ prev = 2
+/\ ain = TRUE
+
+State 5: <LiveNext line 113, col 13 to line 113, col 49 of module DRAS5>
+/\ dwell = 4
+/\ low = 0
+/\ min = 1
+/\ eff = 1
+/\ tin = 1
+/\ maxs = 2
+/\ logged = FALSE
+/\ s = 2
+/\ granted = FALSE
+/\ maxreg = 2
+/\ prev = 2
+/\ ain = TRUE
+
+State 6: <LiveNext line 113, col 13 to line 113, col 49 of module DRAS5>
+/\ dwell = 5
+/\ low = 0
+/\ min = 1
+/\ eff = 1
+/\ tin = 1
+/\ maxs = 2
+/\ logged = FALSE
+/\ s = 2
+/\ granted = FALSE
+/\ maxreg = 2
+/\ prev = 2
+/\ ain = TRUE
+
+State 7: <LiveNext line 113, col 13 to line 113, col 49 of module DRAS5>
+/\ dwell = 6
+/\ low = 0
+/\ min = 1
+/\ eff = 1
+/\ tin = 1
+/\ maxs = 2
+/\ logged = FALSE
+/\ s = 2
+/\ granted = FALSE
+/\ maxreg = 2
+/\ prev = 2
+/\ ain = TRUE
+
+State 8: <LiveNext line 113, col 13 to line 113, col 49 of module DRAS5>
+/\ dwell = 7
+/\ low = 0
+/\ min = 1
+/\ eff = 1
+/\ tin = 1
+/\ maxs = 2
+/\ logged = FALSE
+/\ s = 2
+/\ granted = FALSE
+/\ maxreg = 2
+/\ prev = 2
+/\ ain = TRUE
+
+State 9: <LiveNext line 113, col 13 to line 113, col 49 of module DRAS5>
+/\ dwell = 8
+/\ low = 0
+/\ min = 1
+/\ eff = 1
+/\ tin = 1
+/\ maxs = 2
+/\ logged = FALSE
+/\ s = 2
+/\ granted = FALSE
+/\ maxreg = 2
+/\ prev = 2
+/\ ain = TRUE
+
+State 10: <LiveNext line 113, col 13 to line 113, col 49 of module DRAS5>
+/\ dwell = 9
+/\ low = 0
+/\ min = 1
+/\ eff = 1
+/\ tin = 1
+/\ maxs = 2
+/\ logged = FALSE
+/\ s = 2
+/\ granted = FALSE
+/\ maxreg = 2
+/\ prev = 2
+/\ ain = TRUE
+
+State 11: <LiveNext line 113, col 13 to line 113, col 49 of module DRAS5>
+/\ dwell = 10
+/\ low = 0
+/\ min = 1
+/\ eff = 1
+/\ tin = 1
+/\ maxs = 2
+/\ logged = FALSE
+/\ s = 2
+/\ granted = FALSE
+/\ maxreg = 2
+/\ prev = 2
+/\ ain = TRUE
+
+State 12: <LiveNext line 113, col 13 to line 113, col 49 of module DRAS5>
+/\ dwell = 11
+/\ low = 0
+/\ min = 1
+/\ eff = 1
+/\ tin = 1
+/\ maxs = 2
+/\ logged = FALSE
+/\ s = 2
+/\ granted = FALSE
+/\ maxreg = 2
+/\ prev = 2
+/\ ain = TRUE
+
+State 13: <LiveNext line 113, col 13 to line 113, col 49 of module DRAS5>
+/\ dwell = 12
+/\ low = 0
+/\ min = 1
+/\ eff = 1
+/\ tin = 1
+/\ maxs = 2
+/\ logged = FALSE
+/\ s = 2
+/\ granted = FALSE
+/\ maxreg = 2
+/\ prev = 2
+/\ ain = TRUE
+
+State 14: Stuttering
+Finished checking temporal properties in 00s at 2026-10-05 22:49:13
+368 states generated, 219 distinct states found, 0 states left on queue.
+Finished in 02s at (2026-10-05 22:49:13)
