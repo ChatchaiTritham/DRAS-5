@@ -1,0 +1,6 @@
+C4 gate removed (Phase 3 skipped)                -> Error: Action property C4 is violated.
+C1 broken (state may fall to the live band)      -> Error: Action property C1 is violated.
+C5a broken (no cooling window)                   -> Error: Action property C5a is violated.
+C5b broken (one approval suffices)               -> Error: Action property C5b is violated.
+C2 broken (timeout late by 3 ticks)              -> Error: Action property C2 is violated.
+C3 broken (no audit entry)                       -> Error: Action property C3 is violated.

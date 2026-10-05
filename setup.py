@@ -21,7 +21,7 @@ long_desc = readme_path.read_text(encoding="utf-8") if readme_path.exists() else
 
 setup(
     name="dras5",
-    version="1.0.0",
+    version="1.3.0",
     author="Chatchai Tritham, Chakkrit Snae Namahoot",
     author_email="chatchait66@nu.ac.th, chakkrits@nu.ac.th",
     description=(

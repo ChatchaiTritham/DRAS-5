@@ -148,6 +148,40 @@ class TestC5Deescalation:
         )
         assert sm.current_state == RiskState.ALERT  # stays
 
+    def _recovering(self, **kw):
+        sm = DRAS5StateMachine(require_human_approval=False)
+        sm.update(risk_score=0.55, t=0)
+        return sm, sm.update(risk_score=0.15, t=50, deescalation_request=True,
+                             human_approved=True, rho_eff_series=[0.25, 0.22, 0.20], **kw)
+
+    def test_single_approval_denied_each_signal(self):
+        # Each approval signal is a separate input; either one missing denies.
+        assert self._recovering(approval_1=True, approval_2=False)[1] == RiskState.ALERT
+        assert self._recovering(approval_1=False, approval_2=True)[1] == RiskState.ALERT
+
+    def test_two_signals_grant(self):
+        assert self._recovering(approval_1=True, approval_2=True)[1] == RiskState.MONITOR
+
+    def test_same_approver_not_independent(self):
+        _, st = self._recovering(approval_1=True, approval_2=True,
+                                 approver_1="dr-a", approver_2="dr-a")
+        assert st == RiskState.ALERT
+
+    def test_approvers_recorded_in_audit_log(self):
+        sm = DRAS5StateMachine(require_human_approval=False, enable_audit=True)
+        sm.update(risk_score=0.55, t=0)
+        sm.update(risk_score=0.15, t=50, deescalation_request=True, human_approved=True,
+                  rho_eff_series=[0.25, 0.22, 0.20], approval_1=True, approval_2=True,
+                  approver_1="dr-a", approver_2="dr-b")
+        last = sm.audit_log.entries[-1]
+        assert last.metadata["approver_1"] == "dr-a"
+        assert last.metadata["approver_2"] == "dr-b"
+        assert "rho_eff" in last.metadata
+
+    def test_legacy_dual_approval_flag_still_sets_both(self):
+        assert self._recovering(dual_approval=True)[1] == RiskState.MONITOR
+        assert self._recovering(dual_approval=False)[1] == RiskState.ALERT
+
     def test_deny_decay_not_sustained(self):
         sm = DRAS5StateMachine(require_human_approval=False)
         sm.update(risk_score=0.55, t=0)
@@ -259,3 +293,14 @@ class TestC4AllRoutes:
         sm.update(risk_score=0.35, t=0)
         sm.update(risk_score=0.35, t=302)
         assert sm.transition_history[-1].approved is False
+
+
+def test_monitor_returns_to_safe_after_sustained_recovery():
+    """Regression: S2 -> S1 needed rho_eff < theta_1 = 0 and was unreachable (Corollary 1)."""
+    sm = DRAS5StateMachine(require_human_approval=True)
+    sm.update(risk_score=0.35, t=0)
+    assert sm.current_state == RiskState.MONITOR
+    for i in range(1, 200):
+        sm.update(risk_score=0.0, t=i * 10.0, human_approved=True, deescalation_request=True,
+                  approval_1=True, approval_2=True, approver_1="a", approver_2="b")
+    assert sm.current_state == RiskState.SAFE

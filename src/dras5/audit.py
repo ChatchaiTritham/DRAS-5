@@ -245,6 +245,7 @@ class AuditLogger:
         trigger: str = "",
         approved: bool = False,
         user_id: Optional[str] = None,
+        metadata: Optional[Dict[str, Any]] = None,
     ) -> AuditEntry:
         """Append an audit entry.
 
@@ -262,7 +263,7 @@ class AuditLogger:
             trigger=trigger,
             approved=approved,
             user_id=user_id,
-            metadata={"rho_eff": rho_eff},
+            metadata={"rho_eff": rho_eff, **(metadata or {})},
             entry_id=len(self._entries) + 1,
         )
         self._entries.append(entry)

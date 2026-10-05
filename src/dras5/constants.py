@@ -3,7 +3,7 @@
 from typing import Final, Tuple
 
 PACKAGE_NAME: Final[str] = "dras5"
-PACKAGE_VERSION: Final[str] = "1.0.0"
+PACKAGE_VERSION: Final[str] = "1.3.0"
 FRAMEWORK_NAME: Final[str] = "DRAS-5"
 SUPPORTED_PYTHON_VERSION_MIN: Final[str] = "3.9"
 

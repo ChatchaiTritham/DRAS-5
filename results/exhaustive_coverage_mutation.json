@@ -1,0 +1,210 @@
+{
+  "coverage": [
+    {
+      "dt_s": 10.0,
+      "length": 60,
+      "c1": 0,
+      "c2": 0,
+      "c4": 0,
+      "c5": 0,
+      "reach": 0,
+      "cov_grant": 90,
+      "cov_timeout": 21069,
+      "cov_c4_block": 154516,
+      "cov_c5_denied": 458292,
+      "n": 48000,
+      "seq_cov_grant": 90,
+      "seq_cov_timeout": 19703,
+      "seq_cov_c4_block": 17659,
+      "seq_cov_c5_denied": 27162
+    },
+    {
+      "dt_s": 60.0,
+      "length": 15,
+      "c1": 0,
+      "c2": 0,
+      "c4": 0,
+      "c5": 0,
+      "reach": 0,
+      "cov_grant": 1497,
+      "cov_timeout": 23434,
+      "cov_c4_block": 47847,
+      "cov_c5_denied": 127771,
+      "n": 48000,
+      "seq_cov_grant": 1481,
+      "seq_cov_timeout": 20933,
+      "seq_cov_c4_block": 15545,
+      "seq_cov_c5_denied": 26082
+    },
+    {
+      "dt_s": 300.0,
+      "length": 15,
+      "c1": 0,
+      "c2": 0,
+      "c4": 0,
+      "c5": 0,
+      "reach": 0,
+      "cov_grant": 12854,
+      "cov_timeout": 40053,
+      "cov_c4_block": 45648,
+      "cov_c5_denied": 124020,
+      "n": 48000,
+      "seq_cov_grant": 8902,
+      "seq_cov_timeout": 30505,
+      "seq_cov_c4_block": 14783,
+      "seq_cov_c5_denied": 27229
+    }
+  ],
+  "mutation": [
+    {
+      "mutant": "c4_gate_off",
+      "dt10": {
+        "c1": 0,
+        "c2": 0,
+        "c4": 23754,
+        "c5": 0,
+        "reach": 0
+      },
+      "dt60": {
+        "c1": 0,
+        "c2": 0,
+        "c4": 21994,
+        "c5": 0,
+        "reach": 0
+      },
+      "dt300": {
+        "c1": 0,
+        "c2": 0,
+        "c4": 22443,
+        "c5": 0,
+        "reach": 0
+      },
+      "detected": true
+    },
+    {
+      "mutant": "c1_monotonic_off",
+      "dt10": {
+        "c1": 103614,
+        "c2": 0,
+        "c4": 0,
+        "c5": 89589,
+        "reach": 0
+      },
+      "dt60": {
+        "c1": 61322,
+        "c2": 0,
+        "c4": 0,
+        "c5": 48906,
+        "reach": 0
+      },
+      "dt300": {
+        "c1": 75612,
+        "c2": 0,
+        "c4": 0,
+        "c5": 52057,
+        "reach": 0
+      },
+      "detected": true
+    },
+    {
+      "mutant": "ignore_alpha2",
+      "dt10": {
+        "c1": 61,
+        "c2": 0,
+        "c4": 0,
+        "c5": 61,
+        "reach": 0
+      },
+      "dt60": {
+        "c1": 1433,
+        "c2": 0,
+        "c4": 0,
+        "c5": 1433,
+        "reach": 0
+      },
+      "dt300": {
+        "c1": 12083,
+        "c2": 0,
+        "c4": 0,
+        "c5": 12083,
+        "reach": 0
+      },
+      "detected": true
+    },
+    {
+      "mutant": "ignore_independence",
+      "dt10": {
+        "c1": 60,
+        "c2": 0,
+        "c4": 0,
+        "c5": 60,
+        "reach": 0
+      },
+      "dt60": {
+        "c1": 1402,
+        "c2": 0,
+        "c4": 0,
+        "c5": 1402,
+        "reach": 0
+      },
+      "dt300": {
+        "c1": 11617,
+        "c2": 0,
+        "c4": 0,
+        "c5": 11617,
+        "reach": 0
+      },
+      "detected": true
+    },
+    {
+      "mutant": "no_cooling_window",
+      "dt10": {
+        "c1": 0,
+        "c2": 0,
+        "c4": 0,
+        "c5": 1659,
+        "reach": 0
+      },
+      "dt60": {
+        "c1": 0,
+        "c2": 0,
+        "c4": 0,
+        "c5": 3136,
+        "reach": 0
+      },
+      "dt300": {
+        "c1": 0,
+        "c2": 0,
+        "c4": 0,
+        "c5": 0,
+        "reach": 0
+      },
+      "detected": true
+    },
+    {
+      "mutant": "timeout_off",
+      "dt10": {
+        "c1": 0,
+        "c2": 32864,
+        "c4": 0,
+        "c5": 1403,
+        "reach": 0
+      },
+      "dt60": {
+        "c1": 0,
+        "c2": 22365,
+        "c4": 0,
+        "c5": 2585,
+        "reach": 0
+      },
+      "dt300": {
+        "c1": 0,
+        "c2": 66623,
+        "c4": 0,
+        "c5": 0,
+        "reach": 0
+      },
+      "detected": true
+    }
+  ]
+}

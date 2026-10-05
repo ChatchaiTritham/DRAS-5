@@ -57,7 +57,8 @@ def oracle_c5_ok(state, times, rhos, t_now):
     """
     cfg = STATE_CONFIG[state]
     lam, t_cool = cfg["lam"], cfg["t_cool"]
-    theta_next = STATE_CONFIG[S(state - 1)]["theta"]
+    # oracle encodes the corrected rule: theta_{k-1}, except S2->S1 which uses theta_2
+    theta_next = STATE_CONFIG[S(state - 1)]["theta"] if state - 1 != 1 else STATE_CONFIG[S(state)]["theta"]
     peak, t_peak, eff = 0.0, 0.0, []
     for t, r in zip(times, rhos):
         if r > peak:
@@ -171,8 +172,13 @@ def pass_approval_gate(n_traj, seed):
     return out
 
 
-def pass_dual_approval(n_traj, seed):
-    out = dict(requests=0, deescalations=0, trajectories=0)
+def pass_dual_approval(n_traj, seed, mode="second_withheld"):
+    """Withhold one C5 approval on every request.
+
+    mode: ``second_withheld`` (alpha_2 = False), ``first_withheld`` (alpha_1 = False) or
+    ``same_approver`` (both signals true but the same approver id, so not independent).
+    """
+    out = dict(mode=mode, requests=0, deescalations=0, trajectories=0)
     for _tt, rho in cohort(n_traj, seed):
         out["trajectories"] += 1
         sm = DRAS5StateMachine(enable_constraints=True, enable_audit=True,
@@ -181,8 +187,12 @@ def pass_dual_approval(n_traj, seed):
             before = sm.current_state
             n_hist = len(sm.transition_history)
             want = risk_to_state(r) < before and before not in (S.SAFE, S.EMERGENCY)
+            kw = dict(second_withheld=dict(approval_1=True, approval_2=False),
+                      first_withheld=dict(approval_1=False, approval_2=True),
+                      same_approver=dict(approval_1=True, approval_2=True,
+                                         approver_1="clinician-A", approver_2="clinician-A"))[mode]
             sm.update(risk_score=r, t=i * DT, human_approved=True,
-                      deescalation_request=want, dual_approval=False)
+                      deescalation_request=want, **kw)
             out["requests"] += int(want)
             for tr in sm.transition_history[n_hist:]:
                 if tr.from_state > tr.to_state:
@@ -199,6 +209,8 @@ def main():
     a = pass_main(args.trajectories, args.seed)
     b = pass_approval_gate(args.trajectories, args.seed)
     c = pass_dual_approval(args.trajectories, args.seed)
+    c_first = pass_dual_approval(args.trajectories, args.seed, "first_withheld")
+    c_same = pass_dual_approval(args.trajectories, args.seed, "same_approver")
 
     rows = [
         dict(constraint="C1", unit="steps checked", events=a["steps"],
@@ -217,7 +229,8 @@ def main():
         dict(constraint="C5", unit="de-escalation grants audited by independent oracle",
              events=a["c5_grants"],
              violations=a["c5_oracle_disagree"] + a["c5_not_single_step"],
-             note=f"{a['c5_requests']} requests; dual-approval withheld: {c['requests']} requests, {c['deescalations']} de-escalations"),
+             note=(f"{a['c5_requests']} requests; alpha_2 withheld: {c['requests']} requests, {c['deescalations']} de-escalations; "
+                  f"alpha_1 withheld: {c_first['deescalations']}; same approver id: {c_same['deescalations']}")),
     ]
     results = Path(__file__).resolve().parent.parent / "results"
     results.mkdir(exist_ok=True)
@@ -226,9 +239,11 @@ def main():
         w.writeheader()
         w.writerows(rows)
     (results / "compliance.json").write_text(
-        json.dumps(dict(main=a, approval_gate=b, dual_approval=c), indent=2),
+        json.dumps(dict(main=a, approval_gate=b, dual_approval=c,
+                        first_withheld=c_first, same_approver=c_same), indent=2),
         encoding="utf-8")
-    print(json.dumps(dict(main=a, approval_gate=b, dual_approval=c), indent=2))
+    print(json.dumps(dict(main=a, approval_gate=b, dual_approval=c,
+                          first_withheld=c_first, same_approver=c_same), indent=2))
 
 
 if __name__ == "__main__":
