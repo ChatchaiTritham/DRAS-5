@@ -155,7 +155,8 @@ def run_dras5(rho: List[float], enable_c5: bool) -> Tuple[List[RiskState], Dict[
         enable_constraints=True, enable_audit=False, require_human_approval=False
     )
     states: List[RiskState] = []
-    c5 = {"granted": 0, "denied_decay": 0, "denied_cooling": 0, "denied_approval": 0}
+    c5 = {"granted": 0, "denied_decay": 0, "denied_cooling": 0, "denied_monotone": 0,
+          "denied_approval": 0}
 
     for i, r in enumerate(rho):
         t = i * DT_SECONDS
@@ -195,7 +196,9 @@ def run_dras5(rho: List[float], enable_c5: bool) -> Tuple[List[RiskState], Dict[
                     elif not all(v < theta for v in series):
                         c5["denied_decay"] += 1
                     else:
-                        c5["denied_cooling"] += 1
+                        # below threshold throughout, but the effective-risk window is
+                        # not non-increasing (the monotonicity guard of check_c5)
+                        c5["denied_monotone"] += 1
         states.append(RiskState(int(new)))
     return states, c5
 
@@ -312,7 +315,8 @@ def evaluate(n_traj: int, base_seed: int):
     mer = {s: {tt: 0 for tt in TYPES} for s in systems}
     urr = {s: {tt: 0.0 for tt in TYPES} for s in ("NEWS2", "MEWS")}  # graded under-recognition
     oer_sum = {c: {tt: 0.0 for tt in TYPES} for c in ("c5_on", "c5_off")}
-    c5_tot = {"granted": 0, "denied_decay": 0, "denied_cooling": 0, "denied_approval": 0}
+    c5_tot = {"granted": 0, "denied_decay": 0, "denied_cooling": 0, "denied_monotone": 0,
+              "denied_approval": 0}
     n_evals = 0
 
     # Per-trajectory observations retained for the seeded bootstrap CIs.
