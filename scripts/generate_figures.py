@@ -544,13 +544,15 @@ def fig7_c5_rejection(outdir: Path):
     denial_order = [
         ("denied_cooling", "Denied:\ncooling\nincomplete", DRAS_ORANGE),
         ("denied_decay", "Denied:\ndecay not\nsustained", DRAS_GRAY),
+        ("denied_monotone", "Denied:\nrisk not\nnon-increasing", DRAS_BLUE),
         ("denied_approval", "Denied:\nsingle\napproval", DRAS_RED),
     ]
     # A category with no observations would draw a zero-height bar with a
     # "-0 (0.0%)" label; state those in the caption instead of plotting them.
     denial_order = [d for d in denial_order if rows.get(d[0], 0) > 0]
     total = sum(rows.get(k, 0) for k in
-                ("granted", "denied_decay", "denied_cooling", "denied_approval"))
+                ("granted", "denied_decay", "denied_cooling", "denied_monotone",
+                 "denied_approval"))
     granted = rows.get("granted", 0)
 
     # Build the waterfall: bar i spans [running_after, running_before]; each

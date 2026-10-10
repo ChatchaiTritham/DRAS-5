@@ -110,11 +110,11 @@
   "magnitude_oer": [
     {
       "t_cool_scale": 0.1,
-      "c5_grants": 2500,
+      "c5_grants": 2997,
       "excess_levels_per_sample_no_c5": 1.5672,
-      "excess_levels_per_sample_c5": 1.4025,
+      "excess_levels_per_sample_c5": 1.388,
       "binary_oer_no_c5_pct": 69.71,
-      "binary_oer_c5_pct": 69.71
+      "binary_oer_c5_pct": 68.26
     },
     {
       "t_cool_scale": 0.25,

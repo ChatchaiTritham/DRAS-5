@@ -2,7 +2,7 @@
 
 > Reference implementation plus a fixed-seed evaluation script that let a reader re-derive the paper's central safety property: under the monotonic-escalation rule, a deteriorating patient is never silently down-classified.
 
-![License](https://img.shields.io/badge/license-MIT-blue) ![Python](https://img.shields.io/badge/python-3.10%2B-blue) ![Reproducible](https://img.shields.io/badge/reproducible-seed--42-success)
+![License](https://img.shields.io/badge/license-MIT-blue) ![Python](https://img.shields.io/badge/python-3.9%2B-blue) ![Reproducible](https://img.shields.io/badge/reproducible-seed--42-success)
 
 ## Description
 
@@ -101,7 +101,10 @@ other repositories in this portfolio.
 
 ## Requirements
 
-Python 3.9 or newer (tested on CPython; no GPU required). Runtime dependencies are NumPy,
+Python 3.9 or newer is required by the package metadata; the reported results were produced and
+tested only with CPython 3.11.15 (NumPy 2.4.6, scikit-learn 1.9.0) on an Intel Core i7-7700HQ
+(2.80 GHz, 8 logical processors) with 15.9 GiB RAM under Windows 11, no GPU; `run_all.py` records
+this in `results/environment.json`. Runtime dependencies are NumPy, scikit-learn,
 Matplotlib and Seaborn; tests additionally need pytest and pytest-cov. Exact versions are pinned in
 `requirements.txt`, and `Dockerfile` / `docker-compose.yml` provide a container with the same stack.
 The state machine itself is pure Python, so results are host-independent; only the latency table
