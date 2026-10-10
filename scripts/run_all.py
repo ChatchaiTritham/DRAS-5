@@ -459,13 +459,29 @@ def evaluate(n_traj: int, base_seed: int):
 
 
 # ------------------------------------------------------------------ ML wrapper experiment
-def ml_wrapper_experiment(n_traj: int, base_seed: int, window: int = 5) -> dict | None:
+ML_TEST_FRACTION = 0.2
+
+
+def _miss_forms(reported: List[int], peak: int) -> Tuple[int, int]:
+    """(MER_end, MER_reach) indicators of one reported level series against ``peak``."""
+    return (1 if reported[-1] < peak else 0), (1 if max(reported) < peak else 0)
+
+
+def ml_wrapper_experiment(n_traj: int, base_seed: int, window: int = 5):
     """Train a gradient-boosted-tree next-step risk predictor and govern it with DRAS-5.
 
-    Demonstrates that the MER guarantee is independent of input quality: the GBT's
-    noisy predictions are fed to DRAS-5 in place of ground-truth risk. Returns
-    None if scikit-learn is unavailable (the rest of the pipeline does not depend
-    on it). Deterministic given the seed.
+    The split is by trajectory and stratified by family: within every trajectory family
+    the last ``ML_TEST_FRACTION`` of trajectories (by index) are held out, so the test set
+    has the same family mix as the cohort and no window of a test trajectory is seen in
+    training. Both arms -- DRAS-5 governing the predictions, and the same predictions
+    used statelessly at the NEWS2 cadence -- are scored with the SAME metric forms:
+
+      MER_end    level at the last sample is below the sustained peak
+      MER_reach  the level never reached the sustained peak during the episode
+
+    each against two references: the sustained peak of the predictions the arm received
+    (input-relative) and the sustained peak of the true risk series (true-relative).
+    Returns (summary_row, per_family_rows), or None if scikit-learn is unavailable.
     """
     try:
         from sklearn.ensemble import GradientBoostingRegressor
@@ -474,51 +490,72 @@ def ml_wrapper_experiment(n_traj: int, base_seed: int, window: int = 5) -> dict 
     import numpy as np
 
     per_type = n_traj // len(TYPES)
-    X, y, series = [], [], []
+    n_test_per_type = int(round(ML_TEST_FRACTION * per_type))
+    train_series, test_series = [], []
     for tt in TYPES:
         for j in range(per_type):
             rho = make_trajectory(tt, _traj_seed(base_seed, tt, j))
-            series.append(rho)
-            for i in range(window, len(rho)):
-                X.append(rho[i - window:i])
-                y.append(rho[i])
-    X = np.asarray(X)
-    y = np.asarray(y)
-    n_train = int(0.8 * len(X))
-    model = GradientBoostingRegressor(random_state=base_seed, n_estimators=100, max_depth=3)
-    model.fit(X[:n_train], y[:n_train])
-    pred = model.predict(X[n_train:])
-    rmse = float(np.sqrt(np.mean((pred - y[n_train:]) ** 2)))
+            (test_series if j >= per_type - n_test_per_type else train_series).append((tt, rho))
 
-    # Govern the held-out trajectories' predicted risk with DRAS-5 (MER) and
-    # compare with the ungoverned stateless use of the same predictions, scored
-    # under the same intermittent-observation model as the NEWS2/MEWS baselines.
-    split_traj = int(0.8 * len(series))
-    governed_miss = ungoverned_miss = n = 0
-    for rho in series[split_traj:]:
-        # Build the windowed feature matrix for the whole trajectory, then predict
-        # in one vectorised call (left-padded with the first reading).
+    X, y = [], []
+    for _, rho in train_series:
+        for i in range(window, len(rho)):
+            X.append(rho[i - window:i])
+            y.append(rho[i])
+    model = GradientBoostingRegressor(random_state=base_seed, n_estimators=100, max_depth=3)
+    model.fit(np.asarray(X), np.asarray(y))
+
+    keys = ("end_input", "reach_input", "end_true", "reach_true")
+    acc = {arm: {tt: {k: 0 for k in keys} for tt in TYPES} for arm in ("governed", "ungoverned")}
+    n_by_type = {tt: 0 for tt in TYPES}
+    sq_err, n_err = 0.0, 0
+    for tt, rho in test_series:
+        # Windowed features for every step (left-padded with the first reading),
+        # predicted in one vectorised call.
         feats = []
         for i in range(len(rho)):
             if i >= window:
                 feats.append(rho[i - window:i])
             else:
                 feats.append([rho[0]] * (window - i) + rho[:i])
-        pr = [_clip(p) for p in model.predict(np.asarray(feats)).tolist()]
-        true_max = max(risk_to_state(r) for r in rho)
-        sys_states, _ = run_dras5(pr, enable_c5=True)
-        if max(sys_states) < true_max:
-            governed_miss += 1
-        # ungoverned: stateless prediction under intermittent observation (NEWS2 cadence)
-        if baseline_mer(pr, NEWS2_OBS_INTERVAL):
-            ungoverned_miss += 1
-        n += 1
-    return {
-        "gbt_rmse": round(rmse, 4),
-        "n_test_trajectories": n,
-        "mer_governed_pct": round(100.0 * governed_miss / n, 2) if n else 0.0,
-        "mer_ungoverned_pct": round(100.0 * ungoverned_miss / n, 2) if n else 0.0,
-    }
+        raw = model.predict(np.asarray(feats))
+        for i in range(window, len(rho)):
+            sq_err += (raw[i] - rho[i]) ** 2
+            n_err += 1
+        pr = [_clip(p) for p in raw.tolist()]
+        peak_input = sustained_peak_level(pr)
+        peak_true = sustained_peak_level(rho)
+        reports = {
+            "governed": [int(s) for s in run_dras5(pr, enable_c5=True)[0]],
+            "ungoverned": stateless_reported_levels(pr, NEWS2_OBS_INTERVAL),
+        }
+        for arm, rep in reports.items():
+            e_in, r_in = _miss_forms(rep, peak_input)
+            e_tr, r_tr = _miss_forms(rep, peak_true)
+            d = acc[arm][tt]
+            d["end_input"] += e_in
+            d["reach_input"] += r_in
+            d["end_true"] += e_tr
+            d["reach_true"] += r_tr
+        n_by_type[tt] += 1
+
+    n = sum(n_by_type.values())
+    summary = {"gbt_rmse": round(float(math.sqrt(sq_err / n_err)), 4),
+               "split": "by trajectory, stratified by family",
+               "n_train_trajectories": len(train_series), "n_test_trajectories": n}
+    for tt in TYPES:
+        summary[f"n_test_{tt}"] = n_by_type[tt]
+    rows = []
+    for arm in ("governed", "ungoverned"):
+        for k in keys:
+            summary[f"mer_{k}_{arm}_pct"] = round(
+                100.0 * sum(acc[arm][tt][k] for tt in TYPES) / n, 2)
+        for tt in TYPES:
+            row = {"arm": arm, "trajectory_type": tt, "n_test": n_by_type[tt]}
+            for k in keys:
+                row[f"mer_{k}_pct"] = round(100.0 * acc[arm][tt][k] / n_by_type[tt], 2)
+            rows.append(row)
+    return summary, rows
 
 
 # ------------------------------------------------------------------ latency benchmark
@@ -550,6 +587,52 @@ def benchmark_latency(n_ops: int = 50_000, seed: int = BASE_SEED) -> dict:
         "ci95_high_ms": round(hi, 4),
         "throughput_per_s": int(1000.0 / mean) if mean > 0 else 0,
     }
+
+
+def machine_environment() -> dict:
+    """CPU, RAM, OS and library versions of the machine that produced latency.csv."""
+    import os
+    import platform
+    import sys
+    env = {"python": platform.python_version(), "os": platform.platform(),
+           "machine": platform.machine(), "logical_cpus": os.cpu_count(),
+           "cpu": platform.processor(), "ram_bytes": None}
+    try:
+        if sys.platform == "win32":
+            import ctypes
+            import subprocess
+
+            class _MemStatus(ctypes.Structure):
+                _fields_ = [("dwLength", ctypes.c_ulong), ("dwMemoryLoad", ctypes.c_ulong),
+                            ("ullTotalPhys", ctypes.c_ulonglong), ("ullAvailPhys", ctypes.c_ulonglong),
+                            ("ullTotalPageFile", ctypes.c_ulonglong), ("ullAvailPageFile", ctypes.c_ulonglong),
+                            ("ullTotalVirtual", ctypes.c_ulonglong), ("ullAvailVirtual", ctypes.c_ulonglong),
+                            ("ullAvailExtendedVirtual", ctypes.c_ulonglong)]
+            ms = _MemStatus()
+            ms.dwLength = ctypes.sizeof(_MemStatus)
+            ctypes.windll.kernel32.GlobalMemoryStatusEx(ctypes.byref(ms))
+            env["ram_bytes"] = int(ms.ullTotalPhys)
+            name = subprocess.run(
+                ["powershell", "-NoProfile", "-Command", "(Get-CimInstance Win32_Processor).Name"],
+                capture_output=True, text=True, timeout=30).stdout.strip()
+            env["cpu"] = name or env["cpu"]
+        else:
+            env["ram_bytes"] = os.sysconf("SC_PAGE_SIZE") * os.sysconf("SC_PHYS_PAGES")
+            with open("/proc/cpuinfo", encoding="utf-8") as fh:
+                for line in fh:
+                    if line.startswith("model name"):
+                        env["cpu"] = line.split(":", 1)[1].strip()
+                        break
+    except Exception:
+        pass
+    if env["ram_bytes"]:
+        env["ram_gib"] = round(env["ram_bytes"] / 2**30, 1)
+    for mod in ("numpy", "sklearn"):
+        try:
+            env[mod] = __import__(mod).__version__
+        except Exception:
+            env[mod] = None
+    return env
 
 
 # ------------------------------------------------------------------ io
@@ -584,13 +667,16 @@ def main():
     if not args.no_ml:
         ml = ml_wrapper_experiment(args.trajectories, args.seed)
         if ml is not None:
-            write_csv(RESULTS / "ml_wrapper.csv", [ml])
-            summary["ml_wrapper"] = ml
+            write_csv(RESULTS / "ml_wrapper.csv", [ml[0]])
+            write_csv(RESULTS / "ml_wrapper_by_family.csv", ml[1])
+            summary["ml_wrapper"] = ml[0]
 
     if not args.no_latency:
         lat = benchmark_latency(seed=args.seed)
         write_csv(RESULTS / "latency.csv", [lat])
         summary["latency"] = lat
+        (RESULTS / "environment.json").write_text(
+            json.dumps(machine_environment(), indent=2) + "\n", encoding="utf-8")
 
     (RESULTS / "summary.json").write_text(json.dumps(summary, indent=2), encoding="utf-8")
     print(json.dumps(summary, indent=2))
