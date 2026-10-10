@@ -1,0 +1,70 @@
+{
+  "n_trajectories_per_seed": 5000,
+  "seeds": [
+    42,
+    43,
+    44,
+    45,
+    46,
+    47,
+    48,
+    49,
+    50,
+    51
+  ],
+  "sd": "sample SD (n-1)",
+  "mer_end_news2_pct": {
+    "mean": 74.46,
+    "sd": 0.115,
+    "min": 74.22,
+    "max": 74.6
+  },
+  "mer_end_mews_pct": {
+    "mean": 75.446,
+    "sd": 0.128,
+    "min": 75.28,
+    "max": 75.64
+  },
+  "mer_reach_dras5_pct": {
+    "mean": 0.0,
+    "sd": 0.0,
+    "min": 0.0,
+    "max": 0.0
+  },
+  "mer_end_dras5_pct": {
+    "mean": 21.036,
+    "sd": 0.298,
+    "min": 20.46,
+    "max": 21.48
+  },
+  "oer_dras5_pct": {
+    "mean": 69.692,
+    "sd": 0.05,
+    "min": 69.63,
+    "max": 69.79
+  },
+  "oer_maxhold_pct": {
+    "mean": 58.702,
+    "sd": 0.078,
+    "min": 58.57,
+    "max": 58.8
+  },
+  "end_excess_dras5": {
+    "mean": 2.056,
+    "sd": 0.005,
+    "min": 2.048,
+    "max": 2.063
+  },
+  "end_excess_maxhold": {
+    "mean": 2.17,
+    "sd": 0.005,
+    "min": 2.164,
+    "max": 2.177
+  },
+  "c5_granted": {
+    "mean": 1250,
+    "sd": 0.0,
+    "min": 1250,
+    "max": 1250
+  }
+}
