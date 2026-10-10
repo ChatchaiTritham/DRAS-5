@@ -1,0 +1,11 @@
+{
+  "python": "3.11.15",
+  "os": "Windows-10-10.0.26200-SP0",
+  "machine": "AMD64",
+  "logical_cpus": 8,
+  "cpu": "Intel(R) Core(TM) i7-7700HQ CPU @ 2.80GHz",
+  "ram_bytes": 17024389120,
+  "ram_gib": 15.9,
+  "numpy": "2.4.6",
+  "sklearn": "1.9.0"
+}

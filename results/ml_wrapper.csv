@@ -1,2 +1,2 @@
-gbt_rmse,n_test_trajectories,mer_governed_pct,mer_ungoverned_pct
-0.0562,1000,0.0,100.0
+gbt_rmse,split,n_train_trajectories,n_test_trajectories,n_test_monotonic,n_test_oscillating,n_test_spike_emergency,n_test_spike_critical,mer_end_input_governed_pct,mer_reach_input_governed_pct,mer_end_true_governed_pct,mer_reach_true_governed_pct,mer_end_input_ungoverned_pct,mer_reach_input_ungoverned_pct,mer_end_true_ungoverned_pct,mer_reach_true_ungoverned_pct
+0.0566,"by trajectory, stratified by family",4000,1000,250,250,250,250,20.2,0.0,21.3,0.0,72.6,0.0,75.6,22.2
