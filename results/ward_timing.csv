@@ -1,19 +1,22 @@
-schedule,system,n,charts_per_patient,mer_reach_true_pct,mer_end_true_pct,oer_pct,end_excess_levels,median_delay_min,not_registered_60min_pct,c5_grants,c5_requests_per_patient
-hourly,Stateless chart,5000,21.72,8.56,59.54,10.64,0.346,0.0,15.8,,
-hourly,Max-hold,5000,21.72,8.56,8.56,52.55,1.894,0.0,15.5,,
-hourly,Hysteresis (ward windows),5000,21.72,8.56,35.38,49.96,1.275,0.0,15.5,,
-hourly,Timed-release max-hold (ward windows),5000,21.72,8.56,35.38,33.9,1.044,0.0,15.5,,
-hourly,DRAS-5 (shipped seconds),5000,21.72,2.44,25.04,59.48,1.557,0.0,7.48,3888,3.04
-hourly,DRAS-5 (ward-scaled x60),5000,21.72,2.5,21.46,65.19,2.004,0.0,9.08,1366,4.75
-irregular,Stateless chart,5000,17.9,25.72,64.62,11.64,0.281,43.2,45.44,,
-irregular,Max-hold,5000,17.9,25.72,25.72,49.45,1.604,28.8,45.18,,
-irregular,Hysteresis (ward windows),5000,17.9,25.72,45.84,45.73,0.942,28.8,45.18,,
-irregular,Timed-release max-hold (ward windows),5000,17.9,25.72,45.92,29.18,0.721,28.8,45.18,,
-irregular,DRAS-5 (shipped seconds),5000,17.9,12.58,25.64,56.12,1.544,14.4,31.04,3562,2.37
-irregular,DRAS-5 (ward-scaled x60),5000,17.9,14.52,25.46,62.64,1.841,28.8,33.62,1315,3.85
-4-hourly,Stateless chart,5000,5.5,48.58,75.5,15.53,0.2,129.6,98.86,,
-4-hourly,Max-hold,5000,5.5,48.58,48.58,41.87,1.115,129.6,98.8,,
-4-hourly,Hysteresis (ward windows),5000,5.5,48.58,69.5,41.15,0.765,129.6,98.8,,
-4-hourly,Timed-release max-hold (ward windows),5000,5.5,48.58,72.66,28.09,0.383,129.6,98.8,,
-4-hourly,DRAS-5 (shipped seconds),5000,5.5,43.98,56.12,34.56,0.79,129.6,79.6,4273,1.29
-4-hourly,DRAS-5 (ward-scaled x60),5000,5.5,45.5,57.36,42.59,0.914,129.6,88.74,3036,1.67
+schedule,system,n,charts_per_patient,mer_reach_true_pct,mer_end_true_pct,oer_pct,end_excess_levels,median_delay_min,not_registered_60min_pct,c5_grants,c5_requests_per_patient,c2_timeouts_per_patient_day
+hourly,Stateless chart,5000,21.72,8.56,59.54,10.64,0.346,0.0,15.8,,,
+hourly,Max-hold,5000,21.72,8.56,8.56,52.55,1.894,0.0,15.5,,,
+hourly,Hysteresis (ward windows),5000,21.72,8.56,35.38,49.96,1.275,0.0,15.5,,,
+hourly,Timed-release max-hold (ward windows),5000,21.72,8.56,35.38,33.9,1.044,0.0,15.5,,,
+hourly,Decayed max (ward rates),5000,21.72,8.56,35.46,34.54,1.04,0.0,15.52,,,
+hourly,DRAS-5 (shipped seconds),5000,21.72,2.44,25.04,59.48,1.557,0.0,7.48,3888,3.04,1.11
+hourly,DRAS-5 (ward-scaled x60),5000,21.72,2.5,21.46,65.19,2.004,0.0,9.08,1366,4.75,0.83
+irregular,Stateless chart,5000,17.9,25.72,64.62,11.64,0.281,43.2,45.44,,,
+irregular,Max-hold,5000,17.9,25.72,25.72,49.45,1.604,28.8,45.18,,,
+irregular,Hysteresis (ward windows),5000,17.9,25.72,45.84,45.73,0.942,28.8,45.18,,,
+irregular,Timed-release max-hold (ward windows),5000,17.9,25.72,45.92,29.18,0.721,28.8,45.18,,,
+irregular,Decayed max (ward rates),5000,17.9,25.72,46.42,26.04,0.705,43.2,45.32,,,
+irregular,DRAS-5 (shipped seconds),5000,17.9,12.58,25.64,56.12,1.544,14.4,31.04,3562,2.37,1.25
+irregular,DRAS-5 (ward-scaled x60),5000,17.9,14.52,25.46,62.64,1.841,28.8,33.62,1315,3.85,0.95
+4-hourly,Stateless chart,5000,5.5,48.58,75.5,15.53,0.2,129.6,98.86,,,
+4-hourly,Max-hold,5000,5.5,48.58,48.58,41.87,1.115,129.6,98.8,,,
+4-hourly,Hysteresis (ward windows),5000,5.5,48.58,69.5,41.15,0.765,129.6,98.8,,,
+4-hourly,Timed-release max-hold (ward windows),5000,5.5,48.58,72.66,28.09,0.383,129.6,98.8,,,
+4-hourly,Decayed max (ward rates),5000,5.5,48.58,72.56,19.95,0.264,129.6,98.8,,,
+4-hourly,DRAS-5 (shipped seconds),5000,5.5,43.98,56.12,34.56,0.79,129.6,79.6,4273,1.29,0.68
+4-hourly,DRAS-5 (ward-scaled x60),5000,5.5,45.5,57.36,42.59,0.914,129.6,88.74,3036,1.67,0.39

@@ -1,0 +1,9 @@
+n_steps,system,stepdowns,premature_vs_noisefree,premature_pct_of_stepdowns,trajectories_with_premature_pct
+100,Hysteresis,3424,0,0.0,0.0
+100,Timed-release max-hold,2174,10,0.46,0.18
+100,Decayed max,8892,1221,13.73,17.82
+100,DRAS-5 (full),1250,0,0.0,0.0
+720,Hysteresis,4059,0,0.0,0.0
+720,Timed-release max-hold,1557,13,0.83,0.26
+720,Decayed max,47134,7089,15.04,32.28
+720,DRAS-5 (full),1250,0,0.0,0.0

@@ -1,0 +1,266 @@
+setting,system,knob,value,n,mer_reach_true_pct,oer_pct,mer_end_true_pct
+ward hourly,Stateless,threshold shift delta,0.0,5000,8.56,10.64,59.54
+ward hourly,Max-hold,threshold shift delta,0.0,5000,8.56,52.55,8.56
+ward hourly,Hysteresis,threshold shift delta,0.0,5000,8.56,49.96,35.38
+ward hourly,Timed-release max-hold,threshold shift delta,0.0,5000,8.56,33.9,35.38
+ward hourly,Decayed max,threshold shift delta,0.0,5000,8.56,34.54,35.46
+ward hourly,Stateless,threshold shift delta,0.05,5000,3.9,24.77,55.3
+ward hourly,Max-hold,threshold shift delta,0.05,5000,3.9,64.32,3.9
+ward hourly,Hysteresis,threshold shift delta,0.05,5000,3.9,63.54,26.84
+ward hourly,Timed-release max-hold,threshold shift delta,0.05,5000,3.9,55.64,26.84
+ward hourly,Decayed max,threshold shift delta,0.05,5000,3.9,51.29,26.84
+ward hourly,Stateless,threshold shift delta,0.1,5000,2.22,46.12,53.52
+ward hourly,Max-hold,threshold shift delta,0.1,5000,2.22,77.84,2.22
+ward hourly,Hysteresis,threshold shift delta,0.1,5000,2.22,77.73,21.88
+ward hourly,Timed-release max-hold,threshold shift delta,0.1,5000,2.22,72.95,21.88
+ward hourly,Decayed max,threshold shift delta,0.1,5000,2.22,68.23,21.88
+ward hourly,Stateless,threshold shift delta,0.15,5000,0.74,64.87,52.08
+ward hourly,Max-hold,threshold shift delta,0.15,5000,0.74,86.71,0.74
+ward hourly,Hysteresis,threshold shift delta,0.15,5000,0.74,86.7,4.18
+ward hourly,Timed-release max-hold,threshold shift delta,0.15,5000,0.74,86.18,4.18
+ward hourly,Decayed max,threshold shift delta,0.15,5000,0.74,84.8,4.18
+ward hourly,Stateless,threshold shift delta,0.2,5000,0.28,87.01,50.66
+ward hourly,Max-hold,threshold shift delta,0.2,5000,0.28,93.81,0.28
+ward hourly,Hysteresis,threshold shift delta,0.2,5000,0.28,93.81,2.76
+ward hourly,Timed-release max-hold,threshold shift delta,0.2,5000,0.28,93.8,2.76
+ward hourly,Decayed max,threshold shift delta,0.2,5000,0.28,93.51,2.76
+ward hourly,Stateless,threshold shift delta,0.25,5000,0.28,94.64,50.14
+ward hourly,Max-hold,threshold shift delta,0.25,5000,0.28,97.63,0.28
+ward hourly,Hysteresis,threshold shift delta,0.25,5000,0.28,97.63,2.76
+ward hourly,Timed-release max-hold,threshold shift delta,0.25,5000,0.28,97.63,2.76
+ward hourly,Decayed max,threshold shift delta,0.25,5000,0.28,97.53,2.76
+ward hourly,Stateless,threshold shift delta,0.3,5000,0.04,96.48,50.0
+ward hourly,Max-hold,threshold shift delta,0.3,5000,0.04,98.2,0.04
+ward hourly,Hysteresis,threshold shift delta,0.3,5000,0.04,98.2,2.52
+ward hourly,Timed-release max-hold,threshold shift delta,0.3,5000,0.04,98.2,2.52
+ward hourly,Decayed max,threshold shift delta,0.3,5000,0.04,98.2,2.52
+ward hourly,Stateless,threshold shift delta,0.35,5000,0.0,97.34,48.7
+ward hourly,Max-hold,threshold shift delta,0.35,5000,0.0,98.3,0.0
+ward hourly,Hysteresis,threshold shift delta,0.35,5000,0.0,98.3,0.84
+ward hourly,Timed-release max-hold,threshold shift delta,0.35,5000,0.0,98.3,0.86
+ward hourly,Decayed max,threshold shift delta,0.35,5000,0.0,98.3,0.88
+ward hourly,Stateless,threshold shift delta,0.4,5000,0.0,97.9,36.66
+ward hourly,Max-hold,threshold shift delta,0.4,5000,0.0,98.41,0.0
+ward hourly,Hysteresis,threshold shift delta,0.4,5000,0.0,98.41,0.28
+ward hourly,Timed-release max-hold,threshold shift delta,0.4,5000,0.0,98.41,0.28
+ward hourly,Decayed max,threshold shift delta,0.4,5000,0.0,98.41,0.32
+ward hourly,DRAS-5,T_max factor,1,5000,2.44,59.48,25.04
+ward hourly,DRAS-5,T_max factor,10,5000,2.44,59.48,25.04
+ward hourly,DRAS-5,T_max factor,30,5000,2.44,57.07,25.04
+ward hourly,DRAS-5,T_max factor,60,5000,2.54,49.68,25.2
+ward hourly,DRAS-5,T_max factor,120,5000,3.8,40.3,26.76
+ward hourly,DRAS-5,T_max factor,240,5000,7.64,34.52,34.12
+ward hourly,DRAS-5,T_max factor,480,5000,8.56,34.17,35.38
+ward hourly,DRAS-5,T_max factor,inf,5000,8.56,34.17,35.38
+ward irregular,Stateless,threshold shift delta,0.0,5000,25.72,11.64,64.62
+ward irregular,Max-hold,threshold shift delta,0.0,5000,25.72,49.45,25.72
+ward irregular,Hysteresis,threshold shift delta,0.0,5000,25.72,45.73,45.84
+ward irregular,Timed-release max-hold,threshold shift delta,0.0,5000,25.72,29.18,45.92
+ward irregular,Decayed max,threshold shift delta,0.0,5000,25.72,26.04,46.42
+ward irregular,Stateless,threshold shift delta,0.05,5000,15.62,24.75,60.28
+ward irregular,Max-hold,threshold shift delta,0.05,5000,15.62,60.78,15.62
+ward irregular,Hysteresis,threshold shift delta,0.05,5000,15.62,59.68,31.7
+ward irregular,Timed-release max-hold,threshold shift delta,0.05,5000,15.62,46.34,31.72
+ward irregular,Decayed max,threshold shift delta,0.05,5000,15.62,45.03,31.72
+ward irregular,Stateless,threshold shift delta,0.1,5000,8.58,44.81,56.02
+ward irregular,Max-hold,threshold shift delta,0.1,5000,8.58,75.0,8.58
+ward irregular,Hysteresis,threshold shift delta,0.1,5000,8.58,74.74,25.38
+ward irregular,Timed-release max-hold,threshold shift delta,0.1,5000,8.58,65.33,25.38
+ward irregular,Decayed max,threshold shift delta,0.1,5000,8.58,62.93,25.38
+ward irregular,Stateless,threshold shift delta,0.15,5000,5.32,62.6,53.16
+ward irregular,Max-hold,threshold shift delta,0.15,5000,5.32,84.19,5.32
+ward irregular,Hysteresis,threshold shift delta,0.15,5000,5.32,84.16,20.94
+ward irregular,Timed-release max-hold,threshold shift delta,0.15,5000,5.32,80.37,20.94
+ward irregular,Decayed max,threshold shift delta,0.15,5000,5.32,75.68,20.94
+ward irregular,Stateless,threshold shift delta,0.2,5000,3.16,83.74,51.92
+ward irregular,Max-hold,threshold shift delta,0.2,5000,3.16,91.19,3.16
+ward irregular,Hysteresis,threshold shift delta,0.2,5000,3.16,91.19,17.18
+ward irregular,Timed-release max-hold,threshold shift delta,0.2,5000,3.16,91.11,17.18
+ward irregular,Decayed max,threshold shift delta,0.2,5000,3.16,89.99,17.18
+ward irregular,Stateless,threshold shift delta,0.25,5000,1.56,91.83,51.14
+ward irregular,Max-hold,threshold shift delta,0.25,5000,1.56,95.72,1.56
+ward irregular,Hysteresis,threshold shift delta,0.25,5000,1.56,95.72,13.02
+ward irregular,Timed-release max-hold,threshold shift delta,0.25,5000,1.56,95.71,13.02
+ward irregular,Decayed max,threshold shift delta,0.25,5000,1.56,95.62,13.02
+ward irregular,Stateless,threshold shift delta,0.3,5000,0.76,93.92,50.38
+ward irregular,Max-hold,threshold shift delta,0.3,5000,0.76,96.63,0.76
+ward irregular,Hysteresis,threshold shift delta,0.3,5000,0.76,96.63,9.4
+ward irregular,Timed-release max-hold,threshold shift delta,0.3,5000,0.76,96.63,9.4
+ward irregular,Decayed max,threshold shift delta,0.3,5000,0.76,96.62,9.4
+ward irregular,Stateless,threshold shift delta,0.35,5000,0.44,95.03,48.68
+ward irregular,Max-hold,threshold shift delta,0.35,5000,0.44,96.86,0.44
+ward irregular,Hysteresis,threshold shift delta,0.35,5000,0.44,96.86,5.78
+ward irregular,Timed-release max-hold,threshold shift delta,0.35,5000,0.44,96.86,5.88
+ward irregular,Decayed max,threshold shift delta,0.35,5000,0.44,96.86,6.06
+ward irregular,Stateless,threshold shift delta,0.4,5000,0.12,96.05,37.12
+ward irregular,Max-hold,threshold shift delta,0.4,5000,0.12,97.21,0.12
+ward irregular,Hysteresis,threshold shift delta,0.4,5000,0.12,97.21,3.14
+ward irregular,Timed-release max-hold,threshold shift delta,0.4,5000,0.12,97.21,3.14
+ward irregular,Decayed max,threshold shift delta,0.4,5000,0.12,97.19,3.22
+ward irregular,DRAS-5,T_max factor,1,5000,12.58,56.12,25.64
+ward irregular,DRAS-5,T_max factor,10,5000,12.68,55.83,25.64
+ward irregular,DRAS-5,T_max factor,30,5000,14.12,53.46,25.64
+ward irregular,DRAS-5,T_max factor,60,5000,14.58,48.19,26.26
+ward irregular,DRAS-5,T_max factor,120,5000,17.56,38.82,31.18
+ward irregular,DRAS-5,T_max factor,240,5000,24.76,32.53,44.16
+ward irregular,DRAS-5,T_max factor,480,5000,25.72,32.12,45.88
+ward irregular,DRAS-5,T_max factor,inf,5000,25.72,32.12,45.88
+ward 4-hourly,Stateless,threshold shift delta,0.0,5000,48.58,15.53,75.5
+ward 4-hourly,Max-hold,threshold shift delta,0.0,5000,48.58,41.87,48.58
+ward 4-hourly,Hysteresis,threshold shift delta,0.0,5000,48.58,41.15,69.5
+ward 4-hourly,Timed-release max-hold,threshold shift delta,0.0,5000,48.58,28.09,72.66
+ward 4-hourly,Decayed max,threshold shift delta,0.0,5000,48.58,19.95,72.56
+ward 4-hourly,Stateless,threshold shift delta,0.05,5000,45.92,23.19,68.24
+ward 4-hourly,Max-hold,threshold shift delta,0.05,5000,45.92,47.93,45.92
+ward 4-hourly,Hysteresis,threshold shift delta,0.05,5000,45.92,47.58,58.72
+ward 4-hourly,Timed-release max-hold,threshold shift delta,0.05,5000,45.92,37.22,60.64
+ward 4-hourly,Decayed max,threshold shift delta,0.05,5000,45.92,28.97,60.5
+ward 4-hourly,Stateless,threshold shift delta,0.1,5000,30.02,39.25,60.7
+ward 4-hourly,Max-hold,threshold shift delta,0.1,5000,30.02,61.09,30.02
+ward 4-hourly,Hysteresis,threshold shift delta,0.1,5000,30.02,61.0,35.5
+ward 4-hourly,Timed-release max-hold,threshold shift delta,0.1,5000,30.02,51.53,36.62
+ward 4-hourly,Decayed max,threshold shift delta,0.1,5000,30.02,47.07,36.6
+ward 4-hourly,Stateless,threshold shift delta,0.15,5000,23.86,54.33,57.12
+ward 4-hourly,Max-hold,threshold shift delta,0.15,5000,23.86,72.53,23.86
+ward 4-hourly,Hysteresis,threshold shift delta,0.15,5000,23.86,72.47,28.12
+ward 4-hourly,Timed-release max-hold,threshold shift delta,0.15,5000,23.86,63.6,29.0
+ward 4-hourly,Decayed max,threshold shift delta,0.15,5000,23.86,60.3,29.04
+ward 4-hourly,Stateless,threshold shift delta,0.2,5000,23.04,71.16,55.16
+ward 4-hourly,Max-hold,threshold shift delta,0.2,5000,23.04,79.51,23.04
+ward 4-hourly,Hysteresis,threshold shift delta,0.2,5000,23.04,79.48,26.96
+ward 4-hourly,Timed-release max-hold,threshold shift delta,0.2,5000,23.04,77.75,28.18
+ward 4-hourly,Decayed max,threshold shift delta,0.2,5000,23.04,77.34,28.22
+ward 4-hourly,Stateless,threshold shift delta,0.25,5000,21.66,80.48,52.98
+ward 4-hourly,Max-hold,threshold shift delta,0.25,5000,21.66,86.12,21.66
+ward 4-hourly,Hysteresis,threshold shift delta,0.25,5000,21.66,86.1,25.84
+ward 4-hourly,Timed-release max-hold,threshold shift delta,0.25,5000,21.66,85.72,27.42
+ward 4-hourly,Decayed max,threshold shift delta,0.25,5000,21.66,85.84,27.46
+ward 4-hourly,Stateless,threshold shift delta,0.3,5000,7.34,86.23,49.34
+ward 4-hourly,Max-hold,threshold shift delta,0.3,5000,7.34,90.61,7.34
+ward 4-hourly,Hysteresis,threshold shift delta,0.3,5000,7.34,90.6,21.88
+ward 4-hourly,Timed-release max-hold,threshold shift delta,0.3,5000,7.34,90.42,25.42
+ward 4-hourly,Decayed max,threshold shift delta,0.3,5000,7.34,90.46,25.42
+ward 4-hourly,Stateless,threshold shift delta,0.35,5000,2.26,88.34,41.4
+ward 4-hourly,Max-hold,threshold shift delta,0.35,5000,2.26,91.95,2.26
+ward 4-hourly,Hysteresis,threshold shift delta,0.35,5000,2.26,91.94,20.54
+ward 4-hourly,Timed-release max-hold,threshold shift delta,0.35,5000,2.26,91.84,24.56
+ward 4-hourly,Decayed max,threshold shift delta,0.35,5000,2.26,91.85,24.84
+ward 4-hourly,Stateless,threshold shift delta,0.4,5000,2.02,90.03,36.94
+ward 4-hourly,Max-hold,threshold shift delta,0.4,5000,2.02,93.34,2.02
+ward 4-hourly,Hysteresis,threshold shift delta,0.4,5000,2.02,93.34,20.2
+ward 4-hourly,Timed-release max-hold,threshold shift delta,0.4,5000,2.02,93.28,20.74
+ward 4-hourly,Decayed max,threshold shift delta,0.4,5000,2.02,93.28,21.36
+ward 4-hourly,DRAS-5,T_max factor,1,5000,43.98,34.56,56.12
+ward 4-hourly,DRAS-5,T_max factor,10,5000,43.98,34.56,56.12
+ward 4-hourly,DRAS-5,T_max factor,30,5000,43.98,34.56,56.12
+ward 4-hourly,DRAS-5,T_max factor,60,5000,45.52,32.1,57.58
+ward 4-hourly,DRAS-5,T_max factor,120,5000,48.38,28.89,69.8
+ward 4-hourly,DRAS-5,T_max factor,240,5000,48.38,28.89,69.84
+ward 4-hourly,DRAS-5,T_max factor,480,5000,48.58,28.55,70.86
+ward 4-hourly,DRAS-5,T_max factor,inf,5000,48.58,28.55,70.86
+vital-sign,Stateless,threshold shift delta,0.0,1000,23.9,11.93,70.2
+vital-sign,Max-hold,threshold shift delta,0.0,1000,23.9,59.27,23.9
+vital-sign,Hysteresis,threshold shift delta,0.0,1000,23.9,56.95,56.9
+vital-sign,Timed-release max-hold,threshold shift delta,0.0,1000,23.9,43.74,56.9
+vital-sign,Decayed max,threshold shift delta,0.0,1000,23.9,33.08,56.9
+vital-sign,Stateless,threshold shift delta,0.05,1000,9.1,24.66,65.7
+vital-sign,Max-hold,threshold shift delta,0.05,1000,9.1,71.97,9.1
+vital-sign,Hysteresis,threshold shift delta,0.05,1000,9.1,70.83,39.1
+vital-sign,Timed-release max-hold,threshold shift delta,0.05,1000,9.1,65.32,39.1
+vital-sign,Decayed max,threshold shift delta,0.05,1000,9.1,56.23,39.1
+vital-sign,Stateless,threshold shift delta,0.1,1000,0.0,46.68,60.2
+vital-sign,Max-hold,threshold shift delta,0.1,1000,0.0,87.2,0.0
+vital-sign,Hysteresis,threshold shift delta,0.1,1000,0.0,87.2,21.3
+vital-sign,Timed-release max-hold,threshold shift delta,0.1,1000,0.0,86.37,21.3
+vital-sign,Decayed max,threshold shift delta,0.1,1000,0.0,80.67,21.3
+vital-sign,Stateless,threshold shift delta,0.15,1000,0.0,70.47,57.2
+vital-sign,Max-hold,threshold shift delta,0.15,1000,0.0,93.92,0.0
+vital-sign,Hysteresis,threshold shift delta,0.15,1000,0.0,93.92,10.0
+vital-sign,Timed-release max-hold,threshold shift delta,0.15,1000,0.0,93.86,10.0
+vital-sign,Decayed max,threshold shift delta,0.15,1000,0.0,91.81,10.0
+vital-sign,Stateless,threshold shift delta,0.2,1000,0.0,87.67,54.3
+vital-sign,Max-hold,threshold shift delta,0.2,1000,0.0,97.06,0.0
+vital-sign,Hysteresis,threshold shift delta,0.2,1000,0.0,97.06,2.5
+vital-sign,Timed-release max-hold,threshold shift delta,0.2,1000,0.0,97.06,2.5
+vital-sign,Decayed max,threshold shift delta,0.2,1000,0.0,96.32,2.7
+vital-sign,Stateless,threshold shift delta,0.25,1000,0.0,93.45,52.4
+vital-sign,Max-hold,threshold shift delta,0.25,1000,0.0,97.7,0.0
+vital-sign,Hysteresis,threshold shift delta,0.25,1000,0.0,97.7,0.1
+vital-sign,Timed-release max-hold,threshold shift delta,0.25,1000,0.0,97.7,0.1
+vital-sign,Decayed max,threshold shift delta,0.25,1000,0.0,97.6,0.1
+vital-sign,Stateless,threshold shift delta,0.3,1000,0.0,96.08,49.5
+vital-sign,Max-hold,threshold shift delta,0.3,1000,0.0,97.95,0.0
+vital-sign,Hysteresis,threshold shift delta,0.3,1000,0.0,97.94,0.0
+vital-sign,Timed-release max-hold,threshold shift delta,0.3,1000,0.0,97.94,0.0
+vital-sign,Decayed max,threshold shift delta,0.3,1000,0.0,97.92,0.0
+vital-sign,Stateless,threshold shift delta,0.35,1000,0.0,97.2,46.4
+vital-sign,Max-hold,threshold shift delta,0.35,1000,0.0,98.14,0.0
+vital-sign,Hysteresis,threshold shift delta,0.35,1000,0.0,98.13,0.0
+vital-sign,Timed-release max-hold,threshold shift delta,0.35,1000,0.0,98.13,0.0
+vital-sign,Decayed max,threshold shift delta,0.35,1000,0.0,98.08,0.0
+vital-sign,Stateless,threshold shift delta,0.4,1000,0.0,97.75,40.6
+vital-sign,Max-hold,threshold shift delta,0.4,1000,0.0,98.25,0.0
+vital-sign,Hysteresis,threshold shift delta,0.4,1000,0.0,98.25,0.0
+vital-sign,Timed-release max-hold,threshold shift delta,0.4,1000,0.0,98.25,0.0
+vital-sign,Decayed max,threshold shift delta,0.4,1000,0.0,98.24,0.0
+vital-sign,DRAS-5,T_max factor,0.25,1000,0.0,86.55,16.0
+vital-sign,DRAS-5,T_max factor,0.5,1000,0.7,83.68,21.2
+vital-sign,DRAS-5,T_max factor,1,1000,2.0,77.71,21.3
+vital-sign,DRAS-5,T_max factor,2,1000,2.0,70.5,21.3
+vital-sign,DRAS-5,T_max factor,4,1000,13.9,65.3,34.5
+vital-sign,DRAS-5,T_max factor,8,1000,19.4,62.52,40.1
+vital-sign,DRAS-5,T_max factor,16,1000,23.9,59.26,44.6
+vital-sign,DRAS-5,T_max factor,inf,1000,23.9,59.26,44.6
+"vital-sign, shifted",Stateless,threshold shift delta,0.0,1000,22.3,34.88,67.2
+"vital-sign, shifted",Max-hold,threshold shift delta,0.0,1000,22.3,73.53,22.3
+"vital-sign, shifted",Hysteresis,threshold shift delta,0.0,1000,22.3,71.84,56.5
+"vital-sign, shifted",Timed-release max-hold,threshold shift delta,0.0,1000,22.3,69.96,56.5
+"vital-sign, shifted",Decayed max,threshold shift delta,0.0,1000,22.3,62.23,56.7
+"vital-sign, shifted",Stateless,threshold shift delta,0.05,1000,3.0,51.05,61.9
+"vital-sign, shifted",Max-hold,threshold shift delta,0.05,1000,3.0,86.42,3.0
+"vital-sign, shifted",Hysteresis,threshold shift delta,0.05,1000,3.0,86.03,28.2
+"vital-sign, shifted",Timed-release max-hold,threshold shift delta,0.05,1000,3.0,85.58,28.2
+"vital-sign, shifted",Decayed max,threshold shift delta,0.05,1000,3.0,82.94,29.2
+"vital-sign, shifted",Stateless,threshold shift delta,0.1,1000,0.0,71.35,57.0
+"vital-sign, shifted",Max-hold,threshold shift delta,0.1,1000,0.0,95.02,0.0
+"vital-sign, shifted",Hysteresis,threshold shift delta,0.1,1000,0.0,95.01,12.6
+"vital-sign, shifted",Timed-release max-hold,threshold shift delta,0.1,1000,0.0,94.93,12.6
+"vital-sign, shifted",Decayed max,threshold shift delta,0.1,1000,0.0,94.11,13.5
+"vital-sign, shifted",Stateless,threshold shift delta,0.15,1000,0.0,85.54,54.4
+"vital-sign, shifted",Max-hold,threshold shift delta,0.15,1000,0.0,97.24,0.0
+"vital-sign, shifted",Hysteresis,threshold shift delta,0.15,1000,0.0,97.24,3.4
+"vital-sign, shifted",Timed-release max-hold,threshold shift delta,0.15,1000,0.0,97.23,3.4
+"vital-sign, shifted",Decayed max,threshold shift delta,0.15,1000,0.0,97.07,4.1
+"vital-sign, shifted",Stateless,threshold shift delta,0.2,1000,0.0,92.88,51.2
+"vital-sign, shifted",Max-hold,threshold shift delta,0.2,1000,0.0,97.84,0.0
+"vital-sign, shifted",Hysteresis,threshold shift delta,0.2,1000,0.0,97.83,0.4
+"vital-sign, shifted",Timed-release max-hold,threshold shift delta,0.2,1000,0.0,97.82,0.4
+"vital-sign, shifted",Decayed max,threshold shift delta,0.2,1000,0.0,97.78,0.4
+"vital-sign, shifted",Stateless,threshold shift delta,0.25,1000,0.0,95.93,48.0
+"vital-sign, shifted",Max-hold,threshold shift delta,0.25,1000,0.0,98.12,0.0
+"vital-sign, shifted",Hysteresis,threshold shift delta,0.25,1000,0.0,98.11,0.0
+"vital-sign, shifted",Timed-release max-hold,threshold shift delta,0.25,1000,0.0,98.11,0.0
+"vital-sign, shifted",Decayed max,threshold shift delta,0.25,1000,0.0,98.06,0.0
+"vital-sign, shifted",Stateless,threshold shift delta,0.3,1000,0.0,97.25,42.2
+"vital-sign, shifted",Max-hold,threshold shift delta,0.3,1000,0.0,98.24,0.0
+"vital-sign, shifted",Hysteresis,threshold shift delta,0.3,1000,0.0,98.24,0.0
+"vital-sign, shifted",Timed-release max-hold,threshold shift delta,0.3,1000,0.0,98.24,0.0
+"vital-sign, shifted",Decayed max,threshold shift delta,0.3,1000,0.0,98.23,0.0
+"vital-sign, shifted",Stateless,threshold shift delta,0.35,1000,0.0,97.83,36.5
+"vital-sign, shifted",Max-hold,threshold shift delta,0.35,1000,0.0,98.34,0.0
+"vital-sign, shifted",Hysteresis,threshold shift delta,0.35,1000,0.0,98.34,0.0
+"vital-sign, shifted",Timed-release max-hold,threshold shift delta,0.35,1000,0.0,98.34,0.0
+"vital-sign, shifted",Decayed max,threshold shift delta,0.35,1000,0.0,98.34,0.0
+"vital-sign, shifted",Stateless,threshold shift delta,0.4,1000,0.0,98.11,29.5
+"vital-sign, shifted",Max-hold,threshold shift delta,0.4,1000,0.0,98.56,0.0
+"vital-sign, shifted",Hysteresis,threshold shift delta,0.4,1000,0.0,98.56,0.0
+"vital-sign, shifted",Timed-release max-hold,threshold shift delta,0.4,1000,0.0,98.56,0.0
+"vital-sign, shifted",Decayed max,threshold shift delta,0.4,1000,0.0,98.56,0.0
+"vital-sign, shifted",DRAS-5,T_max factor,0.25,1000,0.0,95.44,3.5
+"vital-sign, shifted",DRAS-5,T_max factor,0.5,1000,0.0,94.21,12.1
+"vital-sign, shifted",DRAS-5,T_max factor,1,1000,0.1,91.37,17.6
+"vital-sign, shifted",DRAS-5,T_max factor,2,1000,0.3,87.62,18.8
+"vital-sign, shifted",DRAS-5,T_max factor,4,1000,1.7,82.58,20.1
+"vital-sign, shifted",DRAS-5,T_max factor,8,1000,16.6,77.25,35.0
+"vital-sign, shifted",DRAS-5,T_max factor,16,1000,21.6,73.54,40.0
+"vital-sign, shifted",DRAS-5,T_max factor,inf,1000,22.3,73.53,40.7

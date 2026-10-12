@@ -5,6 +5,20 @@ All notable changes to DRAS-5 will be documented in this file.
 The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.1.0/),
 and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0.html).
 
+## [1.6.0] - 2026-10-12
+
+Second revision round (items E-02, E-03, E-04, E-09, E-16, E-21 of the round-2 simulated review).
+
+### Added
+
+- `scripts/tradeoff_frontier.py`: reach versus over-escalation frontier (threshold shift for stateless, max-hold, hysteresis, timed release and decayed max; T_max factor for DRAS-5) at ward hourly/irregular/4-hourly charting and behind the vital-sign predictor, with a matched-OER comparison; the recoverable comparison re-run on two-hour (720-sample) episodes; premature step-downs counted against the noise-free trajectory. Outputs `results/tradeoff_frontier.csv`, `tradeoff_matched.csv`, `long_episodes.csv`, `long_episodes_summary.json`, `premature_noisefree.csv`.
+
+### Changed
+
+- `scripts/ward_timing.py`: adds decayed max at ward decay rates and the column `c2_timeouts_per_patient_day`; all earlier rows are unchanged.
+- `scripts/fig_recoverable.py`: panel (a) relabelled "ended below the sustained input peak"; panel (b) x-axis to 80%.
+- README and REPRODUCIBILITY: install from the clone (`pip install -e .` or `PYTHONPATH=src`), script runtimes, and which script writes which CSV.
+
 ## [1.5.0] - 2026-10-12
 
 Revision in response to a ten-reviewer simulated review (items D-04..D-18).

@@ -14,10 +14,12 @@ scored on the full 14.4-min truth grid against the TRUE level, so a peak that fa
 charts is a real miss for every system.
 
 Systems: stateless chart (NEWS2-style), max-hold, hysteresis and timed-release max-hold with
-the ward-scaled cooling windows, DRAS-5 with the shipped parameters (seconds), and DRAS-5 with
+the ward-scaled cooling windows, decayed max with the ward-scaled decay rates (lambda/60, S5
+absorbing; added in v1.6.0), DRAS-5 with the shipped parameters (seconds), and DRAS-5 with
 every timeout and cooling window multiplied by 60 and every decay rate divided by 60
 (T_max 5 h / 2 h / 1 h; T_cool 10 h / 5 h / 3 h), a ward-scale configuration that is
-illustrative, not calibrated.
+illustrative, not calibrated. For DRAS-5 the C2 timeout escalations per patient-day are also
+reported (v1.6.0).
 
 Output: results/ward_timing.csv     Usage: python scripts/ward_timing.py [--n 5000] [--seed 42]
 """
@@ -49,7 +51,8 @@ SCALE = 60.0
 REG_LIMIT_S = 3600.0
 SCHEDULES = ("hourly", "irregular", "4-hourly")
 SYSTEMS = ("Stateless chart", "Max-hold", "Hysteresis (ward windows)",
-           "Timed-release max-hold (ward windows)", "DRAS-5 (shipped seconds)", "DRAS-5 (ward-scaled x60)")
+           "Timed-release max-hold (ward windows)", "Decayed max (ward rates)",
+           "DRAS-5 (shipped seconds)", "DRAS-5 (ward-scaled x60)")
 
 
 def chart_times(schedule: str, rng: random.Random):
@@ -80,15 +83,16 @@ def run_dras(times, vals, scale):
                 cfg[s]["lam"] = saved[s][1] / scale
         sm = DRAS5StateMachine(enable_audit=False, require_human_approval=False)
         sm.STATE_TIMEOUTS = {s: v * scale for s, v in DRAS5StateMachine.STATE_TIMEOUTS.items()}
-        levels, grants, requests = [], 0, 0
+        levels, grants, requests, timeouts = [], 0, 0, 0
         for t, r in zip(times, vals):
             before = sm.current_state
             want = risk_to_state(r) < before and before not in (RiskState.SAFE, RiskState.EMERGENCY)
             requests += int(want)
             new = sm.update(r, t=t, human_approved=True, deescalation_request=want, dual_approval=want)
             grants += int(want and new < before)
+            timeouts += int(new > max(before, risk_to_state(r)))
             levels.append(int(new))
-        return levels, grants, requests
+        return levels, grants, requests, timeouts
     finally:
         for s in RiskState:
             cfg[s]["t_cool"], cfg[s]["lam"] = saved[s]
@@ -118,6 +122,17 @@ def timed_release(times, lv):
     return out
 
 
+def decayed_max(times, vals):
+    out, d, cur, last = [], vals[0], int(risk_to_state(vals[0])), times[0]
+    for t, v in zip(times, vals):
+        lam = states_mod.STATE_CONFIG[RiskState(min(max(cur, 2), 4))]["lam"] / SCALE
+        d = max(v, d * math.exp(-lam * (t - last)))
+        last = t
+        cur = 5 if cur == 5 else int(risk_to_state(min(1.0, d)))
+        out.append(cur)
+    return out
+
+
 def to_grid(times, levels):
     out, j = [], 0
     for k in range(run_all.N_STEPS):
@@ -131,7 +146,7 @@ def to_grid(times, levels):
 def family(args):
     tt, per, seed = args
     acc = {(sch, s): [] for sch in SCHEDULES for s in SYSTEMS}
-    extra = {(sch, s): [0, 0, 0] for sch in SCHEDULES for s in SYSTEMS}  # grants, requests, charts
+    extra = {(sch, s): [0, 0, 0, 0] for sch in SCHEDULES for s in SYSTEMS}  # grants, requests, charts, timeouts
     for j in range(per):
         tseed = run_all._traj_seed(seed, tt, j)
         rho = run_all.make_trajectory(tt, tseed)
@@ -146,13 +161,15 @@ def family(args):
             for l in lv:
                 cur = max(cur, l)
                 mh.append(cur)
-            d_s, g_s, r_s = run_dras(times, vals, 1.0)
-            d_w, g_w, r_w = run_dras(times, vals, SCALE)
-            reps = {"Stateless chart": (lv, 0, 0), "Max-hold": (mh, 0, 0),
-                    "Hysteresis (ward windows)": (hysteresis(times, lv), 0, 0),
-                    "Timed-release max-hold (ward windows)": (timed_release(times, lv), 0, 0),
-                    "DRAS-5 (shipped seconds)": (d_s, g_s, r_s), "DRAS-5 (ward-scaled x60)": (d_w, g_w, r_w)}
-            for s, (rep, g, r) in reps.items():
+            d_s, g_s, r_s, c_s = run_dras(times, vals, 1.0)
+            d_w, g_w, r_w, c_w = run_dras(times, vals, SCALE)
+            reps = {"Stateless chart": (lv, 0, 0, 0), "Max-hold": (mh, 0, 0, 0),
+                    "Hysteresis (ward windows)": (hysteresis(times, lv), 0, 0, 0),
+                    "Timed-release max-hold (ward windows)": (timed_release(times, lv), 0, 0, 0),
+                    "Decayed max (ward rates)": (decayed_max(times, vals), 0, 0, 0),
+                    "DRAS-5 (shipped seconds)": (d_s, g_s, r_s, c_s),
+                    "DRAS-5 (ward-scaled x60)": (d_w, g_w, r_w, c_w)}
+            for s, (rep, g, r, c) in reps.items():
                 grid = to_grid(times, rep)
                 reg = next((k for k in range(t0, len(grid)) if grid[k] >= peak), None)
                 delay = None if reg is None else (reg - t0) * GRID_S
@@ -165,6 +182,7 @@ def family(args):
                 e[0] += g
                 e[1] += r
                 e[2] += len(times)
+                e[3] += c
     return acc, extra
 
 
@@ -183,6 +201,7 @@ def main():
             g = sum(p[1][(sch, s)][0] for p in parts)
             r = sum(p[1][(sch, s)][1] for p in parts)
             charts = sum(p[1][(sch, s)][2] for p in parts)
+            to = sum(p[1][(sch, s)][3] for p in parts)
             delays = sorted(d["delay"] for d in data if d["delay"] is not None)
             n = len(data)
             rows.append({
@@ -194,7 +213,8 @@ def main():
                 "median_delay_min": round(delays[len(delays) // 2] / 60, 1) if delays else "",
                 "not_registered_60min_pct": round(100 * sum(d["late"] for d in data) / n, 2),
                 "c5_grants": g if s.startswith("DRAS") else "",
-                "c5_requests_per_patient": round(r / n, 2) if s.startswith("DRAS") else ""})
+                "c5_requests_per_patient": round(r / n, 2) if s.startswith("DRAS") else "",
+                "c2_timeouts_per_patient_day": round(to / n, 2) if s.startswith("DRAS") else ""})
     with open(REPO / "results" / "ward_timing.csv", "w", newline="", encoding="utf-8") as fh:
         w = csv.DictWriter(fh, fieldnames=list(rows[0]))
         w.writeheader()
