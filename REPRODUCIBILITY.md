@@ -102,3 +102,16 @@ timeout raises an approval request instead of promoting, and timeout transitions
 flag actually supplied. `scripts/compliance_audit.py` counts every constraint on the seeded cohort
 (`results/compliance.csv`). The main driver runs with approval granted, so `run_all.py` outputs are
 unchanged.
+
+
+## Script runtimes and outputs (v1.6.0)
+
+Run every command from the clone with `PYTHONPATH=src` (or after `pip install -e .` in the clone); otherwise a differently installed `dras5` may be imported. Runtimes on an Intel Core i7-7700HQ laptop:
+
+| Script | Runtime | Writes |
+|---|---|---|
+| `scripts/recoverable_baselines.py` | about 4 min | `recoverable_baselines.csv`, `recoverable_summary.json`, `mixture_sensitivity.csv`, `generator_sensitivity.csv` |
+| `scripts/ml_wrapper_v2.py` | about 4 min | `ml_wrapper_v2.csv` |
+| `scripts/tradeoff_frontier.py` | about 5 min | `tradeoff_frontier.csv`, `tradeoff_matched.csv`, `long_episodes.csv`, `long_episodes_summary.json`, `premature_noisefree.csv` |
+| `scripts/ward_timing.py` | about 10 s | `ward_timing.csv` |
+| `scripts/fig_recoverable.py` | seconds | `figures/fig_systems_mer_oer.pdf` |

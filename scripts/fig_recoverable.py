@@ -1,6 +1,7 @@
 """Figure: end-of-episode miss rate and over-escalation for every system (results/recoverable_baselines.csv).
 
-Panel (a): MER_end (%) by trajectory family. Panel (b): overall binary OER (%) and end-of-episode
+Panel (a): share of episodes that end below the sustained input peak (MER_end, %), by family;
+for a recoverable system this counts appropriate recovery too, so it is not a miss rate. Panel (b): overall binary OER (%) and end-of-episode
 excess (levels). Output: figures/fig_systems_mer_oer.pdf (+ .png at 300 dpi).
 Usage: python scripts/fig_recoverable.py
 """
@@ -40,10 +41,10 @@ def main() -> None:
         vals = [float(get[(key, f)]["mer_end_pct"]) for f, _ in FAMS]
         ax1.bar(x - 0.4 + w * (k + 0.5), vals, w, color=c, edgecolor="black", linewidth=0.4, label=label)
     ax1.set_xticks(x, [lab for _, lab in FAMS])
-    ax1.set_ylabel(r"MER$_{\mathrm{end}}$ (%)")
+    ax1.set_ylabel("Ended below sustained peak (%)")
     ax1.set_ylim(0, 105)
     ax1.title.set_y(1.3)
-    ax1.set_title("(a) End-of-episode miss rate by family", fontsize=9, loc="left")
+    ax1.set_title("(a) Episodes ending below the sustained input peak, by family", fontsize=9, loc="left")
     ax1.grid(axis="y", lw=0.3, alpha=0.5)
     ax1.legend(fontsize=7.5, ncol=3, loc="lower center", bbox_to_anchor=(0.45, 1.07), frameon=False)
     y = np.arange(len(SYSTEMS))
@@ -51,10 +52,11 @@ def main() -> None:
     exc = [float(get[(k, "OVERALL")]["end_excess_levels"]) for k, _ in SYSTEMS]
     ax2.barh(y, oer, color=COLORS, edgecolor="black", linewidth=0.4)
     for yi, (o, e) in enumerate(zip(oer, exc)):
-        ax2.text(o + 1, yi, f"{o:.1f}%  | excess {e:.2f}", va="center", fontsize=7.5)
+        ax2.text(o - 1 if o > 20 else o + 1, yi, f"{o:.1f}%  | excess {e:.2f}", va="center",
+                 ha="right" if o > 20 else "left", fontsize=7.5)
     ax2.set_yticks(y, [lab for _, lab in SYSTEMS])
     ax2.invert_yaxis()
-    ax2.set_xlim(0, 125)
+    ax2.set_xlim(0, 80)
     ax2.set_xlabel("Binary over-escalation, OER (%)")
     ax2.set_title("(b) Overall OER and end-of-episode excess (levels)", fontsize=9, loc="left")
     ax2.grid(axis="x", lw=0.3, alpha=0.5)

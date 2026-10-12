@@ -30,6 +30,14 @@ All figures below come from `python scripts/run_all.py` at seed 42 on the synthe
 - `python scripts/run_tlc.py` regenerates the TLC outputs; eight mutants are rejected.
 - Result keys follow the paper: `mer_reach_*` (never reached the sustained peak) and `mer_end_*` (final level below it). `under_recognition_overall_pct` in `summary.json` is the fraction of the post-peak window a stateless score sits below the sustained peak; it is a diagnostic and is not reported in the paper.
 
+## Revision v1.6.0 (2026-10-12, round 2): what changed in the findings
+
+- **Install from the clone.** If another copy of `dras5` is installed (for example an editable install of a different working tree), the scripts may import it instead of this clone. Run `pip install -e .` inside the clone, or prefix every command with `PYTHONPATH=src` (PowerShell: `$env:PYTHONPATH="src"`).
+- `scripts/tradeoff_frontier.py` (about 5 min) sweeps a threshold shift for every baseline and a `T_max` factor for DRAS-5 at the ward and predictor settings. At matched or lower over-escalation, a stateless scorer with every threshold lowered by 0.1 misses as few or fewer true peaks than DRAS-5 (ward hourly: 2.22% at OER 46.1% vs 2.44% at 59.5%; vital-sign predictor: 0.0% at 46.7% vs 2.0% at 77.7%). The C2 reach gain is a point on the reach/over-escalation trade-off, not a gain at matched burden (`results/tradeoff_frontier.csv`, `results/tradeoff_matched.csv`).
+- Two-hour episodes (`results/long_episodes.csv`): DRAS-5 still makes only the 1,250 S4 -> S3 steps; the recoverable filters' advantage in end excess grows (paired difference +0.53 levels).
+- Premature step-downs against the noise-free trajectory (`results/premature_noisefree.csv`): decayed max 1,221 of 8,892 step-downs (13.7%), timed release 10, hysteresis 0, DRAS-5 0.
+- `scripts/ward_timing.py` now also runs decayed max at ward rates and reports C2 timeouts per patient-day.
+
 ## Repository structure
 
 ```text
