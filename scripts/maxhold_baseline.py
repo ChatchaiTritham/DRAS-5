@@ -46,9 +46,9 @@ def maxhold_levels(rho, interval: int):
 def _blank():
     # mer_end  : level at the episode's decision point is below the sustained peak
     #            (Definition 11, the definition used for the stateless baselines)
-    # mer_ever : the system never reached the sustained peak at any point
+    # mer_reach : the system never reached the sustained peak at any point
     #            (the definition under which Theorem 1 gives DRAS-5 0%)
-    return {"mer_end": [], "mer_ever": [], "oer": [], "over": 0, "steps": 0,
+    return {"mer_end": [], "mer_reach": [], "oer": [], "over": 0, "steps": 0,
             "late_over": 0, "late_steps": 0}
 
 
@@ -70,7 +70,7 @@ def evaluate(n_traj: int, base_seed: int, intervals=(1, 2)):
             for arm, rep in reports.items():
                 d = per_type[arm][tt]
                 d["mer_end"].append(1 if rep[-1] < peak else 0)
-                d["mer_ever"].append(1 if max(rep) < peak else 0)
+                d["mer_reach"].append(1 if max(rep) < peak else 0)
                 over = sum(1 for t in range(len(truth)) if rep[t] > truth[t])
                 d["oer"].append(over / len(truth))
                 d["over"] += over
@@ -92,7 +92,7 @@ def main() -> None:
         tot_over = sum(d["over"] for d in types.values())
         tot_steps = sum(d["steps"] for d in types.values())
         tot_end = sum(sum(d["mer_end"]) for d in types.values())
-        tot_ever = sum(sum(d["mer_ever"]) for d in types.values())
+        tot_reach = sum(sum(d["mer_reach"]) for d in types.values())
         tot_n = sum(len(d["mer_end"]) for d in types.values())
         late_over = sum(d["late_over"] for d in types.values())
         late_steps = sum(d["late_steps"] for d in types.values())
@@ -100,15 +100,15 @@ def main() -> None:
             rows.append({"system": arm, "trajectory_type": tt,
                          "n": len(d["mer_end"]),
                          "mer_end_pct": round(100 * sum(d["mer_end"]) / len(d["mer_end"]), 2),
-                         "mer_ever_pct": round(100 * sum(d["mer_ever"]) / len(d["mer_ever"]), 2),
+                         "mer_reach_pct": round(100 * sum(d["mer_reach"]) / len(d["mer_reach"]), 2),
                          "oer_pct": round(100 * d["over"] / d["steps"], 2)})
         rows.append({"system": arm, "trajectory_type": "OVERALL", "n": tot_n,
                      "mer_end_pct": round(100 * tot_end / tot_n, 2),
-                     "mer_ever_pct": round(100 * tot_ever / tot_n, 2),
+                     "mer_reach_pct": round(100 * tot_reach / tot_n, 2),
                      "oer_pct": round(100 * tot_over / tot_steps, 2)})
         rows.append({"system": arm, "trajectory_type": "OVERALL_second_half",
                      "n": tot_n, "mer_end_pct": round(100 * tot_end / tot_n, 2),
-                     "mer_ever_pct": round(100 * tot_ever / tot_n, 2),
+                     "mer_reach_pct": round(100 * tot_reach / tot_n, 2),
                      "oer_pct": round(100 * late_over / late_steps, 2)})
 
     summary_path = REPO / "results" / "summary.json"
@@ -121,16 +121,16 @@ def main() -> None:
         w.writerows(rows)
     (REPO / "results" / "maxhold_baseline.json").write_text(json.dumps({
         "seed": args.seed, "n_trajectories": args.n, "rows": rows,
-        "dras5_reference": {"mer_pct": dras.get("mer_overall_pct", {}).get("dras5"),
+        "dras5_reference": {"mer_pct": dras.get("mer_reach_overall_pct", {}).get("dras5"),
                             "oer_with_c5_pct": dras.get("oer_overall_pct", {}).get("with_c5"),
                             "c5_grants": dras.get("c5_outcomes", {}).get("granted")},
     }, indent=2) + "\n", encoding="utf-8")
 
-    print(f"{'system':>16} {'type':>22} {'MERend%':>8} {'MERever%':>9} {'OER%':>7}")
+    print(f"{'system':>16} {'type':>22} {'MERend%':>8} {'MERreach%':>9} {'OER%':>7}")
     for r in rows:
         print(f"{r['system']:>16} {r['trajectory_type']:>22} {r['mer_end_pct']:>8.2f} "
-              f"{r['mer_ever_pct']:>9.2f} {r['oer_pct']:>7.2f}")
-    print(f"\nDRAS-5 (results/summary.json): MER {dras.get('mer_overall_pct', {}).get('dras5')}%, "
+              f"{r['mer_reach_pct']:>9.2f} {r['oer_pct']:>7.2f}")
+    print(f"\nDRAS-5 (results/summary.json): MER {dras.get('mer_reach_overall_pct', {}).get('dras5')}%, "
           f"OER {dras.get('oer_overall_pct', {}).get('with_c5')}%, "
           f"{dras.get('c5_outcomes', {}).get('granted')} C5 grants")
     print("wrote", out_csv.relative_to(REPO))

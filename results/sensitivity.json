@@ -27,7 +27,7 @@
       "theta_2": 0.425,
       "theta_3": 0.595,
       "theta_4": 0.765,
-      "mer_dras5_pct": 0.0,
+      "mer_reach_dras5_pct": 0.0,
       "oer_no_c5_pct": 61.74,
       "oer_with_c5_pct": 61.74,
       "c5_granted": 224
@@ -39,7 +39,7 @@
       "theta_2": 0.45,
       "theta_3": 0.63,
       "theta_4": 0.81,
-      "mer_dras5_pct": 0.0,
+      "mer_reach_dras5_pct": 0.0,
       "oer_no_c5_pct": 64.91,
       "oer_with_c5_pct": 64.91,
       "c5_granted": 1168
@@ -51,7 +51,7 @@
       "theta_2": 0.475,
       "theta_3": 0.665,
       "theta_4": 0.855,
-      "mer_dras5_pct": 0.0,
+      "mer_reach_dras5_pct": 0.0,
       "oer_no_c5_pct": 68.25,
       "oer_with_c5_pct": 68.25,
       "c5_granted": 1250
@@ -63,7 +63,7 @@
       "theta_2": 0.5,
       "theta_3": 0.7,
       "theta_4": 0.9,
-      "mer_dras5_pct": 0.0,
+      "mer_reach_dras5_pct": 0.0,
       "oer_no_c5_pct": 69.71,
       "oer_with_c5_pct": 69.71,
       "c5_granted": 1250
@@ -75,7 +75,7 @@
       "theta_2": 0.525,
       "theta_3": 0.735,
       "theta_4": 0.945,
-      "mer_dras5_pct": 0.0,
+      "mer_reach_dras5_pct": 0.0,
       "oer_no_c5_pct": 67.7,
       "oer_with_c5_pct": 67.7,
       "c5_granted": 1241
@@ -87,7 +87,7 @@
       "theta_2": 0.55,
       "theta_3": 0.77,
       "theta_4": 0.99,
-      "mer_dras5_pct": 0.0,
+      "mer_reach_dras5_pct": 0.0,
       "oer_no_c5_pct": 66.06,
       "oer_with_c5_pct": 66.06,
       "c5_granted": 1056
@@ -99,7 +99,7 @@
       "theta_2": 0.575,
       "theta_3": 0.805,
       "theta_4": 1.0,
-      "mer_dras5_pct": 0.0,
+      "mer_reach_dras5_pct": 0.0,
       "oer_no_c5_pct": 64.86,
       "oer_with_c5_pct": 64.86,
       "c5_granted": 921
@@ -111,7 +111,7 @@
       "theta_2": 0.5,
       "theta_3": 0.7,
       "theta_4": 0.9,
-      "mer_dras5_pct": 0.0,
+      "mer_reach_dras5_pct": 0.0,
       "oer_no_c5_pct": 69.71,
       "oer_with_c5_pct": 69.71,
       "c5_granted": 1249
@@ -123,7 +123,7 @@
       "theta_2": 0.5,
       "theta_3": 0.7,
       "theta_4": 0.9,
-      "mer_dras5_pct": 0.0,
+      "mer_reach_dras5_pct": 0.0,
       "oer_no_c5_pct": 69.71,
       "oer_with_c5_pct": 69.71,
       "c5_granted": 1250
@@ -135,7 +135,7 @@
       "theta_2": 0.5,
       "theta_3": 0.7,
       "theta_4": 0.9,
-      "mer_dras5_pct": 0.0,
+      "mer_reach_dras5_pct": 0.0,
       "oer_no_c5_pct": 69.71,
       "oer_with_c5_pct": 69.71,
       "c5_granted": 1250
@@ -147,7 +147,7 @@
       "theta_2": 0.5,
       "theta_3": 0.7,
       "theta_4": 0.9,
-      "mer_dras5_pct": 0.0,
+      "mer_reach_dras5_pct": 0.0,
       "oer_no_c5_pct": 69.71,
       "oer_with_c5_pct": 69.71,
       "c5_granted": 1250
@@ -159,7 +159,7 @@
       "theta_2": 0.5,
       "theta_3": 0.7,
       "theta_4": 0.9,
-      "mer_dras5_pct": 0.0,
+      "mer_reach_dras5_pct": 0.0,
       "oer_no_c5_pct": 69.71,
       "oer_with_c5_pct": 69.71,
       "c5_granted": 1250
@@ -171,7 +171,7 @@
       "theta_2": 0.5,
       "theta_3": 0.7,
       "theta_4": 0.9,
-      "mer_dras5_pct": 0.0,
+      "mer_reach_dras5_pct": 0.0,
       "oer_no_c5_pct": 69.71,
       "oer_with_c5_pct": 69.71,
       "c5_granted": 1250

@@ -7,7 +7,7 @@
       "trajectory_type": "monotonic",
       "n": 1250,
       "mer_end_pct": 0.0,
-      "mer_ever_pct": 0.0,
+      "mer_reach_pct": 0.0,
       "oer_pct": 4.93
     },
     {
@@ -15,7 +15,7 @@
       "trajectory_type": "oscillating",
       "n": 1250,
       "mer_end_pct": 0.0,
-      "mer_ever_pct": 0.0,
+      "mer_reach_pct": 0.0,
       "oer_pct": 79.6
     },
     {
@@ -23,7 +23,7 @@
       "trajectory_type": "spike_emergency",
       "n": 1250,
       "mer_end_pct": 0.0,
-      "mer_ever_pct": 0.0,
+      "mer_reach_pct": 0.0,
       "oer_pct": 74.65
     },
     {
@@ -31,7 +31,7 @@
       "trajectory_type": "spike_critical",
       "n": 1250,
       "mer_end_pct": 0.0,
-      "mer_ever_pct": 0.0,
+      "mer_reach_pct": 0.0,
       "oer_pct": 75.6
     },
     {
@@ -39,7 +39,7 @@
       "trajectory_type": "OVERALL",
       "n": 5000,
       "mer_end_pct": 0.0,
-      "mer_ever_pct": 0.0,
+      "mer_reach_pct": 0.0,
       "oer_pct": 58.69
     },
     {
@@ -47,7 +47,7 @@
       "trajectory_type": "OVERALL_second_half",
       "n": 5000,
       "mer_end_pct": 0.0,
-      "mer_ever_pct": 0.0,
+      "mer_reach_pct": 0.0,
       "oer_pct": 74.13
     },
     {
@@ -55,7 +55,7 @@
       "trajectory_type": "monotonic",
       "n": 1250,
       "mer_end_pct": 0.0,
-      "mer_ever_pct": 0.0,
+      "mer_reach_pct": 0.0,
       "oer_pct": 3.15
     },
     {
@@ -63,7 +63,7 @@
       "trajectory_type": "oscillating",
       "n": 1250,
       "mer_end_pct": 0.0,
-      "mer_ever_pct": 0.0,
+      "mer_reach_pct": 0.0,
       "oer_pct": 72.97
     },
     {
@@ -71,7 +71,7 @@
       "trajectory_type": "spike_emergency",
       "n": 1250,
       "mer_end_pct": 0.0,
-      "mer_ever_pct": 0.0,
+      "mer_reach_pct": 0.0,
       "oer_pct": 68.61
     },
     {
@@ -79,7 +79,7 @@
       "trajectory_type": "spike_critical",
       "n": 1250,
       "mer_end_pct": 0.0,
-      "mer_ever_pct": 0.0,
+      "mer_reach_pct": 0.0,
       "oer_pct": 73.63
     },
     {
@@ -87,7 +87,7 @@
       "trajectory_type": "OVERALL",
       "n": 5000,
       "mer_end_pct": 0.0,
-      "mer_ever_pct": 0.0,
+      "mer_reach_pct": 0.0,
       "oer_pct": 54.59
     },
     {
@@ -95,7 +95,7 @@
       "trajectory_type": "OVERALL_second_half",
       "n": 5000,
       "mer_end_pct": 0.0,
-      "mer_ever_pct": 0.0,
+      "mer_reach_pct": 0.0,
       "oer_pct": 71.57
     },
     {
@@ -103,7 +103,7 @@
       "trajectory_type": "monotonic",
       "n": 1250,
       "mer_end_pct": 0.0,
-      "mer_ever_pct": 0.0,
+      "mer_reach_pct": 0.0,
       "oer_pct": 40.24
     },
     {
@@ -111,7 +111,7 @@
       "trajectory_type": "oscillating",
       "n": 1250,
       "mer_end_pct": 0.0,
-      "mer_ever_pct": 0.0,
+      "mer_reach_pct": 0.0,
       "oer_pct": 88.04
     },
     {
@@ -119,7 +119,7 @@
       "trajectory_type": "spike_emergency",
       "n": 1250,
       "mer_end_pct": 0.0,
-      "mer_ever_pct": 0.0,
+      "mer_reach_pct": 0.0,
       "oer_pct": 74.98
     },
     {
@@ -127,7 +127,7 @@
       "trajectory_type": "spike_critical",
       "n": 1250,
       "mer_end_pct": 81.84,
-      "mer_ever_pct": 0.0,
+      "mer_reach_pct": 0.0,
       "oer_pct": 75.6
     },
     {
@@ -135,7 +135,7 @@
       "trajectory_type": "OVERALL",
       "n": 5000,
       "mer_end_pct": 20.46,
-      "mer_ever_pct": 0.0,
+      "mer_reach_pct": 0.0,
       "oer_pct": 69.71
     },
     {
@@ -143,7 +143,7 @@
       "trajectory_type": "OVERALL_second_half",
       "n": 5000,
       "mer_end_pct": 20.46,
-      "mer_ever_pct": 0.0,
+      "mer_reach_pct": 0.0,
       "oer_pct": 93.56
     },
     {
@@ -151,7 +151,7 @@
       "trajectory_type": "monotonic",
       "n": 1250,
       "mer_end_pct": 0.0,
-      "mer_ever_pct": 0.0,
+      "mer_reach_pct": 0.0,
       "oer_pct": 40.24
     },
     {
@@ -159,7 +159,7 @@
       "trajectory_type": "oscillating",
       "n": 1250,
       "mer_end_pct": 0.0,
-      "mer_ever_pct": 0.0,
+      "mer_reach_pct": 0.0,
       "oer_pct": 88.04
     },
     {
@@ -167,7 +167,7 @@
       "trajectory_type": "spike_emergency",
       "n": 1250,
       "mer_end_pct": 0.0,
-      "mer_ever_pct": 0.0,
+      "mer_reach_pct": 0.0,
       "oer_pct": 74.98
     },
     {
@@ -175,7 +175,7 @@
       "trajectory_type": "spike_critical",
       "n": 1250,
       "mer_end_pct": 0.0,
-      "mer_ever_pct": 0.0,
+      "mer_reach_pct": 0.0,
       "oer_pct": 75.6
     },
     {
@@ -183,7 +183,7 @@
       "trajectory_type": "OVERALL",
       "n": 5000,
       "mer_end_pct": 0.0,
-      "mer_ever_pct": 0.0,
+      "mer_reach_pct": 0.0,
       "oer_pct": 69.71
     },
     {
@@ -191,7 +191,7 @@
       "trajectory_type": "OVERALL_second_half",
       "n": 5000,
       "mer_end_pct": 0.0,
-      "mer_ever_pct": 0.0,
+      "mer_reach_pct": 0.0,
       "oer_pct": 93.56
     }
   ],

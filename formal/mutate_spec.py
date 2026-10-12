@@ -1,4 +1,5 @@
 """Sanity check that the TLC properties have teeth: break the spec one way at a time, expect a violation."""
+import os
 import re
 import shutil
 import subprocess
@@ -16,6 +17,10 @@ MUTANTS = {
     "C5b broken (one approval suffices)": ("/\\ m = 1 /\\ p3 = s", "/\\ m # 0 /\\ p3 = s"),
     "C2 broken (timeout late by 3 ticks)": ("el > TMAX[s] /\\ t >= s", "el > TMAX[s] + 3 /\\ t >= s"),
     "C3 broken (no audit entry)": ("/\\ logged' = (s2 # s)", "/\\ logged' = FALSE"),
+    "C5c broken (a grant may drop two levels)": ("s2   == IF ok THEN s - 1 ELSE p3",
+                                                 "s2   == IF ok /\\ s > 2 THEN s - 2 ELSE IF ok THEN s - 1 ELSE p3"),
+    "Reach broken (a band-4 input is not registered)": ("p2   == Max(p1, t)",
+                                                        "p2   == IF t = 4 THEN p1 ELSE Max(p1, t)"),
 }
 work = HERE / "mut"
 work.mkdir(exist_ok=True)
@@ -23,7 +28,7 @@ shutil.copy(HERE / "safe_60_TRUE.cfg", work / "safe_60_TRUE.cfg")
 for name, (old, new) in MUTANTS.items():
     assert SRC.count(old) == 1, name
     (work / "DRAS5.tla").write_text(SRC.replace(old, new), encoding="utf-8")
-    r = subprocess.run(["java", "-cp", str(HERE / "tla2tools.jar"), "tlc2.TLC", "-workers", "8",
+    r = subprocess.run(["java", "-cp", os.environ.get("TLA2TOOLS", str(HERE / "tla2tools.jar")), "tlc2.TLC", "-workers", "8",
                         "-config", "safe_60_TRUE.cfg", "DRAS5.tla"], cwd=work, capture_output=True, text=True)
     out = r.stdout + r.stderr
     m = re.search(r"(Invariant \w+ is violated|Action property \w+ is violated|Temporal properties were violated|No error has been found|Error: [^\n]*)", out)

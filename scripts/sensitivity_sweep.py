@@ -125,7 +125,7 @@ def run_configuration(n_traj: int, seed: int, tau_scale: float, lam_scale: float
         "theta_2": round(bounds[1], 4),
         "theta_3": round(bounds[2], 4),
         "theta_4": round(bounds[3], 4),
-        "mer_dras5_pct": summary["mer_overall_pct"]["dras5"],
+        "mer_reach_dras5_pct": summary["mer_reach_overall_pct"]["dras5"],
         "oer_no_c5_pct": summary["oer_overall_pct"]["no_c5"],
         "oer_with_c5_pct": summary["oer_overall_pct"]["with_c5"],
         "c5_granted": c5_totals.get("granted"),
@@ -159,7 +159,7 @@ def main() -> None:
     print(f"{'thr':>5} {'lam':>5} {'MER%':>6} {'OER no-C5%':>11} {'OER C5%':>8} {'grants':>8}")
     for r in rows:
         print(f"{r['threshold_scale']:>5.2f} {r['decay_scale']:>5.2f} "
-              f"{r['mer_dras5_pct']:>6.2f} {r['oer_no_c5_pct']:>11.2f} "
+              f"{r['mer_reach_dras5_pct']:>6.2f} {r['oer_no_c5_pct']:>11.2f} "
               f"{r['oer_with_c5_pct']:>8.2f} {str(r['c5_granted']):>8}")
     print("wrote", out_csv.relative_to(REPO))
 

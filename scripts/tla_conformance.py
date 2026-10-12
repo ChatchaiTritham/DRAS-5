@@ -6,7 +6,14 @@ released machine. Whatever the machine does with rho_eff (the exponential decay)
 the machine and fed to the model as the nondeterministic `effNew`, after checking that it lies
 in the set the model allows. The two level sequences must then agree on every step.
 
-Output: results/tla_conformance.json.   Usage: python scripts/tla_conformance.py [--n 60000]
+Independent-oracle variant (--oracle): instead of reading rho_eff off the machine, the model's
+`effNew` is the band of rho_eff recomputed independently from the raw inputs by Eq. (decay)
+(peak and peak time since entry into the current level, decay rate of that level), so a wrong
+decay computation in the code would show up as a level mismatch instead of being copied into
+the model.
+
+Output: results/tla_conformance.json (and tla_conformance_oracle.json with --oracle).
+Usage: python scripts/tla_conformance.py [--n 60000] [--oracle]
 """
 from __future__ import annotations
 
@@ -23,7 +30,9 @@ REPO = Path(__file__).resolve().parents[1]
 sys.path.insert(0, str(REPO / "src"))
 
 from dras5.state_machine import DRAS5StateMachine  # noqa: E402
-from dras5.states import RiskState, risk_to_state  # noqa: E402
+import math  # noqa: E402
+
+from dras5.states import STATE_CONFIG, RiskState, risk_to_state  # noqa: E402
 
 TICKS = {10: dict(tmax=(999, 30, 12, 6, 999), tcool=(0, 60, 30, 18, 0), tcoolf=(0, 60, 30, 18, 0), cap=61),
          60: dict(tmax=(999, 5, 2, 1, 999), tcool=(0, 10, 5, 3, 0), tcoolf=(0, 10, 5, 3, 0), cap=12),
@@ -54,6 +63,7 @@ def tla_step(st, t, a, m, eff_new, cfg):
 def main() -> None:
     ap = argparse.ArgumentParser()
     ap.add_argument("--n", type=int, default=60000)
+    ap.add_argument("--oracle", action="store_true")
     args = ap.parse_args()
     rng = random.Random(2026)
     tally = Counter()
@@ -62,6 +72,7 @@ def main() -> None:
         for _ in range(args.n // len(TICKS)):
             sm = DRAS5StateMachine(enable_constraints=True, enable_audit=False, require_human_approval=True)
             st = (1, 0, 1, 0)
+            peak, tpeak = 0.0, 0.0
             seq = []
             while len(seq) < 30:
                 seq.extend([(rng.choice(RHOS), rng.random() < 0.5, rng.choice((0, 1, 1, 2, 3)))] * rng.randint(1, 8))
@@ -76,8 +87,17 @@ def main() -> None:
                 t = int(risk_to_state(rho))
                 if new != old:
                     eff_new = t
+                elif args.oracle:
+                    # independent recomputation of rho_eff (Eq. decay) for the current level
+                    if rho > peak:
+                        peak, tpeak = rho, i * float(dt)
+                    lam = STATE_CONFIG[RiskState(old)]["lam"]
+                    r_eff = rho if lam is None else max(rho, peak * math.exp(-lam * (i * float(dt) - tpeak)))
+                    eff_new = int(risk_to_state(min(1.0, r_eff)))
                 else:
                     eff_new = int(risk_to_state(sm._rho_eff_history[-1]))
+                if new != old:
+                    peak, tpeak = 0.0, 0.0
                 s, dwell, eff, low = st
                 allowed = {t} if t > eff else set(range(t, eff + 1))
                 tally["steps"] += 1
@@ -101,7 +121,8 @@ def main() -> None:
                                                  mode=m, code=new, model=st[0], before=old))
                     break                      # first divergence ends this sequence (no cascade)
     out = dict(tally), examples
-    (REPO / "results" / "tla_conformance.json").write_text(
+    name = "tla_conformance_oracle.json" if args.oracle else "tla_conformance.json"
+    (REPO / "results" / name).write_text(
         json.dumps(dict(tally=dict(tally), examples=examples), indent=2) + "\n", encoding="utf-8")
     print(json.dumps(dict(tally=dict(tally), examples=examples), indent=1))
 

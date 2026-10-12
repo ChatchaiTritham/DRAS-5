@@ -69,3 +69,8 @@ Thumbs.db
 *.swp
 temp/
 tmp/
+
+# TLC jar (downloaded and hash-checked by scripts/run_tlc.py)
+formal/tla2tools.jar
+formal/mut/
+formal/states/

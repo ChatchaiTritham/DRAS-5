@@ -51,7 +51,7 @@ def run_configuration(n_traj: int, seed: int, scale: float) -> dict:
         "t_cool_scale": scale,
         "min_tcool_over_tmax": round(min(ratios.values()), 3),
         "max_tcool_over_tmax": round(max(ratios.values()), 3),
-        "mer_reach_pct": summary["mer_overall_pct"]["dras5"],
+        "mer_reach_pct": summary["mer_reach_overall_pct"]["dras5"],
         "oer_no_c5_pct": no_c5,
         "oer_with_c5_pct": with_c5,
         "oer_reduction_pp": round(no_c5 - with_c5, 2),
