@@ -1,4 +1,4 @@
-system,trajectory_type,n,mer_end_pct,mer_ever_pct,oer_pct
+system,trajectory_type,n,mer_end_pct,mer_reach_pct,oer_pct
 max-hold(1),monotonic,1250,0.0,0.0,4.93
 max-hold(1),oscillating,1250,0.0,0.0,79.6
 max-hold(1),spike_emergency,1250,0.0,0.0,74.65

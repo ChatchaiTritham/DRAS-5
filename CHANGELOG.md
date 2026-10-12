@@ -1,9 +1,36 @@
-﻿# Changelog
+# Changelog
 
 All notable changes to DRAS-5 will be documented in this file.
 
 The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.1.0/),
 and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0.html).
+
+## [1.5.0] - 2026-10-12
+
+Revision in response to a ten-reviewer simulated review (items D-04..D-18).
+
+### Added
+
+- `scripts/recoverable_baselines.py`: hysteresis, timed-release max-hold and decayed-max baselines; registration delay and failure to register within 5 min; paired bootstrap CIs (DRAS-5 vs NEWS2 on MER_end, CI of DRAS-5 MER_end, DRAS-5 vs every baseline on end excess and OER); per-family results; Dirichlet mixture-weight sensitivity; generator hyperparameter sensitivity; C5 grants by family and transition; attribution runs (no C5, C2 clock restarting, no C2). Outputs `results/recoverable_baselines.csv`, `recoverable_summary.json`, `mixture_sensitivity.csv`, `generator_sensitivity.csv`.
+- `scripts/ward_timing.py`: 24-hour episodes observed hourly, irregularly (30-120 min) or 4-hourly with 10% missing charts; shipped and ward-scaled (x60) parameters. Output `results/ward_timing.csv`.
+- `scripts/ml_wrapper_v2.py`: autoregressive and vital-sign (lag, nonlinearity, missingness, site shift) upstream predictors; stateless every sample / every 2nd sample, max-hold and DRAS-5 arms. Output `results/ml_wrapper_v2.csv`.
+- `scripts/run_tlc.py`: regenerates `formal/out/` with TLC from TLA+ release v1.7.4 (TLC 2.19), SHA-256 pinned.
+- Two TLA+ mutants (C5c two-level grant; unregistered band for reach): eight mutants, all rejected.
+- `scripts/tla_conformance.py --oracle`: the model's effective-risk band comes from an independent recomputation of the decay, not from the code (`results/tla_conformance_oracle.json`).
+- `scripts/fig_recoverable.py` -> `figures/fig_systems_mer_oer.pdf`.
+- `DRAS5StateMachine(c2_clock="rewarrant")`: optional C2 clock that restarts when the patient returns to the band; default `"entry"` unchanged.
+- `approval_pending` flag and `pending_events` when the S4 timeout elapses without S5 approval.
+
+### Changed
+
+- C5(a) is decided in O(1) from an incremental run counter (Theorem 6 now holds for the code); the v1.4.0 window rescan is kept as `_c5_window_ok_rescan` and `tests/test_c5_incremental.py` checks they agree. All `run_all.py` outputs are byte-identical.
+- Result keys renamed to the paper's definitions: `summary.json` `mer_reach_overall_pct` (DRAS-5) and `mer_end_overall_pct` (NEWS2, MEWS) with matching `*_ci95`; `mer_by_type.csv` columns `mer_reach_dras5_*`, `mer_end_news2_*`, `mer_end_mews_*`; `maxhold_baseline.csv` `mer_reach_pct` (was `mer_ever_pct`). `under_recognition_overall_pct` is documented as a diagnostic.
+- `run_all.py`: spike-to-critical decay is the named constant `SPIKEC_DECAY` (value unchanged).
+- `pytest.ini`: removed the unknown `asyncio_default_fixture_loop_scope` option (warning).
+
+### Removed
+
+- Uncommitted λ×T_cool edit of `scripts/cooling_sweep.py` discarded (duplicated `scripts/decay_sweep.py`); the stale `results/cooling_sweep.csv|json`, used by no script or paper table, deleted.
 
 ## [1.3.0] - 2026-10-05
 

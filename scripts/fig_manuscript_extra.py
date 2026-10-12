@@ -38,10 +38,14 @@ def fig_mer(outdir: Path):
     rows = list(csv.DictReader(open(ROOT / "results" / "mer_by_type.csv", encoding="utf-8")))
     summ = json.load(open(ROOT / "results" / "summary.json", encoding="utf-8"))
     cats = [LABELS[r["trajectory_type"]] for r in rows] + ["Overall"]
+    ov = {**summ["mer_end_overall_pct"], **summ["mer_reach_overall_pct"]}
+    ovci = {**summ["mer_end_overall_ci95"], **summ["mer_reach_overall_ci95"]}
+
     def series(key):
-        v = [float(r[f"mer_{key}_pct"]) for r in rows] + [summ["mer_overall_pct"][key]]
-        lo = [float(r[f"mer_{key}_ci_lo"]) for r in rows] + [summ["mer_overall_ci95"][key][0]]
-        hi = [float(r[f"mer_{key}_ci_hi"]) for r in rows] + [summ["mer_overall_ci95"][key][1]]
+        col = ("mer_reach_" if key == "dras5" else "mer_end_") + key
+        v = [float(r[f"{col}_pct"]) for r in rows] + [ov[key]]
+        lo = [float(r[f"{col}_ci_lo"]) for r in rows] + [ovci[key][0]]
+        hi = [float(r[f"{col}_ci_hi"]) for r in rows] + [ovci[key][1]]
         v, lo, hi = map(np.array, (v, lo, hi))
         return v, np.vstack([v - lo, hi - v])
     apply_pub_style()

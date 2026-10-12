@@ -405,14 +405,14 @@ def fig4_mer(outdir: Path):
         return [float(r[key]) for r in rows]
 
     series = {
-        "news2": (col("mer_news2_pct"), col("mer_news2_ci_lo"), col("mer_news2_ci_hi")),
-        "mews": (col("mer_mews_pct"), col("mer_mews_ci_lo"), col("mer_mews_ci_hi")),
-        "dras": (col("mer_dras5_pct"), col("mer_dras5_ci_lo"), col("mer_dras5_ci_hi")),
+        "news2": (col("mer_end_news2_pct"), col("mer_end_news2_ci_lo"), col("mer_end_news2_ci_hi")),
+        "mews": (col("mer_end_mews_pct"), col("mer_end_mews_ci_lo"), col("mer_end_mews_ci_hi")),
+        "dras": (col("mer_reach_dras5_pct"), col("mer_reach_dras5_ci_lo"), col("mer_reach_dras5_ci_hi")),
     }
     # Append the pooled "Overall" bar with its own bootstrap CI from summary.json.
     types.append("Overall")
-    ov = summ["mer_overall_pct"]
-    ovci = summ["mer_overall_ci95"]
+    ov = {**summ["mer_end_overall_pct"], **summ["mer_reach_overall_pct"]}
+    ovci = {**summ["mer_end_overall_ci95"], **summ["mer_reach_overall_ci95"]}
     for key, src in (("news2", "news2"), ("mews", "mews"), ("dras", "dras5")):
         vals, los, his = series[key]
         vals.append(float(ov[src]))

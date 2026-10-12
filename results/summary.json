@@ -19,16 +19,20 @@
     "seed": 42,
     "ci": "95%"
   },
-  "mer_overall_pct": {
-    "dras5": 0.0,
+  "mer_reach_overall_pct": {
+    "dras5": 0.0
+  },
+  "mer_end_overall_pct": {
     "news2": 74.22,
     "mews": 75.6
   },
-  "mer_overall_ci95": {
+  "mer_reach_overall_ci95": {
     "dras5": [
       0.0,
       0.0
-    ],
+    ]
+  },
+  "mer_end_overall_ci95": {
     "news2": [
       73.0,
       75.36
@@ -123,9 +127,9 @@
   },
   "latency": {
     "operations": 50000,
-    "mean_ms": 0.0381,
-    "ci95_low_ms": 0.0049,
-    "ci95_high_ms": 0.1128,
-    "throughput_per_s": 26256
+    "mean_ms": 0.0474,
+    "ci95_low_ms": 0.0089,
+    "ci95_high_ms": 0.1265,
+    "throughput_per_s": 21108
   }
 }

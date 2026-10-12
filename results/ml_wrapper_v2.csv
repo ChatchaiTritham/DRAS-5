@@ -1,0 +1,13 @@
+upstream,arm,n_test,rmse,mean_bias_when_true_ge_0.7,mer_end_input_pct,mer_reach_input_pct,mer_end_true_pct,mer_reach_true_pct,oer_vs_true_pct
+autoregressive,"Stateless, every sample",1000,0.057,-0.025,74.5,0.0,77.2,22.1,7.3
+autoregressive,"Stateless, every 2nd sample",1000,0.057,-0.025,72.6,0.0,75.6,22.2,7.87
+autoregressive,"Max-hold, every sample",1000,0.057,-0.025,0.0,0.0,22.1,22.1,51.56
+autoregressive,DRAS-5 (full),1000,0.057,-0.025,20.2,0.0,21.3,0.0,69.62
+vital-sign,"Stateless, every sample",1000,0.098,-0.064,66.1,0.0,70.2,23.9,11.93
+vital-sign,"Stateless, every 2nd sample",1000,0.098,-0.064,61.8,0.0,66.6,26.9,12.72
+vital-sign,"Max-hold, every sample",1000,0.098,-0.064,0.0,0.0,23.9,23.9,59.27
+vital-sign,DRAS-5 (full),1000,0.098,-0.064,13.7,0.0,21.3,2.0,77.71
+"vital-sign, shifted","Stateless, every sample",1000,0.132,-0.043,62.8,0.0,67.2,22.3,34.88
+"vital-sign, shifted","Stateless, every 2nd sample",1000,0.132,-0.043,58.5,0.0,64.0,24.0,34.88
+"vital-sign, shifted","Max-hold, every sample",1000,0.132,-0.043,0.0,0.0,22.3,22.3,73.53
+"vital-sign, shifted",DRAS-5 (full),1000,0.132,-0.043,15.6,0.0,17.6,0.1,91.37

@@ -22,6 +22,14 @@ All figures below come from `python scripts/run_all.py` at seed 42 on the synthe
 - **Over-escalation is 69.7% with and without C5.** The valid grants remain above the instantaneous recovered true level, so they do not change the binary over-escalation indicator on this cohort.
 - **Per-update cost stays well under the 1 ms target.** The committed run records 0.0701 ms mean latency (14,267 updates/s) over 50,000 operations. Timing is wall-clock and machine-dependent; reruns should be interpreted against the sub-millisecond target rather than as exact portable timing.
 
+## Revision v1.5.0 (2026-10-12): what changed in the findings
+
+- Recoverable filters that need no state machine (hysteresis, timed-release max-hold, decayed max) end episodes with less excess (1.40-1.65 vs 2.06 levels) and less over-escalation (42.9-58.0% vs 69.7%) than DRAS-5, with no premature step-down on this cohort (`scripts/recoverable_baselines.py`).
+- Without the C2 timeout, DRAS-5's over-escalation is 58.69%, equal to max-hold: the timeout causes the whole gap. The same timeout is what reduces unreported true peaks under hourly charting (8.56% -> 2.44%, `scripts/ward_timing.py`) and behind an under-reporting vital-sign predictor (23.9% -> 2.0%, `scripts/ml_wrapper_v2.py`).
+- All 1,250 C5 grants are S4 -> S3 steps, one per spike-to-critical trajectory.
+- `python scripts/run_tlc.py` regenerates the TLC outputs; eight mutants are rejected.
+- Result keys follow the paper: `mer_reach_*` (never reached the sustained peak) and `mer_end_*` (final level below it). `under_recognition_overall_pct` in `summary.json` is the fraction of the post-peak window a stateless score sits below the sustained peak; it is a diagnostic and is not reported in the paper.
+
 ## Repository structure
 
 ```text

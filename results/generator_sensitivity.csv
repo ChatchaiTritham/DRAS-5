@@ -1,0 +1,33 @@
+configuration,system,mer_end_pct,oer_pct,end_excess_levels,not_registered_5min_pct,premature_stepdowns,c5_grants
+baseline,NEWS2 (every 2nd),74.22,3.51,0.153,0.0,0,
+baseline,Max-hold,0.0,58.69,2.166,0.0,0,
+baseline,Hysteresis,25.7,58.01,1.652,0.0,0,
+baseline,DRAS-5 (full),20.46,69.71,2.058,0.0,0,1250
+noise x0.5,NEWS2 (every 2nd),75.0,2.36,0.087,0.0,0,
+noise x0.5,Max-hold,0.0,52.49,1.894,0.0,0,
+noise x0.5,Hysteresis,25.08,50.72,1.392,0.0,0,
+noise x0.5,DRAS-5 (full),24.32,68.28,2.044,0.0,0,1250
+noise x2,NEWS2 (every 2nd),74.82,6.22,0.224,0.0,0,
+noise x2,Max-hold,0.0,65.31,2.276,0.0,0,
+noise x2,Hysteresis,25.6,65.21,1.769,0.0,0,
+noise x2,DRAS-5 (full),16.5,73.85,2.07,0.0,0,1239
+spike-to-emergency peak 0.95,NEWS2 (every 2nd),74.22,3.45,0.135,0.0,0,
+spike-to-emergency peak 0.95,Max-hold,0.0,58.35,2.127,0.0,0,
+spike-to-emergency peak 0.95,Hysteresis,25.0,57.72,1.627,0.0,0,
+spike-to-emergency peak 0.95,DRAS-5 (full),20.46,69.29,2.012,0.0,0,1250
+spike-to-critical peak 0.74,NEWS2 (every 2nd),74.22,3.31,0.153,0.0,0,
+spike-to-critical peak 0.74,Max-hold,0.0,58.84,2.161,0.0,0,
+spike-to-critical peak 0.74,Hysteresis,25.7,58.16,1.652,0.0,0,
+spike-to-critical peak 0.74,DRAS-5 (full),4.88,69.86,2.057,0.0,0,1231
+spike-to-critical peak 0.85,NEWS2 (every 2nd),74.22,3.26,0.153,0.0,0,
+spike-to-critical peak 0.85,Max-hold,0.0,58.43,2.167,0.0,0,
+spike-to-critical peak 0.85,Hysteresis,25.52,57.75,1.658,0.0,0,
+spike-to-critical peak 0.85,DRAS-5 (full),24.82,69.45,2.062,0.0,0,1241
+spike recovery x0.5 (longer spikes),NEWS2 (every 2nd),74.22,3.29,0.101,0.0,0,
+spike recovery x0.5 (longer spikes),Max-hold,0.0,58.06,1.835,0.0,0,
+spike recovery x0.5 (longer spikes),Hysteresis,25.04,57.42,1.334,0.0,0,
+spike recovery x0.5 (longer spikes),DRAS-5 (full),24.88,69.01,1.72,0.0,0,1250
+spike recovery x2 (shorter spikes),NEWS2 (every 2nd),74.22,3.02,0.083,0.0,0,
+spike recovery x2 (shorter spikes),Max-hold,0.0,59.01,2.291,0.0,0,
+spike recovery x2 (shorter spikes),Hysteresis,27.46,58.38,1.742,0.0,0,
+spike recovery x2 (shorter spikes),DRAS-5 (full),1.14,70.01,2.201,0.0,0,1250

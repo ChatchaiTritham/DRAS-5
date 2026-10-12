@@ -1,0 +1,33 @@
+system,metric,equal_weights,median,p2_5,p97_5
+NEWS2 (every 2nd),mer_end_pct,74.22,79.281,28.073,97.967
+NEWS2 (every 2nd),oer_pct,3.511,3.431,2.211,5.204
+NEWS2 (every 2nd),end_excess_levels,0.153,0.157,0.055,0.231
+NEWS2 (every 2nd),excess_levels,0.035,0.034,0.022,0.052
+Max-hold,mer_end_pct,0.0,0.0,0.0,0.0
+Max-hold,oer_pct,58.693,62.049,24.794,76.245
+Max-hold,end_excess_levels,2.166,2.239,0.945,3.026
+Max-hold,excess_levels,1.401,1.486,0.554,1.899
+Hysteresis,mer_end_pct,25.7,21.635,1.592,72.757
+Hysteresis,oer_pct,58.013,61.447,24.539,75.112
+Hysteresis,end_excess_levels,1.652,1.635,0.697,2.654
+Hysteresis,excess_levels,1.175,1.24,0.466,1.622
+Timed-release max-hold,mer_end_pct,25.7,21.635,1.592,72.757
+Timed-release max-hold,oer_pct,42.929,43.411,16.424,67.573
+Timed-release max-hold,end_excess_levels,1.402,1.393,0.344,2.588
+Timed-release max-hold,excess_levels,0.944,0.954,0.318,1.526
+Decayed max,mer_end_pct,25.7,21.635,1.592,72.757
+Decayed max,oer_pct,45.558,46.428,17.982,68.699
+Decayed max,end_excess_levels,1.399,1.391,0.344,2.582
+Decayed max,excess_levels,0.967,0.981,0.33,1.545
+DRAS-5 (full),mer_end_pct,20.46,17.045,0.64,59.292
+DRAS-5 (full),oer_pct,69.714,71.256,51.189,82.05
+DRAS-5 (full),end_excess_levels,2.058,2.071,1.148,2.855
+DRAS-5 (full),excess_levels,1.519,1.576,0.831,1.947
+DRAS-5 (full) minus Max-hold,end_excess_levels,-0.108,-0.067,-0.661,0.268
+DRAS-5 (full) minus Max-hold,oer_pct,11.021,9.672,1.792,26.134
+DRAS-5 (full) minus Hysteresis,end_excess_levels,0.406,0.387,0.151,0.779
+DRAS-5 (full) minus Hysteresis,oer_pct,11.701,10.569,2.103,26.391
+DRAS-5 (full) minus Timed-release max-hold,end_excess_levels,0.656,0.588,0.177,1.501
+DRAS-5 (full) minus Timed-release max-hold,oer_pct,26.785,26.364,10.289,45.749
+DRAS-5 (full) minus Decayed max,end_excess_levels,0.659,0.59,0.184,1.502
+DRAS-5 (full) minus Decayed max,oer_pct,24.156,23.988,10.526,38.087

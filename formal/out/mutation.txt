@@ -4,3 +4,5 @@ C5a broken (no cooling window)                   -> Error: Action property C5a i
 C5b broken (one approval suffices)               -> Error: Action property C5b is violated.
 C2 broken (timeout late by 3 ticks)              -> Error: Action property C2 is violated.
 C3 broken (no audit entry)                       -> Error: Action property C3 is violated.
+C5c broken (a grant may drop two levels)         -> Error: Action property C5c is violated.
+Reach broken (a band-4 input is not registered)  -> Error: Invariant Reach is violated.

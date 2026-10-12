@@ -83,6 +83,7 @@ SPIKEE_DECAY, SPIKEE_NOISE = 0.015, 0.02
 SPIKEC_PRE_BASE, SPIKEC_PRE_SLOPE, SPIKEC_PEAK = 0.20, 0.10, 0.78
 SPIKEC_RECOVER = 0.12  # sustained low risk after recovery
 SPIKEC_NOISE = 0.02
+SPIKEC_DECAY = 0.08  # per-step decay of the spike-to-critical peak
 
 # Trajectory types and their share of the cohort.
 TYPES = ("monotonic", "oscillating", "spike_emergency", "spike_critical")
@@ -132,7 +133,7 @@ def make_trajectory(ttype: str, seed: int) -> List[float]:
                 base = SPIKEC_PEAK
             else:
                 # quick observed recovery to a sustained low floor
-                decayed = SPIKEC_PEAK * math.exp(-0.08 * (i - spike_at))
+                decayed = SPIKEC_PEAK * math.exp(-SPIKEC_DECAY * (i - spike_at))
                 base = max(SPIKEC_RECOVER, decayed)
             noise = rng.gauss(0, SPIKEC_NOISE)
         else:
@@ -387,12 +388,12 @@ def evaluate(n_traj: int, base_seed: int):
         mw_lo, mw_hi = _bootstrap_ci(mer_obs["MEWS"][tt])
         mer_rows.append({
             "trajectory_type": tt, "n": per_type,
-            "mer_dras5_pct": pct(mer["DRAS-5"][tt], per_type),
-            "mer_dras5_ci_lo": d5_lo, "mer_dras5_ci_hi": d5_hi,
-            "mer_news2_pct": pct(mer["NEWS2"][tt], per_type),
-            "mer_news2_ci_lo": n2_lo, "mer_news2_ci_hi": n2_hi,
-            "mer_mews_pct": pct(mer["MEWS"][tt], per_type),
-            "mer_mews_ci_lo": mw_lo, "mer_mews_ci_hi": mw_hi,
+            "mer_reach_dras5_pct": pct(mer["DRAS-5"][tt], per_type),
+            "mer_reach_dras5_ci_lo": d5_lo, "mer_reach_dras5_ci_hi": d5_hi,
+            "mer_end_news2_pct": pct(mer["NEWS2"][tt], per_type),
+            "mer_end_news2_ci_lo": n2_lo, "mer_end_news2_ci_hi": n2_hi,
+            "mer_end_mews_pct": pct(mer["MEWS"][tt], per_type),
+            "mer_end_mews_ci_lo": mw_lo, "mer_end_mews_ci_hi": mw_hi,
             "urr_news2_pct": pct(urr["NEWS2"][tt], per_type),
             "urr_mews_pct": pct(urr["MEWS"][tt], per_type),
         })
@@ -434,16 +435,20 @@ def evaluate(n_traj: int, base_seed: int):
             "n_evaluations": n_evals, "trajectory_types": list(TYPES),
         },
         "bootstrap": {"n_resamples": BOOTSTRAP_N, "seed": BOOTSTRAP_SEED, "ci": "95%"},
-        "mer_overall_pct": {
-            "dras5": pct(mer_overall["DRAS-5"], n_total),
+        # MER_reach for DRAS-5 (state never reached the peak) and MER_end for the
+        # stateless baselines (level at the episode end below the sustained peak).
+        "mer_reach_overall_pct": {"dras5": pct(mer_overall["DRAS-5"], n_total)},
+        "mer_end_overall_pct": {
             "news2": pct(mer_overall["NEWS2"], n_total),
             "mews": pct(mer_overall["MEWS"], n_total),
         },
-        "mer_overall_ci95": {
-            "dras5": list(mer_ci_overall["dras5"]),
+        "mer_reach_overall_ci95": {"dras5": list(mer_ci_overall["dras5"])},
+        "mer_end_overall_ci95": {
             "news2": list(mer_ci_overall["news2"]),
             "mews": list(mer_ci_overall["mews"]),
         },
+        # Graded under-recognition: fraction of the post-peak window in which the stateless
+        # score sits below the sustained peak. Diagnostic only; not reported in the paper.
         "under_recognition_overall_pct": {
             "dras5": 0.0,  # DRAS-5 retains the peak (C1) -> never under-recognises
             "news2": pct(urr_overall["NEWS2"], n_total),
