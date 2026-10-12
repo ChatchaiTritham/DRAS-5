@@ -80,6 +80,7 @@ class DRAS5StateMachine:
         enable_audit: bool = True,
         require_human_approval: bool = True,
         session_id: Optional[str] = None,
+        c2_clock: str = "entry",
     ):
         """
         Initialize DRAS-5 state machine.
@@ -90,7 +91,28 @@ class DRAS5StateMachine:
             enable_audit: Enable audit logging
             require_human_approval: Require human approval for S4→S5
             session_id: Session identifier for tracking
+            c2_clock: "entry" (default) -- the C2 dwell clock runs from state entry and
+                keeps running while the timeout is suspended for a recovering patient, so
+                a patient who returns to the state's band after a dip is escalated at
+                once if the dwell already exceeds T_max; "rewarrant" -- the clock restarts
+                when the patient returns to the band after a suspension.
         """
+        if c2_clock not in ("entry", "rewarrant"):
+            raise ValueError(f"c2_clock must be 'entry' or 'rewarrant', got {c2_clock}")
+        self.c2_clock = c2_clock
+        self._warrant_since: Optional[float] = None
+        self._c2_suspended = False
+        # "Approval pending" output (C4/C2 at S4): set when the S4 timeout has elapsed
+        # while risk persists and no S5 approval is given; cleared on any transition.
+        self.approval_pending = False
+        self.pending_events: List[float] = []
+        # Incremental C5 cooling-window state (O(1) per update, Theorem 6): the current
+        # run of consecutive in-state samples whose rho_eff is below the de-escalation
+        # threshold and does not rise over the previous sample.
+        self._run_active = False
+        self._run_last = 0.0
+        self._pre_run_time: Optional[float] = None
+        self._last_sample_time: Optional[float] = None
         self.current_state = initial_state
         self.enable_constraints = enable_constraints
         self.enable_audit = enable_audit
@@ -177,6 +199,7 @@ class DRAS5StateMachine:
         )
         self._rho_eff_history.append(rho_eff)
         self._rho_eff_times.append(current_time)
+        self._advance_c5_run(rho_eff, current_time)
 
         old_state = self.current_state
         new_state = self._calculate_target_state(risk_score)
@@ -189,24 +212,20 @@ class DRAS5StateMachine:
             else:
                 if rho_eff_series:
                     series = rho_eff_series
+                    from dras5.constraints import check_c5
+                    allowed, _ = check_c5(old_state, series, alpha1=a1, alpha2=a2)
                 else:
                     # Evaluate C5 over the cooling-period window only (Theorem 5a:
                     # sustained decay below threshold for the *full cooling period*).
                     # Samples accumulated right after state entry are still near the
                     # entry peak; including them would make a genuine sustained
                     # recovery impossible to demonstrate.
-                    t_cool = STATE_CONFIG[old_state].get("t_cool") or 0.0
-                    in_state = current_time - self.state_entry_time
-                    if in_state + 1e-9 < t_cool:
-                        series = []  # cooling period has not yet elapsed
-                    else:
-                        series = [
-                            r
-                            for ti, r in zip(self._rho_eff_times, self._rho_eff_history)
-                            if current_time - ti <= t_cool
-                        ]
-                from dras5.constraints import check_c5
-                allowed, _ = check_c5(old_state, series, alpha1=a1, alpha2=a2)
+                    #
+                    # Decided in O(1) from the incremental run counter: the window is the
+                    # samples within the last T_cool seconds (all after entry); it passes
+                    # iff the current run covers every one of them. Equivalent to
+                    # check_c5 over the rescanned window (tests/test_c5_incremental.py).
+                    allowed = self._c5_window_ok(old_state, current_time)
                 if not allowed:
                     logger.warning("De-escalation denied: C5 constraint not met")
                     new_state = old_state
@@ -258,6 +277,47 @@ class DRAS5StateMachine:
 
         return self.current_state
 
+    def _advance_c5_run(self, rho_eff: float, t: float) -> None:
+        """Update the O(1) C5 run counter with one in-state sample."""
+        state = self.current_state
+        if state in (RiskState.SAFE, RiskState.EMERGENCY):
+            self._run_active = False
+        else:
+            from dras5.states import deescalation_threshold
+            if rho_eff < deescalation_threshold(state):
+                if not (self._run_active and rho_eff <= self._run_last + 1e-9):
+                    self._run_active = True
+                    self._pre_run_time = self._last_sample_time
+                self._run_last = rho_eff
+            else:
+                self._run_active = False
+        self._last_sample_time = t
+
+    def _c5_window_ok(self, state: RiskState, current_time: float) -> bool:
+        """C5(a) in O(1): full cooling window elapsed and covered by the current run."""
+        if state in (RiskState.SAFE, RiskState.EMERGENCY):
+            return False
+        t_cool = STATE_CONFIG[state].get("t_cool") or 0.0
+        if current_time - self.state_entry_time + 1e-9 < t_cool:
+            return False
+        return self._run_active and (
+            self._pre_run_time is None or not current_time - self._pre_run_time <= t_cool)
+
+    def _c5_window_ok_rescan(self, state: RiskState, current_time: float) -> bool:
+        """Reference O(T_cool/dt) rescan of the window (v1.4.0 behaviour), kept for tests."""
+        from dras5.constraints import check_c5
+        t_cool = STATE_CONFIG[state].get("t_cool") or 0.0
+        if current_time - self.state_entry_time + 1e-9 < t_cool:
+            return False
+        series = [r for ti, r in zip(self._rho_eff_times, self._rho_eff_history)
+                  if current_time - ti <= t_cool]
+        return check_c5(state, series)[0]
+
+    def _dwell_start(self) -> float:
+        if self.c2_clock == "rewarrant" and self._warrant_since is not None:
+            return max(self.state_entry_time, self._warrant_since)
+        return self.state_entry_time
+
     def _check_and_auto_escalate(self, current_time: float, approved: bool = False):
         """Check for timeout and auto-escalate if needed.
 
@@ -266,9 +326,14 @@ class DRAS5StateMachine:
         current state's entry threshold is recovering and must stay eligible for
         controlled C5 de-escalation rather than being forced into EMERGENCY.
         """
-        if not self.check_timeout(t=current_time):
-            return
         if self._calculate_target_state(self.last_risk_score) < self.current_state:
+            if self.check_timeout(t=current_time):
+                self._c2_suspended = True
+            return
+        if self._c2_suspended and self.c2_clock == "rewarrant":
+            self._warrant_since = current_time
+        self._c2_suspended = False
+        if not self.check_timeout(t=current_time):
             return
         self.auto_escalate(t=current_time, approved=approved)
 
@@ -307,6 +372,11 @@ class DRAS5StateMachine:
         # Update state
         self.current_state = new_state
         self.state_entry_time = current_time
+        self._warrant_since = None
+        self._c2_suspended = False
+        self.approval_pending = False
+        self._run_active = False
+        self._last_sample_time = None
         self._decay_tracker.reset(new_state)
         self._rho_eff_history.clear()
         self._rho_eff_times.clear()
@@ -334,7 +404,7 @@ class DRAS5StateMachine:
     def check_timeout(self, t: Optional[float] = None) -> bool:
         """Check if current state has exceeded timeout"""
         current_time = t if t is not None else time.time()
-        duration = current_time - self.state_entry_time
+        duration = current_time - self._dwell_start()
         timeout = self.STATE_TIMEOUTS[self.current_state]
 
         if timeout == float("inf"):
@@ -368,6 +438,9 @@ class DRAS5StateMachine:
             and not approved
         ):
             logger.warning("CRITICAL timeout: approval required before EMERGENCY")
+            if not self.approval_pending:
+                self.approval_pending = True
+                self.pending_events.append(current_time)
             return
         self._transition(
             next_state,
